@@ -1,0 +1,26 @@
+<DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8"/>
+    <title>Configurations</title>
+    <link rel="stylesheet" href="stylesheets/subAuto.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="javascripts/Header.js"></script>
+    <script src="javascripts/Home.js"></script>
+    <script src="javascripts/Configurations.js"></script>
+  </head>
+
+  <body onload = "LoadConfigurationsDataIntoTable()">
+    <div id = "content">
+
+      <table id = "configurationsTable" class = "standardStyle">
+      </table>
+      <br>
+      <button onclick = "FindUrlCodes()" type = "button" class = "standardStyle">Find Url Codes</button>
+      <button onclick = "SaveConfigurations()" type = "button" class = "standardStyle">Save Configurations</button>
+    </div>
+  </body>
+</html>
