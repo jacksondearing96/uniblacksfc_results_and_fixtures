@@ -1,7 +1,9 @@
 function GetResults(teams)
 {
-	//teams = [teams[0]];
-	GetResultsForTeamOfTeams(teams, 0);
+	for (var i = 0; i < teams.length; i++)
+	{
+		GetResultsForTeamOfTeams(teams, i);
+	}
 	console.log(teams);
 }
 
@@ -27,10 +29,6 @@ function GetResultsForTeamOfTeams(teams, teamIndex)
 			{
 				console.log("FINISHED");
 			}
-			else
-			{
-				GetResultsForTeamOfTeams(teams, teamIndex + 1);
-			}
 		}
 	};
 
@@ -53,8 +51,6 @@ function UpdateTeamsWithReturnedTeam(teams, finishedTeam)
 
 function DisplayResults(teams) 
 {
-	//InsertSausageRolls(teams);
-
 	$("#saveResultsHTMLButton").css("display", "block");
 	console.log(teams);
 	var resultsDiv = document.getElementById('results');
@@ -189,139 +185,6 @@ function CorrectWidths(className)
 		}
 	}	
 }
-
-function InsertSausageRolls(teams)
-{
-	for (var i = 0; i < teams.length; i++)
-	{
-		if (teams[i].pastGame_.goalKickers_ == null)
-		{
-			continue;
-		}
-		var goalKickersText = teams[i].pastGame_.goalKickers_;
-		var SR = '<img src="' + sausageRoll + '" style = "height:20px; display:inline-block; margin-bottom:-5px">';
-
-		for (var j = goalKickersText.length - 1; j >= 0; j--)
-		{
-			// // Code to insert sausage rolls for single goal kickers
-			// if (j != 0)
-			// {
-			// 	if (j == goalKickersText.length - 1 && '0123456789'.includes(goalKickersText[j]) == false)
-			// 	{
-			// 		goalKickersText = goalKickersText + " " + SR;
-			// 	}
-
-			// 	if (goalKickersText[j] == ',' && '0123456789'.includes(goalKickersText[j-1]) == false)
-			// 	{
-			// 		goalKickersText = goalKickersText.slice(0, j) + ' ' + goalKickersText.slice(j);
-			// 		goalKickersText = goalKickersText.slice(0, j+1) + SR + goalKickersText.slice(j+1);
-			// 	}
-			// }
-
-			if ('0123456789'.includes(goalKickersText[j]))
-			{
-				var numberOfGoals = Number(goalKickersText[j]);
-				goalKickersText = goalKickersText.slice(0, j-1) + goalKickersText.slice(j+1, goalKickersText.length);
-				var indexToInsert = j-1;
-
-				// check for double digits
-				if ('0123456789'.includes(goalKickersText[j-1]))
-				{
-					var numStr = goalKickersText[j-1] + goalKickersText[j];
-					numberOfGoals = Number(numStr);
-					goalKickersText = goalKickersText.slice(0, j-2) + goalKickersText.slice(j, goalKickersText.length);
-					indexToInsert = j-2;
-				}
-
-				for (var k = 0; k < numberOfGoals; k++)
-				{
-					goalKickersText = goalKickersText.slice(0, indexToInsert) + SR + goalKickersText.slice(indexToInsert);
-				}
-				goalKickersText = goalKickersText.slice(0, indexToInsert) + " " + goalKickersText.slice(indexToInsert);
-
-				teams[i].pastGame_.goalKickers_ = goalKickersText;
-			}
-		}
-	}
-}
-
-// function WhatsOnNextWeek(teams) 
-// {
-// 	$("#saveWhatsOnNextWeekHTMLButton").css("display", "block");
-
-// 	var nextWeekDiv = document.getElementById('whatsOnNextWeek');
-// 	nextWeekDiv.innerHTML = '';
-// 	nextWeekDiv.style.display = "block";
-// 	var previousDate = 0;
-
-// 	nextWeekDiv.innerHTML += "<p style='font-size:25px;text-align:center;color:rgb(242,242,242);'><b>WHAT'S ON THIS WEEKEND</b></p>";
-
-// 	for (var i=0 ; i<teams.length ; i++) 
-// 	{
-// 		if (teams[i].success_ != true)
-// 		{
-// 			continue;
-// 		}
-
-// 		if (teams[i].futureGame_.result_ == 'bye') 
-// 		{
-// 			nextWeekDiv.innerHTML +=
-// 				"<b><u>" + teams[i].gender_ + " Div " + teams[i].division_ + ":</u><br/>BYE<br/><br/>";
-// 		} 
-// 		else 
-// 		{
-// 			if (teams[i].futureGame_.date_ !== previousDate) 
-// 			{
-// 				includeDate = "<p style='text-align:center;color:darkgrey;font-size:1.2em'><b>" +
-// 				teams[i].futureGame_.date_ + "</b></p>";
-// 				previousDate = teams[i].futureGame_.date_;
-// 			} 
-// 			else 
-// 			{
-// 				includeDate = "";
-// 			}
-
-// 			if (teams[i].futureGame_.oppositionNickname_ == null) 
-// 			{
-// 				var opposition = teams[i].futureGame_.opposition_;
-// 			} 
-// 			else 
-// 			{
-// 				var opposition = teams[i].futureGame_.oppositionNickname_;
-// 			}
-
-// 			var actualLocation = "("+teams[i].futureGame_.location_ + ") ";
-// 			if (actualLocation.includes("University Oval"))
-// 			{
-// 				actualLocation = '';
-// 			} 
-// 			else if (actualLocation.includes("Park 10"))
-// 			{
-// 				actualLocation = '';
-// 			}
-
-// 			var locationNickname = "";
-// 			if (teams[i].futureGame_.locationNickname_ == null)
-// 			{
-// 				locationNickname = '';
-// 			}
-// 			else
-// 			{
-// 				locationNickname = teams[i].futureGame_.locationNickname_ + ' ';
-// 			}
-
-// 			nextWeekDiv.innerHTML +=
-// 				includeDate +
-// 				"<div class=nextGame style='text-align:center'>" +
-// 					"<b><u>" + teams[i].gender_ + " Div " + teams[i].division_ + ": Round " +
-// 					Number(Number(teams[i].futureGame_.round_)+1) + "</u></b><br/>"
-// 					+ teams[i].nickname_ + "  v  " + opposition + " @ " + 
-// 					"<a href='" + teams[i].futureGame_.locationURL_ + "' style='color:rgb(242,242,242); text-decoration:none'>" + 
-// 					locationNickname + actualLocation + "</a><b>" +
-// 					teams[i].futureGame_.time_ + "<br/><br/>";
-// 		}
-// 	}
-// }
 
 function PopulateWinOrLossVerb(team) 
 {
