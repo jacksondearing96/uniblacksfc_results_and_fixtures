@@ -5,7 +5,7 @@ $(document).ready(function LoadHeader()
 		<ul> \
 		<li><a href = "index.html"> \
 			<i id = "indexPageIcon" class="fas fa-laptop-code"></i> \
-			Generate Results \
+			Generate \
 		</a></li> \
 		<li><a href = "configurations.html"> \
 			<i id = "configurationsPageIcon" class="fas fa-cog"></i> \
@@ -18,10 +18,6 @@ $(document).ready(function LoadHeader()
 		<li><a href = "taskManager.html"> \
 			<i id = "taskManagerIcon" class="fas fa-tasks"></i> \
 			Tasks \
-		</a></li> \
-		<li><a href = "projectInfo.html"> \
-		<i id = "projectInfoIcon" class="fas fa-project-diagram"></i> \
-			Project \
 		</a></li> \
 		</ul> \
 	</div>';
