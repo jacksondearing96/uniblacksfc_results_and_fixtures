@@ -99,11 +99,11 @@ function DisplayResults(teams)
 		if (teams[i].pastGame_.result_ == 'bye') 
 		{
 			resultsDiv.innerHTML += '<p style="text-align:center;color:darkgrey;font-size:17px;"><b>' + includeDate + '</b></p> \
-			<div><div style="display:flex; float:left"> \
-						<img style="height:50px !important; margin-right:10px" src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png"></img> \
-						<span style="text-align:left; margin: auto 0;"><b>' + teamName + ' </b>(BYE)</span> \
-			</div></div> \
-			<hr style="height:1px; border:none; background-color:lightgrey;">';
+			<div class="gameResult" style="text-align:center; margin-bottom:10px"><div class="teamsDisplay" margin-left:20px;="" \
+			margin-right:20px"=""><span style="display:flex; float:left"><img style="height:50px !important; margin-right:10px" \
+			src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png"><span class="uniNameAndScore" \
+			style="text-align:left; margin: auto 0;"><b>' + teamName + '</b></span></span><div style="display:inline-block; margin: 9px auto; \
+			margin-left:-150px">(BYE)</div></div></div><br>';
 		} 
 		else 
 		{
@@ -337,8 +337,13 @@ function WhatsOnNextWeek(teams)
 
 		if (teams[i].futureGame_.result_ == 'bye') 
 		{
-			nextWeekDiv.innerHTML +=
-				"<b><u>" + teams[i].gender_ + " Div " + teams[i].division_ + ":</u><br/>BYE<br/><br/>";
+			nextWeekDiv.innerHTML += '<table class="nextGame" style="width:100%;"><tbody> \
+			<tr><td style="display:inline-block; width:23%; text-align:center"><img \
+			style="height:50px !important; margin-right:10px; margin-bottom:5px" \
+			src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png"> \
+			<p style="margin:0"><b>' + teams[i].nickname_ + '</b></p></td><td style="display:inline-block; \
+			width:13%; text-align:center"><p style="margin:0">(BYE)</p></td></tr><tr></tr></tbody> \
+			</table><hr style="margin-top:10px; margin-bottom:10px; height:1px;  background-color:lightgrey; border:none">';
 		} 
 		else 
 		{

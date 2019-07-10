@@ -16,8 +16,8 @@ cWhite   = "\x1b[37m";
 process.on('message', (team) => 
 {
     if (team.success_ == true
-        && team.pastGame_.opposition_ != null
-        && team.futureGame_.opposition_ != null)
+        && team.pastGame_.result_ != null
+        && team.futureGame_.result_ != null)
     {
         process.send(JSON.stringify(team));
         return;
@@ -32,10 +32,6 @@ process.on('message', (team) =>
 
 async function GetResultsForTeam(team, processesCompleted)
 {
-  if (team.success_ == true)
-  {
-    process.send(JSON.stringify(team));
-  }
   try
   {
     team.success_ = true; // Set it true initially, set false if necessary
@@ -97,10 +93,16 @@ async function CheckGetResultsProgress(team, processesCompleted, browser)
   if (processesCompleted[0] == 1 && processesCompleted[1] == 1)
   {
     browser.close();
-    if (team.pastGame_.opposition_ == null || team.futureGame_.opposition_ == null)
+    if ((team.pastGame_.result_ == null && team.pastGame_.opposition_ == null) 
+      || (team.futureGame_.result_ == null && team.futureGame_.opposition_ == null))
     {
       team.success_ = false;
     }
+    else
+    {
+      team.success_ = true;
+    }
+  
     process.send(JSON.stringify(team));
   }
 }
@@ -300,7 +302,7 @@ async function GetPastGameDetails(page, team, processesCompleted, browser) {
     if (await clubIsAUFC(page, pClub)) {
       console.log("Found AUFC in fixture");
       team.pastGame_.date_ = await getGameDate(page);
-      if (!roundIsABye(page, pClubs, pClubCount, 'past', team)) {
+      if (await roundIsABye(page, team.pastGame_) == false) {
         console.log("Round was not a bye");
         noResults = false;
 
@@ -349,23 +351,19 @@ async function clubIsAUFC(page, Club)
   }
 }
 
-function roundIsABye(page, Clubs, ClubCount, pastOrFuture, team) 
+async function roundIsABye(page, game) 
 {
-  if (Clubs.length % 2 == 1 && ClubCount == Clubs.length) 
+  const byeTeams = await page.$$('div.m-bye');
+  for (const byeTeam of byeTeams)
   {
-    console.log(bgRed+cWhite + "BYE for AUFC this round" + cReset + "\n\n\n");
-
-    if (pastOrFuture == 'past') 
+    const text = await page.evaluate(byeTeam => byeTeam.textContent, byeTeam);
+    if (text.includes("Adelaide University"))
     {
-      team.pastGame_.result_ = 'bye';
-    } 
-    else 
-    {
-      team.futureGame_.result_ = 'bye';
+      console.log(bgRed+cWhite + "BYE for AUFC this round" + cReset + "\n\n\n");
+      game.result_ = 'bye';
+      return true;
     }
-
-    return true;
-  } 
+  }
   return false;
 }
 
@@ -775,7 +773,7 @@ async function GetFutureGameDetails(page, team, processesCompleted, browser)
     if (await clubIsAUFC(page, fClub)) 
     {
       team.futureGame_.date_ = await getGameDate(page);
-      if (!roundIsABye(page, fClubs, fClubCount, 'future')) 
+      if (await roundIsABye(page, team.futureGame_) == false) 
       {
         fHomeAwayIndex = await homeOrAway(page, fClub);
         team.futureGame_.home_ = fHomeAwayIndex ? true : false;
@@ -789,7 +787,6 @@ async function GetFutureGameDetails(page, team, processesCompleted, browser)
         console.log("\n\n");
 
       } // end if it was a bye
-
       processesCompleted[1] = 1;
       CheckGetResultsProgress(team, processesCompleted, browser);
       break // if Adelaide uni fClub is found, no need to keep going
