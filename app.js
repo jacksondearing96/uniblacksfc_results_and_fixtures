@@ -38,7 +38,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-const server = app.listen(3001);
+const server = app.listen(80);
 
 // go to port 3001 to enable prolonged processing time
 server.setTimeout(300000);
