@@ -32,6 +32,7 @@ function GetResultsForTeamOfTeams(teams, teamIndex)
 		}
 	};
 
+	console.log("Front end sending: ", teams[teamIndex]);
 	resultsRequest.open("POST", "../getResults", true);
 	resultsRequest.setRequestHeader("content-type", "application/json");
 	resultsRequest.send(JSON.stringify(teams[teamIndex]));

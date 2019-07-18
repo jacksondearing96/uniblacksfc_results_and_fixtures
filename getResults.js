@@ -1,5 +1,4 @@
 
-var url       = require('url');
 var puppeteer = require('puppeteer');
 
 cReset   = "\x1b[0m";
@@ -13,21 +12,22 @@ bgGreen  = "\x1b[42m";
 bgRed    = "\x1b[41m";
 cWhite   = "\x1b[37m";
 
+urlStart = "http://websites.sportstg.com/comp_info.cgi?a=ROUND&c=";
+urlEnd   = "&pool=-1";
+
 process.on('message', (team) => 
 {
-    if (team.success_ == true
-        && team.pastGame_.result_ != null
-        && team.futureGame_.result_ != null)
-    {
-        process.send(JSON.stringify(team));
-        return;
-    }
-    
-    urlStart = "http://websites.sportstg.com/comp_info.cgi?a=ROUND&c=";
-    urlEnd   = "&pool=-1";
-    
-    var processesCompleted = [0, 0];
-    GetResultsForTeam(team, processesCompleted);     
+  console.log("Child process getting: ", team);
+  if (team.success_ == true
+      && team.pastGame_.result_ != null
+      && team.futureGame_.result_ != null)
+  {
+    process.send(JSON.stringify(team));
+    return;
+  }
+  
+  var processesCompleted = [0, 0];
+  GetResultsForTeam(team, processesCompleted);     
 })
 
 async function GetResultsForTeam(team, processesCompleted)
