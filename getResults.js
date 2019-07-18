@@ -36,8 +36,10 @@ async function GetResultsForTeam(team, processesCompleted)
   {
     team.success_ = true; // Set it true initially, set false if necessary
     var browserAndPage = await LaunchHeadlessChrome();
+    console.log("LAUNCHED HEADLESS CHROME");
     var browser = browserAndPage[0];
     var page = browserAndPage[1];
+    console.log("Extracted page and browser");
     await page.goto(urlStart + team.urlCode_ + urlEnd);
     console.log("Landing on team's page");
   
