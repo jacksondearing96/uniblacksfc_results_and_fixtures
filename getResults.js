@@ -1,6 +1,7 @@
 
 var puppeteer = require('puppeteer');
 
+// Console colours
 cReset   = "\x1b[0m";
 cMagenta = "\x1b[35m";
 cCyan    = "\x1b[36m";
