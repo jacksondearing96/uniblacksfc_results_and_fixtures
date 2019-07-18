@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd football_results_automation
 git fetch --all
 git reset --hard origin/master
 pm2 delete app
