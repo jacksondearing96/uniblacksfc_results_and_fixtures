@@ -8,6 +8,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 
+// Listen on port 8081
 app.listen(8081);
 
 module.exports = app;
