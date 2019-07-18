@@ -17,7 +17,6 @@ urlEnd   = "&pool=-1";
 
 process.on('message', (team) => 
 {
-  console.log("Child process getting: ", team);
   if (team.success_ == true
       && team.pastGame_.result_ != null
       && team.futureGame_.result_ != null)
@@ -35,6 +34,7 @@ async function GetResultsForTeam(team, processesCompleted)
   try
   {
     team.success_ = true; // Set it true initially, set false if necessary
+    console.log("SET SUCCESS of team");
     var browserAndPage = await LaunchHeadlessChrome();
     console.log("LAUNCHED HEADLESS CHROME");
     var browser = browserAndPage[0];
@@ -112,8 +112,11 @@ async function CheckGetResultsProgress(team, processesCompleted, browser)
 async function LaunchHeadlessChrome() 
 {
   // open headless chrome and extend minimum timeout
-  var browser  = await puppeteer.launch({headless:false});
+  console.log("LAUNCHING HEADLESS CHROME");
+  var browser  = await puppeteer.launch({headless:true});
+  console.log("NEW PAGE");
   var page = await browser.newPage();
+  console.log("SETTING TIMEOUT");
   await page.setDefaultNavigationTimeout(120000);
   return [browser, page];
 }

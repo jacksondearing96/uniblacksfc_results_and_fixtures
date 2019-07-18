@@ -88,7 +88,6 @@ router.get('/loadTasks', function(req, res)
 // accept a 'team' object, populate it's attributes and send back
 router.post('/getResults', function(req,res) 
 {
-  console.log("Server getting: ", req.body);
   const forked = fork('getResults.js');
   var team = req.body;
   forked.send(team);
