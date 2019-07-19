@@ -1,1 +1,0 @@
-ssh -i "JacksKeyPair.pem" ec2-user@ec2-3-87-221-85.compute-1.amazonaws.com
