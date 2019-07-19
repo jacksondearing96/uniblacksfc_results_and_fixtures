@@ -1,10 +1,11 @@
 function GetResults(teams)
 {
+	console.log("START: ", teams);
 	for (var i = 0; i < teams.length; i++)
 	{
 		GetResultsForTeamOfTeams(teams, i);
 	}
-	console.log(teams);
+	console.log("TEAMS: ", teams);
 }
 
 function GetResultsForTeamOfTeams(teams, teamIndex)
@@ -28,6 +29,7 @@ function GetResultsForTeamOfTeams(teams, teamIndex)
 			if (teamIndex == teams.length - 1)
 			{
 				console.log("FINISHED");
+				return;
 			}
 		}
 	};

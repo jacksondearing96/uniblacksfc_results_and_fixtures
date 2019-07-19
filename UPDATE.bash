@@ -14,7 +14,7 @@ echo "{" >> update.c
 echo '    int instructions = open("temp_updateInstructions.txt", O_RDONLY);' >> update.c
 echo "    dup2(instructions, 0);" >> update.c
 echo "    close(instructions);" >> update.c
-echo '    char* ssh = "ssh -i ""~/.ssh/JacksKeyPair.pem"" ec2-user@ec2-3-87-221-85.compute-1.amazonaws.com";' >> update.c
+echo '    char* ssh = "ssh -i ""~/.ssh/JacksKeyPair.pem"" ec2-user@ec2-35-174-154-8.compute-1.amazonaws.com";' >> update.c
 echo "    system(ssh);" >> update.c
 echo "    return 0;" >> update.c
 echo "}" >> update.c

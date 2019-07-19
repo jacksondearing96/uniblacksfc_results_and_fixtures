@@ -161,15 +161,15 @@ th, td
 
 input 
 {
-  border-radius: 3px;
+  background: transparent;
+  border-width: 0px;
+  border-radius: 0px;
+  border-bottom-width: 1px;
+  border-color: black;
   height: 25px;
   font-size: 16px;
   display: inline;
   white-space: nowrap;
-}
-
-.roundInput
-{
   width: 50px;
 }
 
