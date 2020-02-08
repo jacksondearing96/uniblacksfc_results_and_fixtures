@@ -46,7 +46,7 @@ class GetPastResultsTest(unittest.TestCase):
         self.assertEqual(getPastResults.GetMatchResult('1.1-74', '1.2-74'), getPastResults.Result.DRAW)
         
     # Basic game, uni home.
-    def test_GetPastGameDetails(self):
+    def test_GetPastGameDetailsHomeGame(self):
         url = 'http://websites.sportstg.com/round_info.cgi?a=MATCH&fixture=125234850&c=1-114-0-510206-0&pool=1'
         game = getPastResults.GetPastGameDetails(url, 3, 2019)
         self.assertEqual(game.opposition, u'Goodwood Saints')
@@ -62,7 +62,7 @@ class GetPastResultsTest(unittest.TestCase):
         self.assertEqual(game.scoreAgainst, u'8.7-55')
 
     # Womens game.
-    def test_GetPastGameDetails(self):
+    def test_GetPastGameDetailsWomensGame(self):
         url = 'http://websites.sportstg.com/round_info.cgi?a=MATCH&fixture=125275487&c=1-6951-0-522600-0&pool=1'
         game = getPastResults.GetPastGameDetails(url, 14, 2019)
         self.assertEqual(game.opposition, u'SMOSH West Lakes')
@@ -79,3 +79,8 @@ class GetPastResultsTest(unittest.TestCase):
 
         goalKickersAndBestPlayers = '<br><span class="comp-bold">Best Players:</span> R. Gardiner, M. von der Borch-Jardine, M. Williams, M. Lock, B. Badenoch, J. Betts'
         self.assertEqual(game.goalKickersAndBestPlayers, goalKickersAndBestPlayers)
+
+    def test_GetPastGameDetailsForfeitAgainst(self):
+        url = 'http://websites.sportstg.com/round_info.cgi?a=MATCH&fixture=125275511&c=1-6951-0-522600-0&pool=1'
+        game = getPastResults.GetPastGameDetails(url, 1, 2019)
+        self.assertEqual(game.result, getPastResults.Result.OPPOSITION_FORFEIT)

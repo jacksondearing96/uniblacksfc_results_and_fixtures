@@ -70,13 +70,13 @@ def GetPastGameDetails(url, round, year):
         # Women's pages don't have information about the year.
         pass
 
-    # Get location.
-    game.location = html.find('a', {'class':'venuename'}).text
-    game.locationUrl = html.select('span.venuename > a.maplink')[0]['href']
-
     timeAndDateElements = html.find('span', {'class':'matchdate'}).text.split()
     game.time = timeAndDateElements[0] + ' ' + timeAndDateElements[1]
     game.date = ' '.join(timeAndDateElements[3:])
+
+    # Get location.
+    game.location = html.find('a', {'class':'venuename'}).text
+    game.locationUrl = html.select('span.venuename > a.maplink')[0]['href']
 
     # Assume uni is away.
     game.isHomeGame = False
@@ -103,9 +103,14 @@ def GetPastGameDetails(url, round, year):
 
     game.result = GetMatchResult(game.scoreFor, game.scoreAgainst)
 
-    game.goalKickersAndBestPlayers = str(html.select('div.' + goalsAndBestDiv + ' > div.tg-results')[0])
-    game.goalKickersAndBestPlayers = game.goalKickersAndBestPlayers.strip('<div class="tg-results">').strip('</div>').strip()
-    game.goalKickersAndBestPlayers = game.goalKickersAndBestPlayers.replace('<br/>', '<br>')
+    # Now check for a forfeit. If there is a forfeit, there won't
+    # be any data for goalKickersAndBestPlayers.
+    if game.location == u'Forfeit':
+        game.result = Result.FORFEIT if game.result == Result.LOSS else Result.OPPOSITION_FORFEIT
+    else:
+        game.goalKickersAndBestPlayers = str(html.select('div.' + goalsAndBestDiv + ' > div.tg-results')[0])
+        game.goalKickersAndBestPlayers = game.goalKickersAndBestPlayers.strip('<div class="tg-results">').strip('</div>').strip()
+        game.goalKickersAndBestPlayers = game.goalKickersAndBestPlayers.replace('<br/>', '<br>')
 
     # Check the match results are final.
     if html.select('#match-status > span.livenow')[0]['style'] != 'display:none;':
