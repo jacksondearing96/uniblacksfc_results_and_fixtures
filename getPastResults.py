@@ -10,6 +10,7 @@ class Game(object):
         self.year = year
         self.date = None
         self.time = None
+        
         self.opposition = None
         self.oppositionImageUrl = None
         
@@ -19,9 +20,6 @@ class Game(object):
         self.isHomeGame = None
         self.result = None
 
-class PastGame(Game):
-    def __init__(self, round, year):
-        super().__init__(round, year)
         self.scoreFor = None
         self.scoreAgainst = None
 
@@ -48,8 +46,7 @@ def GetMatchResult(scoreForStr, scoreAgainstStr):
     return None
 
 def GetPastGameDetails(url, round, year):
-    if 'sportstg.com' not in url: 
-        return None
+    if 'sportstg.com' not in url: return None
 
     try:
         page = requests.get(url)
@@ -59,8 +56,7 @@ def GetPastGameDetails(url, round, year):
 
         # Verify the round is as expected.
         actualRound = int(html.select('h4.rname')[0].text.split(' ')[1])
-        if actualRound != game.round:
-            return None
+        if actualRound != game.round: return None
 
         # Verify the year is correct.
         try:
@@ -120,3 +116,42 @@ def GetPastGameDetails(url, round, year):
         return game
     except:
         return None
+
+def GetFutureGameDetails(url, round, year):
+    if 'sportstg.com' not in url:
+        return None
+
+    page = requests.get(url)
+    html = BeautifulSoup(page.content, 'html.parser')
+
+    game = Game(round, year)
+
+    # Verify the year is correct. Year selection box is of this form:
+
+    # <select name="seasonID" id="id_seasonID" class="noprint">
+    #     <option value="5918007">2019</option>
+    #     <option value="5696920" selected="">2018</option>
+    # ...
+    yearSelectionBoxStr = str(html.find('select', id='id_seasonID'))
+    target = 'selected=""'
+    selectedIndex = yearSelectionBoxStr.find(target)
+    # Find the next '>' after the selected="" attribute.
+    yearIndex = yearSelectionBoxStr.find('>', selectedIndex) + 1
+    yearLength = 4
+    actualYear = yearSelectionBoxStr[yearIndex : yearIndex + yearLength]
+
+    if actualYear != str(year):
+        return None
+    game.year = int(actualYear)
+
+    # Verify the round is as expected.
+    if url.find('round=' + str(round)) == -1:
+        return None
+    print(html)
+    # Get the match date.
+    teams = html.select('a.m-team')
+    print("Teams: ")
+    for team in teams:
+        print team
+    
+    return game

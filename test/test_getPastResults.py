@@ -15,7 +15,7 @@ class GetPastResultsTest(unittest.TestCase):
     def test_GetPastGameDetails(self):
         game = getPastResults.GetPastGameDetails(self.url, 2, 2019)
         self.assertEqual(game.opposition, 'Brighton Bombers')
-        self.assertEqual(game.oppositionImageUrl, '//www-static.spulsecdn.net/pics/00/36/07/46/36074646_1_T.jpg')
+        self.assertEqual(game.oppositionImageUrl, u'//websites.sportstg.com/pics/00/36/07/46/36074646_1_T.jpg')
         self.assertEqual(game.isHomeGame, False)
         self.assertEqual(game.location, 'Brighton Oval')
         self.assertEqual(game.locationUrl, u'comp_info.cgi?round=2&a=VENUE&venueid=26688848&c=1-114-0-510206-0&fID=125234885')
@@ -50,7 +50,7 @@ class GetPastResultsTest(unittest.TestCase):
         url = 'http://websites.sportstg.com/round_info.cgi?a=MATCH&fixture=125234850&c=1-114-0-510206-0&pool=1'
         game = getPastResults.GetPastGameDetails(url, 3, 2019)
         self.assertEqual(game.opposition, u'Goodwood Saints')
-        self.assertEqual(game.oppositionImageUrl, '//www-static.spulsecdn.net/pics/00/02/20/16/2201604_1_T.jpg')
+        self.assertEqual(game.oppositionImageUrl, u'//websites.sportstg.com/pics/00/02/20/16/2201604_1_T.jpg')
         self.assertEqual(game.isHomeGame, True)
         self.assertEqual(game.location, 'University Oval')
         self.assertEqual(game.locationUrl, u'comp_info.cgi?round=3&a=VENUE&venueid=15225989&c=1-114-0-510206-0&fID=125234850')
@@ -66,7 +66,7 @@ class GetPastResultsTest(unittest.TestCase):
         url = 'http://websites.sportstg.com/round_info.cgi?a=MATCH&fixture=125275487&c=1-6951-0-522600-0&pool=1'
         game = getPastResults.GetPastGameDetails(url, 14, 2019)
         self.assertEqual(game.opposition, u'SMOSH West Lakes')
-        self.assertEqual(game.oppositionImageUrl, '//www-static.spulsecdn.net/images/clublogo_placeholder.gif')
+        self.assertEqual(game.oppositionImageUrl, u'//websites.sportstg.com/images/clublogo_placeholder.gif')
         self.assertEqual(game.isHomeGame, False)
         self.assertEqual(game.location, 'Semaphore Park Oval')
         self.assertEqual(game.locationUrl, u'comp_info.cgi?round=14&a=VENUE&venueid=27368027&c=1-6951-0-522600-0&fID=125275487')
