@@ -50,7 +50,9 @@ def GetPastGameDetails(url, round, year):
 
     try:
         page = requests.get(url)
-        html = BeautifulSoup(page.content, 'html.parser')
+        html = BeautifulSoup(page.text)
+        print(html)
+        return
 
         game = Game(round, year)
 
@@ -116,6 +118,40 @@ def GetPastGameDetails(url, round, year):
         return game
     except:
         return None
+
+# Returns a JSON object that contains all the matches of the round.
+# Extracts the JSON object from a string within a <script> tag.
+# If JSON could not be parsed correctly, returns None.
+def GetMatchesJson(url):
+    page = requests.get(url)
+    html = BeautifulSoup(page.content, 'html.parser')
+
+    # Look through all the <script> elements.
+    scripts = html.find_all('script')
+    for scriptString in (script.text for script in scripts):
+        if 'var matches =' in scriptString:
+            # Strip away the javascript wrapping.
+            text = scriptString.strip('var matches =')
+            text = text.strip(';')
+            try:
+                matchesJSON = json.loads(text)
+                return matchesJSON
+            except:
+                pass
+    return None
+
+# Takes the JSON array of all the matches and returns the specific
+# object that represents the game which involved clubName.
+def GetGameJsonForAdelaideUni(matches):
+    if not matches: return None
+
+    adelaideUni = u'Adelaide University'
+    for match in matches:
+        homeClub = urllib.unquote(match['HomeClubName'])
+        awayClub = urllib.unquote(match['AwayClubName'])
+        if homeClub == adelaideUni or awayClub == adelaideUni:
+            return match
+    return None
 
 def GetFutureGameDetails(url, round, year):
     if 'sportstg.com' not in url:
