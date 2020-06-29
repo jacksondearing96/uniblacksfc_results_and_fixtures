@@ -1,11 +1,12 @@
 <DOCTYPE html>
-<html>
+  <html>
 
   <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <title>SubAuto</title>
-    <link rel="stylesheet" href="stylesheets/subAuto.css"/>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="stylesheets/subAuto.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+      integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="javascripts/Header.js"></script>
@@ -16,17 +17,17 @@
     <script src="javascripts/GenerateResults.js"></script>
   </head>
 
-  <body onload = "Logger.InitialiseLogger()">
+  <body onload="Logger.InitialiseLogger()">
 
-    <div id = "content">
+    <div id="content">
 
-      <button onclick = "GenerateResults()" type = "button" class = "standardStyle" id = "generateResultsButton">
+      <button onclick="WhatsOnNextWeek(1)" type="button" class="standardStyle" id="generateResultsButton">
         <i class="fas fa-laptop-code"></i>
         Generate Results
       </button>
 
       <br>
-      <button onclick = "ExpandOptions()" type = "button" class = "standardStyle" id = "optionsButton">
+      <button onclick="ExpandOptions()" type="button" class="standardStyle" id="optionsButton">
         <i class="fas fa-bars"></i>
         Options
       </button>
@@ -35,36 +36,42 @@
           Log
       </button> -->
       <br>
-<!--
+      <!--
     use this for save html button
       <i class="fas fa-code"></i>
 -->
-      <div id = "moreOptionsSection" class = "standardStyle">
-        <i onclick = "CollapseOptions()" class="fas fa-times-circle closeButton"></i>
+      <div id="moreOptionsSection" class="standardStyle">
+        <i onclick="CollapseOptions()" class="fas fa-times-circle closeButton"></i>
         <br>
-        <table class = "standardStyle">
+        <table class="standardStyle">
         </table>
       </div>
       <br>
 
       <div id="dummyContainer" style="width:600px; margin: 0 auto; display:none">
-        <div id = "results" class = "generatedDiv" style = "line-height:23px; color:rgb(75,75,75); font-size:16px; font-family: helvetica; margin: 0 auto; text-align: left; padding: 15px; background-color:white">      
+        <div id="results" class="generatedDiv"
+          style="line-height:23px; color:rgb(75,75,75); font-size:16px; font-family: helvetica; margin: 0 auto; text-align: left; padding: 15px; background-color:white">
         </div>
       </div>
 
       <br>
-      <button id = "saveResultsHTMLButton" class = "standardStyle saveHTMLButton" onclick = "SaveResultsHTML()">Save HTML</button>
+      <button id="saveResultsHTMLButton" class="standardStyle saveHTMLButton" onclick="SaveResultsHTML()">Save
+        HTML</button>
       <br>
 
-      <div style = "width:600px; margin: 0 auto">
-        <div id = "whatsOnNextWeek" class = "generatedDiv" style = "color:rgb(75,75,75); background-color:white; font-family: helvetica; margin: 0 auto; padding: 15px; display:none">What's On Next Week</div>  
+      <div style="width:600px; margin: 0 auto">
+        <div id="whatsOnNextWeek" class="generatedDiv"
+          style="color:rgb(75,75,75); background-color:white; font-family: helvetica; margin: 0 auto; padding: 15px; display:none">
+          What's On Next Week</div>
       </div>
-      
-      
+
+
       <br>
-      <button id = "saveWhatsOnNextWeekHTMLButton" class = "standardStyle saveHTMLButton" onclick = "SaveWhatsOnNextWeekHTML()" style = "display:none">Save HTML</button>
+      <button id="saveWhatsOnNextWeekHTMLButton" class="standardStyle saveHTMLButton"
+        onclick="SaveWhatsOnNextWeekHTML()" style="display:none">Save HTML</button>
       <br>
-      
+
     </div>
   </body>
-</html>
+
+  </html>

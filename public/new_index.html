@@ -1,0 +1,67 @@
+<DOCTYPE html>
+  <html>
+
+  <head>
+    <meta charset="utf-8" />
+    <title>Substandard Automation</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
+    <link rel="stylesheet" href="stylesheets/future-game.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.0.1/mustache.min.js"></script>
+    <script src="javascripts/new_index.js"></script>
+    <script src="javascripts/new_format_results.js"></script>
+
+  </head>
+
+  <body>
+
+    <button onclick="FormatPastGames()">Format Past Games</button>
+    <button onclick="FormatFutureGames()">Format Future Games</button>
+    <button onclick="CopyPastGamesHTML()">Copy Past Games HTML</button>
+    <button onclick="CopyFutureGamesHTML()">Copy Future Games HTML</button>
+
+    <div id='past-games-container'></div>
+    <br><br>
+    <div id='future-games-container'></div>
+
+    <table id="past-games-table" class="display" style="width:100%">
+      <thead>
+        <th>Team</th>
+        <th>Round</th>
+        <th>Date</th>
+        <th>Opposition</th>
+        <th>Result</th>
+        <th>Score For</th>
+        <th>Score Against</th>
+        <th>Goal Kickers</th>
+        <th>Best Players</th>
+        <th>Image Url</th>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <table id="future-games-table" class="display" style="width:100%">
+      <thead>
+        <th>Team</th>
+        <th>Round</th>
+        <th>Date</th>
+        <th>Opposition</th>
+        <th>Location</th>
+        <th>Division</th>
+        <th>Gender</th>
+        <th>Time</th>
+        <th>Image Url</th>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="buffer"></div>
+
+  </body>
+
+  </html>

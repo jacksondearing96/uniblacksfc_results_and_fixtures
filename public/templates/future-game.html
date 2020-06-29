@@ -1,0 +1,52 @@
+<table class='future-game'>
+
+  <tr class='top-divider bottom-divider'>
+    <td class='centre future-expand'>
+      <img src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png">
+      </br>
+      <b>{{ team }}</b>
+    </td>
+
+    <td id='round-number' class='centre'>
+      Round {{ round }}
+      </br>
+      vs
+    </td>
+
+    <td class='centre future-expand'>
+      <img src="{{ image_url }}">
+      </br>
+      {{ opposition }}</br>
+    </td>
+
+    <td class='icons'>
+      <table>
+
+        <tr>
+          <td>
+            <img src='https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'>
+          </td>
+          <td>
+            {{ location }}
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <img src='https://cdn2.iconfinder.com/data/icons/pittogrammi/142/10-512.png'>
+          </td>
+          <td>{{ time }}</td>
+        </tr>
+
+        <tr>
+          <td>
+            <img src='https://cdns.iconmonstr.com/wp-content/assets/preview/2013/240/iconmonstr-trophy-6.png'>
+          </td>
+          <td>{{ gender }} {{ division }}</td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
