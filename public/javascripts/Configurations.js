@@ -1,20 +1,18 @@
 teams = [];
 
-class Team
-{
-	constructor()
-	{
+class Team {
+	constructor() {
 		this.nickname_ = null;
 		this.division_ = null;
-		this.sponsor_  = null;
-		this.gender_   = null;
+		this.sponsor_ = null;
+		this.gender_ = null;
 
-		this.urlCode_  = null;
+		this.urlCode_ = null;
 
 		this.final_ = false;
-		this.year_  = 2019;
+		this.year_ = 2020;
 
-		this.pastGame_ 	 = new PastGame();
+		this.pastGame_ = new PastGame();
 		this.futureGame_ = new FutureGame();
 
 		this.lastRoundOfTheSeason_ = null;
@@ -23,10 +21,8 @@ class Team
 	}
 }
 
-class Game
-{
-	constructor()
-	{
+class Game {
+	constructor() {
 		this.round_ = 1;
 		this.date_ = null;
 		this.opposition_ = null;
@@ -43,10 +39,8 @@ class Game
 	}
 }
 
-class PastGame extends Game
-{
-	constructor()
-	{
+class PastGame extends Game {
+	constructor() {
 		super();
 		this.scoreFor_ = null;
 		this.scoreAgainst_ = null;
@@ -55,26 +49,19 @@ class PastGame extends Game
 	}
 }
 
-class FutureGame extends Game
-{
-	constructor()
-	{
+class FutureGame extends Game {
+	constructor() {
 		super();
 		this.time_ = null;
 	}
 }
 
-//! Do this automatically for every page
-$(document).ready(PopulateTeamsFromFile());
-
-function PopulateTeamsFromFile()
-{
+function PopulateTeamsFromFile(callback) {
 	var configurationsFile = new XMLHttpRequest();
-	
-	configurationsFile.onreadystatechange = function() {
-		if (configurationsFile.readyState === 4 && configurationsFile.status === 200)
-		{
-			PopulateTeamsFromText(configurationsFile.responseText);
+
+	configurationsFile.onreadystatechange = function () {
+		if (configurationsFile.readyState === 4 && configurationsFile.status === 200) {
+			PopulateTeamsFromText(configurationsFile.responseText, callback);
 		}
 	}
 
@@ -82,18 +69,16 @@ function PopulateTeamsFromFile()
 	configurationsFile.send(null);
 }
 
-function PopulateTeamsFromText(text)
-{
+function PopulateTeamsFromText(text, callback) {
 	var fileLines = text.split('\n');
 
 	// start from 1 because first line is headers, not data
-	for (var i = 1; i < fileLines.length; i++)
-	{
+	for (var i = 1; i < fileLines.length; i++) {
 		fileLines[i] = fileLines[i].replace('\r', '');
 		teams[i - 1] = new Team();
 
 		var dataList = fileLines[i].split(',');
-		
+
 		teams[i - 1].nickname_ = dataList[0];
 		teams[i - 1].division_ = dataList[1];
 		teams[i - 1].sponsor_ = dataList[2];
@@ -102,14 +87,14 @@ function PopulateTeamsFromText(text)
 		teams[i - 1].urlCode_ = dataList[5];
 	}
 
-	if ($("#configurationsTable").length > 0)
-	{
+	if ($("#configurationsTable").length > 0) {
 		LoadConfigurationsDataIntoTable();
 	}
+
+	callback();
 }
 
-function LoadConfigurationsDataIntoTable()
-{
+function LoadConfigurationsDataIntoTable() {
 	$("#configurationsTable tr").remove();
 
 	// put in table headers
@@ -123,8 +108,7 @@ function LoadConfigurationsDataIntoTable()
 				  </tr>";
 	$("#configurationsTable").append(headers);
 
-	for (var i = 0; i < teams.length; i++)
-	{
+	for (var i = 0; i < teams.length; i++) {
 		var newTableRow = "<tr>";
 		newTableRow += "<td>" + teams[i].nickname_ + "</td>";
 		newTableRow += "<td>" + teams[i].division_ + "</td>";
@@ -140,21 +124,18 @@ function LoadConfigurationsDataIntoTable()
 	SetContentEditable();
 }
 
-function SetContentEditable()
-{
+function SetContentEditable() {
 	var tableData = $("#configurationsTable td");
 
-	for (let i = 0; i < tableData.length; i++)
-	{
+	for (let i = 0; i < tableData.length; i++) {
 		tableData[i].setAttribute("contenteditable", "true");
 	}
 }
 
-function FindUrlCodes()
-{
+function FindUrlCodes() {
 	var findUrlCodesRequest = new XMLHttpRequest();
 
-	findUrlCodesRequest.onreadystatechange = function() {
+	findUrlCodesRequest.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
 			console.log("URL CODES FOUND:");
 			teams = JSON.parse(this.responseText);
@@ -168,13 +149,12 @@ function FindUrlCodes()
 	findUrlCodesRequest.send(JSON.stringify(teams));
 }
 
-function SaveConfigurations()
-{
+function SaveConfigurations() {
 	var configurationsText = ExtractConfigurationsTextFromTable();
 
 	var saveConfigurationsRequest = new XMLHttpRequest();
 
-	saveConfigurationsRequest.onreadystatechange = function() {
+	saveConfigurationsRequest.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
 			console.log(this.responseText, " saving configurations");
 		}
@@ -187,22 +167,18 @@ function SaveConfigurations()
 	//PopulateTeamsFromFile();
 }
 
-function ExtractConfigurationsTextFromTable()
-{
+function ExtractConfigurationsTextFromTable() {
 	var configurationsText = "";
 	configurationsText += "NICKNAME, DIVISION, SPONSOR, LAST ROUND OF THE YEAR, GENDER, URL CODE"
 	var tableRows = $("#configurationsTable tr");
-	for (let i = 0; i < tableRows.length; i++)
-	{
+	for (let i = 0; i < tableRows.length; i++) {
 		let tds = $(tableRows[i]).find("td");
-		for (let j = 0; j < tds.length; j++)
-		{
+		for (let j = 0; j < tds.length; j++) {
 			configurationsText += $(tds[j]).text() + ",";
 		}
 
 		// Don't want a loose empty line at the end
-		if (i != tableRows.length - 1)
-		{
+		if (i != tableRows.length - 1) {
 			configurationsText += "\n";
 		}
 	}

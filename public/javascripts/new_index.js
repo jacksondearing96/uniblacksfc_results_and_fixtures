@@ -1,43 +1,67 @@
-// Dummy content
-var row_content = {
-  team: "Div 1 Res",
-  round: "1",
-  date: "12/7/20",
-  opposition: "Goodwood",
-  result: "WIN",
-  score_for: "10.10-70",
-  score_against: "0.0-0",
-  goal_kickers: "list of goal kickers...",
-  best_players: "list of best players...",
-  image_url: "https://images.squarespace-cdn.com/content/v1/5b96fad570e8022dfb162f35/1537319856877-DYI7MP683EAK1VGZZ90O/ke17ZwdGBToddI8pDm48kGXFqw0I8CD12EXMI_-clElZw-zPPgdn4jUwVcJE1ZvWQUxwkmyExglNqGp0IvTJZamWLI2zvYWH8K3-s_4yszcp2ryTI0HqTOaaUohrI8PIQzZ-45FsDXKdRMPjGAIBAUdanliO1YkD_4OMT5hDjn0/Logo+home-01.png",
+function PastContent() {
+  return {
+    'nickname': "",
+    'round': "X",
+    'date': "DD/MM/YY",
+    'opposition': "Opposition Name",
+    'result': "WIN OR LOSS",
+    'score_for': "XX.XX-XXX",
+    'score_against': "YY.YY-YYYY",
+    'goal_kickers': "List of goal kickers...",
+    'best_players': "List of best players...",
+    'image_url': "https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png",
+  }
 }
 
-var future_content = {
-  team: "Pup and His Young Dawgs",
-  round: "22",
-  date: "12/7/20",
-  opposition: "Goodwood",
-  location: "Bob Neil #1",
-  division: "Div 1",
-  gender: "Mens",
-  time: "12:15",
-  image_url: "https://images.squarespace-cdn.com/content/v1/5b96fad570e8022dfb162f35/1537319856877-DYI7MP683EAK1VGZZ90O/ke17ZwdGBToddI8pDm48kGXFqw0I8CD12EXMI_-clElZw-zPPgdn4jUwVcJE1ZvWQUxwkmyExglNqGp0IvTJZamWLI2zvYWH8K3-s_4yszcp2ryTI0HqTOaaUohrI8PIQzZ-45FsDXKdRMPjGAIBAUdanliO1YkD_4OMT5hDjn0/Logo+home-01.png",
+function FutureContent() {
+  return {
+    'nickname': "",
+    'round': "X",
+    'date': "DD/MM/YY",
+    'opposition': "Opposition Team",
+    'location': "Real Location",
+    'location_nickname': "Location Nickname",
+    'division': "XY",
+    'gender': "Gender",
+    'time': "TT:TT AM",
+    'image_url': "https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png",
+  }
+}
+
+past_teams = [];
+future_teams = [];
+
+function TeamsToJSON(callback) {
+
+  for (i in teams) {
+    let team = teams[i];
+
+    let past_content = PastContent();
+    let future_content = FutureContent();
+
+    past_content.nickname = team.nickname_;
+    future_content.nickname = team.nickname_;
+    future_content.division = team.division_;
+    future_content.gender = team.gender_;
+
+    past_teams.push(past_content);
+    future_teams.push(future_content);
+  }
+
+  callback();
 }
 
 function LoadPastGamesTable(initialise_data_table) {
-
-  let number_of_teams = 9;
 
   // Load rows of past games table.
   $('#past-games-table tbody').load('templates/past-games-table-row.html #past-games-table-row', function () {
     var html = document.getElementById('past-games-table-row').outerHTML;
     $("#past-games-table tbody").html('');
 
-    for (let i = 0; i < number_of_teams; ++i) {
-      row_content.team = "team" + i.toString();
-      var output = Mustache.render(html, row_content);
+    past_teams.forEach((team) => {
+      var output = Mustache.render(html, team);
       $("#past-games-table tbody").append(output);
-    }
+    });
 
     initialise_data_table('#past-games-table');
   });
@@ -45,18 +69,15 @@ function LoadPastGamesTable(initialise_data_table) {
 
 function LoadFutureGamesTable(initialise_data_table) {
 
-  let number_of_teams = 9;
-
   // Load rows of past games table.
   $('#future-games-table tbody').load('templates/future-games-table-row.html #future-games-table-row', function () {
     var html = document.getElementById('future-games-table-row').outerHTML;
     $("#future-games-table tbody").html('');
 
-    for (let i = 0; i < number_of_teams; ++i) {
-      future_content.team = "team" + i.toString();
-      var output = Mustache.render(html, future_content);
+    future_teams.forEach((team) => {
+      var output = Mustache.render(html, team);
       $("#future-games-table tbody").append(output);
-    }
+    })
 
     initialise_data_table('#future-games-table');
   });
@@ -93,7 +114,10 @@ function InitialiseDataTable(selector) {
   });
 }
 
-$(document).ready(function () {
-  LoadPastGamesTable(InitialiseDataTable);
-  LoadFutureGamesTable(InitialiseDataTable);
-});
+
+$(document).ready(PopulateTeamsFromFile(function () {
+  TeamsToJSON(() => {
+    LoadPastGamesTable(InitialiseDataTable);
+    LoadFutureGamesTable(InitialiseDataTable);
+  });
+}));

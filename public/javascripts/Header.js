@@ -1,7 +1,6 @@
-$(document).ready(function LoadHeader()
-{
-	var header = 
-	'<div id = "header"> \
+$(document).ready(function LoadHeader() {
+	var header =
+		'<div id = "header"> \
 		<ul> \
 		<li><a href = "index.html"> \
 			<i id = "indexPageIcon" class="fas fa-laptop-code"></i> \
@@ -10,10 +9,6 @@ $(document).ready(function LoadHeader()
 		<li><a href = "configurations.html"> \
 			<i id = "configurationsPageIcon" class="fas fa-cog"></i> \
 			Configurations \
-		</a></li> \
-		<li><a href = "test.html"> \
-			<i id = "testPageIcon" class="fas fa-check-circle"></i> \
-			Test \
 		</a></li> \
 		<li><a href = "taskManager.html"> \
 			<i id = "taskManagerIcon" class="fas fa-tasks"></i> \

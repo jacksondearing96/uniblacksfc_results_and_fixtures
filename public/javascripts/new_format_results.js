@@ -1,6 +1,8 @@
+const NUMBER_OF_TEAMS = 8;
+
 function PastContentArrayToJson(row_content) {
   return {
-    team: row_content[0],
+    nickname: row_content[0],
     round: row_content[1],
     date: row_content[2],
     opposition: row_content[3],
@@ -15,12 +17,12 @@ function PastContentArrayToJson(row_content) {
 
 function FutureContentArrayToJson(row_content) {
   return {
-    team: row_content[0],
+    nickname: row_content[0],
     round: row_content[1],
     date: row_content[2],
     opposition: row_content[3],
     location: row_content[4],
-    lcoation_nickname: row_content[5],
+    location_nickname: row_content[5],
     division: row_content[6],
     gender: row_content[7],
     time: row_content[8],
@@ -28,26 +30,85 @@ function FutureContentArrayToJson(row_content) {
   }
 }
 
+future_games_HTML = [];
+past_games_HTML = [];
+
 // Abstraction to load a HTML template into a given destination with the provided data.
-function LoadHTMLTemplate(template_selector, destination, data) {
+function LoadHTMLTemplate(template_selector, destination, data, callback) {
   $('#buffer').load(template_selector, function () {
     var html = document.getElementById('buffer').innerHTML;
     var output = Mustache.render(html, data);
     $(destination).append(output);
     // Clear the buffer.
     $('#buffer').html('');
+
+    if (callback) callback();
+  });
+}
+
+// Loads a HTML template with the given data and appends it to the list given by destination.
+function LoadHTMLTemplateToList(template_selector, destination, data, final_destination) {
+  $('#buffer').load(template_selector, function () {
+    var html = document.getElementById('buffer').innerHTML;
+    var output = Mustache.render(html, data);
+    destination.push(output);
+
+    // Clear the buffer.
+    $('#buffer').html('');
+    ReOrderTeams(final_destination);
   });
 }
 
 // Appends the given date to the past-games-container.
-function IncludeDate() {
+function IncludeDate(selector) {
   date = {
     day: "Saturday",
-    month: "August",
-    day_number: "3",
-    year: "2019"
+    month: "MMMM",
+    day_number: "DD",
+    year: "YYYY"
   }
-  LoadHTMLTemplate('templates/date-row.html .date', '#past-games-container', date);
+  let date_HTML = "<p class='date'>\
+                     <b>" + date.day + ", " + date.month + " " + date.day_number + ", " + date.year + "</b>\
+                  </p>";
+  $(selector).append(date_HTML);
+}
+
+// Returns the week number, used to determine which team (mens/womens) should be listed first.
+Date.prototype.getWeekNumber = function () {
+  var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+  var dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
+};
+
+// Reorders the teams such that the mens/womens teams alternate between the top position.
+// Also prints the HTML content to the relevant container.
+function ReOrderTeams(selector) {
+
+  let list = []
+  list = selector.includes('past') ? list = past_games_HTML : list = future_games_HTML;
+
+  // This should only be done when all the teams have been completed.
+  if (list.length !== NUMBER_OF_TEAMS) return;
+
+  let womens_div_1 = list[6];
+  let womens_div_2 = list[7];
+
+  const no_delete = 0;
+  let insert_index = 0;
+
+  // Alternate mens/womens being first every week.
+  if ((new Date().getWeekNumber()) % 2 == 0) ++insert_index;
+
+  list.splice(insert_index, no_delete, womens_div_1);
+  list.splice(insert_index + 2, no_delete, womens_div_2);
+  list.pop();
+  list.pop();
+
+  for (let i = 0; i < list.length; ++i) {
+    $(selector).append(list[i]);
+  }
 }
 
 function FormatPastGames() {
@@ -57,12 +118,14 @@ function FormatPastGames() {
 
   // TODO: This should be checked before every game. For 2020, every  game is played on a Saturday so this is not a high priority
   // for the 2020 season.
-  IncludeDate();
+  IncludeDate('#past-games-container');
+
+  past_games_HTML = [];
 
   let table = $('#past-games-table').DataTable();
   table.rows().every(function () {
     let row_content = PastContentArrayToJson(this.data());
-    LoadHTMLTemplate('templates/past-game.html .past-game', '#past-games-container', row_content);
+    LoadHTMLTemplateToList('templates/past-game.html .past-game', past_games_HTML, row_content, '#past-games-container');
   });
 }
 
@@ -73,12 +136,14 @@ function FormatFutureGames() {
 
   // TODO: This should be checked before every game. For 2020, every  game is played on a Saturday so this is not a high priority
   // for the 2020 season.
-  IncludeDate();
+  IncludeDate('#future-games-container');
+
+  future_games_HTML = []
 
   let table = $('#future-games-table').DataTable();
   table.rows().every(function () {
     let row_content = FutureContentArrayToJson(this.data());
-    LoadHTMLTemplate('templates/future-game.html .future-game', '#future-games-container', row_content);
+    LoadHTMLTemplateToList('templates/future-game.html .future-game', future_games_HTML, row_content, '#future-games-container');
   });
 }
 
