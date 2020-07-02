@@ -15,3 +15,6 @@ pip3 install requests
 
 # Python3
 brew install python3
+
+# Flask for python
+pip install flask
