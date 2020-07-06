@@ -1,15 +1,17 @@
 function PastContent() {
   return {
     'nickname': "",
-    'round': "X",
-    'date': "DD/MM/YY",
-    'opposition': "Opposition Name",
+    'round': "1",
+    'date': "",
+    'opposition': "",
+    'gender': '',
+    'division': '',
     'result': '',
-    'score_for': "1.1-11",
-    'score_against': "1.1-5",
-    'goal_kickers': "List of goal kickers...",
-    'best_players': "List of best players...",
-    'image_url': "https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png",
+    'score_for': "",
+    'score_against': "",
+    'goal_kickers': "",
+    'best_players': "",
+    'image_url': "",
   }
 }
 
@@ -24,7 +26,7 @@ function FutureContent() {
     'division': "XY",
     'gender': "Gender",
     'time': "TT:TT AM",
-    'image_url': "https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png",
+    'image_url': "",
   }
 }
 
@@ -32,20 +34,22 @@ past_teams = [];
 future_teams = [];
 
 function LoadPastGamesTable(initialise_data_table) {
+  $('#past-games-table tbody').html('')
   fetch('/past-games-table.html', { method: 'POST', 'Content-Type': "application/json", body: JSON.stringify(past_teams) })
     .then(response => response.text())
     .then(data => {
       $('#past-games-table tbody').append(data);
-      initialise_data_table('#past-games-table');
+      if (initialise_data_table) initialise_data_table('#past-games-table');
     });
 }
 
 function LoadFutureGamesTable(initialise_data_table) {
+  $('#future-games-table tbody').html('');
   fetch('/future-games-table.html', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(future_teams) })
     .then(response => response.text())
     .then(data => {
       $('#future-games-table tbody').append(data);
-      initialise_data_table('#future-games-table');
+      if (initialise_data_table) initialise_data_table('#future-games-table');
     });
 }
 
@@ -91,9 +95,12 @@ function GetTeamsFromServer(callback) {
         let future_team = FutureContent();
 
         past_team.nickname = teams[i].nickname;
+        past_team.division = teams[i].division;
+        past_team.gender = teams[i].gender;
+
         future_team.nickname = teams[i].nickname;
-        future_team.division = teams[i].nickname;
-        future_team.gender = teams[i].nickname;
+        future_team.division = teams[i].division;
+        future_team.gender = teams[i].gender;
 
         past_teams.push(past_team);
         future_teams.push(future_team);
@@ -118,18 +125,27 @@ function GetPastGamesFromTable(callback) {
   });
 }
 
+function UpdatePastTeamsWithInfoFromServer(server_teams) {
+  for (i in server_teams) {
+    past_teams[i]['date'] = server_teams[i]['date']
+    past_teams[i]['round'] = server_teams[i]['round']
+    past_teams[i]['opposition'] = server_teams[i]['opposition']
+    past_teams[i]['score_for'] = server_teams[i]['score_for']
+    past_teams[i]['score_against'] = server_teams[i]['score_against']
+    past_teams[i]['result'] = server_teams[i]['result']
+    past_teams[i]['goal_kickers'] = server_teams[i]['goal_kickers']
+    past_teams[i]['best_players'] = server_teams[i]['best_players']
+    past_teams[i]['image_url'] = server_teams[i]['image_url']
+  }
+}
+
 function GetPastGames() {
   GetPastGamesFromTable(function () {
-    console.log(past_teams);
     fetch('/get_past_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(past_teams) })
       .then(response => response.text())
       .then(data => {
-        // let games = JSON.parse(data);
-
-        console.log('Past games: ');
-        // console.log(games);
-
-        // Update table here.
+        UpdatePastTeamsWithInfoFromServer(JSON.parse(data));
+        LoadPastGamesTable();
       });
   });
 }
@@ -144,17 +160,24 @@ function GetFutureGamesFromTable(callback) {
   });
 }
 
+function UpdateFutureTeamsWithInfoFromServer(server_teams) {
+  for (i in server_teams) {
+    future_teams[i].date = server_teams[i]['date']
+    future_teams[i].round = server_teams[i]['round']
+    future_teams[i]['opposition'] = server_teams[i]['opposition']
+    future_teams[i]['location'] = server_teams[i]['location']
+    future_teams[i]['time'] = server_teams[i]['time']
+    future_teams[i]['image_url'] = server_teams[i]['image_url']
+  }
+}
+
 function GetFutureGames() {
   GetFutureGamesFromTable(function () {
     fetch('/get_future_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(future_teams) })
       .then(response => response.text())
       .then(data => {
-        // let games = JSON.parse(data);
-
-        console.log('Future games: ');
-        // console.log(games);
-
-        // Update table here.
+        UpdateFutureTeamsWithInfoFromServer(JSON.parse(data));
+        LoadFutureGamesTable();
       });
   });
 }

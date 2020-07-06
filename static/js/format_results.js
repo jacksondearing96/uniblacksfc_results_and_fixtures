@@ -6,12 +6,14 @@ function PastContentArrayToJson(row_content) {
     round: row_content[1],
     date: row_content[2],
     opposition: row_content[3],
-    result: row_content[4],
-    score_for: row_content[5],
-    score_against: row_content[6],
-    goal_kickers: row_content[7],
-    best_players: row_content[8],
-    image_url: row_content[9],
+    gender: row_content[4],
+    division: row_content[5],
+    result: row_content[6],
+    score_for: row_content[7],
+    score_against: row_content[8],
+    goal_kickers: row_content[9],
+    best_players: row_content[10],
+    image_url: row_content[11],
   }
 }
 

@@ -4,7 +4,12 @@ from bs4 import BeautifulSoup
 import json
 import urllib
 
+import url_generator
+
 debug = True
+
+PAST_GAME = True
+FUTURE_GAME = False
 
 
 class Game(object):
@@ -15,7 +20,7 @@ class Game(object):
         self.time = None
 
         self.opposition = None
-        self.opposition_image_url = None
+        self.image_url = None
 
         self.location = None
         self.location_url = None
@@ -26,17 +31,38 @@ class Game(object):
         self.score_for = None
         self.score_against = None
 
-        self.goal_kickers_and_best_players = None
+        self.goal_kickers = None
+        self.best_players = None
 
 
-class Result(Enum):
-    WIN = 1
-    LOSS = 2
-    DRAW = 3
-    FORFEIT = 4
-    OPPOSITION_FORFEIT = 5
-    PENDING = 6
-    BYE = 7
+def PastGameJson(game):
+    return {
+        "nickname": None,
+        "round": game.round,
+        "date": game.date,
+        "opposition": game.opposition,
+        "result": game.result,
+        "score_for": game.score_for,
+        "score_against": game.score_against,
+        "goal_kickers": game.goal_kickers,
+        "best_players": game.best_players,
+        "image_url": game.image_url
+    }
+
+
+def FutureGameJson(game):
+    return {
+        "nickname": None,
+        "round": game.round,
+        "date": game.date,
+        "opposition": game.opposition,
+        "location": game.location,
+        "location_nickname": '',
+        "division": '',
+        "gender": '',
+        "time": game.time,
+        "image_url": game.image_url
+    }
 
 
 def Error(message, expected=None, actual=None):
@@ -53,11 +79,11 @@ def GetMatchResult(score_forStr, score_againstStr):
     score_againstTotal = int(score_againstStr.split('-')[1])
 
     if score_forTotal > score_againstTotal:
-        return Result.WIN
+        return "WIN"
     if score_forTotal < score_againstTotal:
-        return Result.LOSS
+        return "LOSS"
     if score_forTotal == score_againstTotal:
-        return Result.DRAW
+        return "DRAW"
     return None
 
 
@@ -123,7 +149,33 @@ def GetAndVerifyYear(html, game, year):
     return int(actualYear)
 
 
-def GetGame(url, round, year, past_game=True):
+def ExtractGoalKickersAndBestPlayers(goal_kickers_and_best_players):
+    goal_kickers_and_best_players = goal_kickers_and_best_players.replace(
+        'Goal Kickers:</span> ', '')
+    goal_kickers_and_best_players = goal_kickers_and_best_players.replace(
+        'Best Players:</span> ', '')
+    goal_kickers_and_best_players = goal_kickers_and_best_players.replace(
+        '<br>', '')
+
+    goal_kickers_and_best_players = goal_kickers_and_best_players.split(
+        '<span class="comp-bold">')
+
+    goal_kickers = ''
+    best_players = ''
+
+    # TODO: Make this more robust. Check that the 'Goal Kickers' or 'Best Players' text is also present so we are sure.
+    if len(goal_kickers_and_best_players) == 2:
+        # This is when there are no goal kickers.
+        best_players = goal_kickers_and_best_players[1]
+
+    if len(goal_kickers_and_best_players) == 3:
+        goal_kickers = goal_kickers_and_best_players[1]
+        best_players = goal_kickers_and_best_players[2]
+
+    return goal_kickers, best_players
+
+
+def GetGame(url, round, year=2020, past_game=True):
     if 'sportstg.com' not in url:
         return None
 
@@ -143,45 +195,85 @@ def GetGame(url, round, year, past_game=True):
 
     game_json = GetGameJsonForAdelaideUni(GetMatchesJson(html))
 
+    # TODO: Improve.
+    str_with_round_embedded = game_json['Venue']
+    str_with_round_embedded = str_with_round_embedded.split('round=')
+    print(str_with_round_embedded)
+    str_with_round_embedded = str_with_round_embedded[1]
+    str_with_round_embedded = str_with_round_embedded.split('&')
+    print(str_with_round_embedded)
+    str_with_round_embedded = str_with_round_embedded[0]
+    game.round = str_with_round_embedded
+
+    # TODO: Make use of these attributes in the JSON:
+    # isBye
+    # PastGame
+
     # Get the location.
     game.location = urllib.unquote(game_json['VenueName'])
     if game.location == 'Forfeit':
-        game.result = Result.FORFEIT
+        game.result = 'FORFEIT'
     game.location_url = game_json['VenueURL']
 
     # Get the match date and time.
     time_and_date = urllib.unquote(game_json['DateTime'])
     time_and_date = time_and_date.split('<br>')
     game.time = time_and_date[0]
+    game.time = game.time.replace('&nbsp;', ' ')
     game.date = time_and_date[1]
+    game.date = game.date.replace('&nbsp;', ' ')
 
     game.is_home_game = urllib.unquote(
         game_json['HomeClubName']) == u'Adelaide University'
 
-    if past_game and game.result != Result.FORFEIT:
+    if past_game and game.result != 'FORFEIT':
         goal_kickers_and_best_players_list = game_json['MatchResults']
 
     if game.is_home_game:
         game.opposition = urllib.unquote(game_json['AwayClubName'])
-        game.opposition_image_url = game_json['AwayClubLogo']
+        game.image_url = game_json['AwayClubLogo']
         if past_game:
             game.score_against = game_json['AwayScore']
             game.score_for = game_json['HomeScore']
-            if game.result != Result.FORFEIT:
-                game.goal_kickers_and_best_players = goal_kickers_and_best_players_list[0]
+            if game.result != 'FORFEIT':
+                goal_kickers_and_best_players = goal_kickers_and_best_players_list[0]
     else:
         game.opposition = urllib.unquote(game_json['HomeClubName'])
-        game.opposition_image_url = game_json['HomeClubLogo']
+        game.image_url = game_json['HomeClubLogo']
         if past_game:
             game.score_against = game_json['HomeScore']
             game.score_for = game_json['AwayScore']
-            if game.result != Result.FORFEIT:
-                game.goal_kickers_and_best_players = goal_kickers_and_best_players_list[1]
+            if game.result != 'FORFEIT':
+                goal_kickers_and_best_players = goal_kickers_and_best_players_list[1]
 
-    if past_game and game.result != Result.FORFEIT:
+    if past_game and game.result != 'FORFEIT':
         game.result = GetMatchResult(game.score_for, game.score_against)
+        game.goal_kickers, game.best_players = ExtractGoalKickersAndBestPlayers(
+            goal_kickers_and_best_players)
     else:
         if game.score_for == u'10.0-60':
-            game.result = Result.OPPOSITION_FORFEIT
+            game.result = 'OPPOSITION_FORFEIT'
 
     return game
+
+
+def GetPastGames(games):
+    past_games = []
+    for game in games:
+        game['year'] = "2020"  # TODO: generalise this
+        url = url_generator.GetUrl(
+            int(game['year']), game['gender'], game['division'], game['round'])
+        past_games.append(PastGameJson(
+            GetGame(url, game['round'], game['year'], PAST_GAME)))
+    return json.dumps(past_games)
+
+
+def GetFutureGames(games):
+    future_games = []
+    for game in games:
+        game["year"] = "2020"  # TODO: generalise this
+        url = url_generator.GetUrl(
+            int(game["year"]), game["gender"], game["division"], game["round"])
+        future_games.append(FutureGameJson(
+            GetGame(url, game["round"], game["year"], FUTURE_GAME)))
+    return json.dumps(future_games)

@@ -41,9 +41,7 @@ def get_future_games():
 def send_file(path):
     if request.method == 'POST':
         teams = request.get_json(force=True)
-        print(render_template(path, teams=teams))
         return render_template(path, teams=teams)
-
     else:
         return render_template(path)
 
