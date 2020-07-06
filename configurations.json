@@ -1,9 +1,10 @@
-[{
+[
+  {
     "nickname": "Benny and His Jets",
     "division": "1",
     "gender": "Mens"
   },
-{
+  {
     "nickname": "Pup and His Young Dawgz",
     "division": "1 Res",
     "gender": "Mens"
@@ -37,4 +38,5 @@
     "nickname": "The Big Lez Show",
     "division": "1 Res",
     "gender": "Womens"
-  }]
+  }
+]

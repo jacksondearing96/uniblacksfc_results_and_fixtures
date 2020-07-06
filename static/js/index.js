@@ -107,3 +107,54 @@ $(document).ready(GetTeamsFromServer(function () {
   LoadPastGamesTable(InitialiseDataTable);
   LoadFutureGamesTable(InitialiseDataTable);
 }));
+
+function GetPastGamesFromTable(callback) {
+  past_teams = [];
+  let table = $('#past-games-table').DataTable();
+  table.rows().every(function () {
+    let game = PastContentArrayToJson(this.data());
+    past_teams.push(game);
+    if (past_teams.length == NUMBER_OF_TEAMS) callback();
+  });
+}
+
+function GetPastGames() {
+  GetPastGamesFromTable(function () {
+    console.log(past_teams);
+    fetch('/get_past_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(past_teams) })
+      .then(response => response.text())
+      .then(data => {
+        // let games = JSON.parse(data);
+
+        console.log('Past games: ');
+        // console.log(games);
+
+        // Update table here.
+      });
+  });
+}
+
+function GetFutureGamesFromTable(callback) {
+  future_teams = [];
+  let table = $('#future-games-table').DataTable();
+  table.rows().every(function () {
+    let game = FutureContentArrayToJson(this.data());
+    future_teams.push(game);
+    if (future_teams.length == NUMBER_OF_TEAMS) callback();
+  });
+}
+
+function GetFutureGames() {
+  GetFutureGamesFromTable(function () {
+    fetch('/get_future_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(future_teams) })
+      .then(response => response.text())
+      .then(data => {
+        // let games = JSON.parse(data);
+
+        console.log('Future games: ');
+        // console.log(games);
+
+        // Update table here.
+      });
+  });
+}

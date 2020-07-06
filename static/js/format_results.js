@@ -312,5 +312,3 @@ function CopyPastGamesHTML() {
 function CopyFutureGamesHTML() {
   CopyHTML('#future-games-container');
 }
-
-

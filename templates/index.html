@@ -12,21 +12,22 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.0.1/mustache.min.js"></script>
-    <script src="{{ url_for('static', filename='js/Configurations.js') }}"></script>
     <script src="{{ url_for('static', filename='js/format_results.js') }}"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
   </head>
 
   <body>
 
-    <button onclick="UpdateTables()">Update Tables</button>
+    <button onclick="UpdateTables()">Update Nicknames</button>
+    <br>
+    <button onclick="GetPastGames()">Get Past Games</button>
+    <button onclick="GetFutureGames()">Get Future Games</button>
+    <br>
     <button onclick="FormatPastGames()">Format Past Games</button>
     <button onclick="FormatFutureGames()">Format Future Games</button>
+    <br>
     <button onclick="CopyPastGamesHTML()">Copy Past Games HTML</button>
     <button onclick="CopyFutureGamesHTML()">Copy Future Games HTML</button>
-    <a href="configurations.html"><button>Configurations</button></a>
-    <a href="taskManager.html"><button>Tasks</button></a>
 
     <div id='past-games-container'></div>
     <br><br>
