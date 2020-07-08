@@ -41,7 +41,7 @@ def PastGameJson(game):
         "round": game.round,
         "date": game.date,
         "opposition": game.opposition,
-        "result": game.result,
+        "result": "",
         "score_for": game.score_for,
         "score_against": game.score_against,
         "goal_kickers": game.goal_kickers,
@@ -195,15 +195,13 @@ def GetGame(url, round, year=2020, past_game=True):
 
     game_json = GetGameJsonForAdelaideUni(GetMatchesJson(html))
 
-    # TODO: Improve.
+    # TODO: Improve. Use regex.
     str_with_round_embedded = game_json['Venue']
     str_with_round_embedded = str_with_round_embedded.split('round=')
-    print(str_with_round_embedded)
     str_with_round_embedded = str_with_round_embedded[1]
     str_with_round_embedded = str_with_round_embedded.split('&')
-    print(str_with_round_embedded)
     str_with_round_embedded = str_with_round_embedded[0]
-    game.round = str_with_round_embedded
+    game.round = int(str_with_round_embedded)
 
     # TODO: Make use of these attributes in the JSON:
     # isBye
