@@ -17,11 +17,19 @@
     <script src="https://editor.datatables.net/extensions/Editor/js/dataTables.editor.min.js"></script>
     <script src="{{ url_for('static', filename='js/format_results.js') }}"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/copy.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/test.js') }}"></script>
   </head>
 
   <body>
 
     <button onclick="Automate()" style='background-color: lawngreen'>AUTOMATE</button>
+    <br>
+    <button onclick="CopyAll()" style='background-color: lightblue'>COPY</button>
+    <br>
+    <button onclick="RunUnitTests()" style='background-color: red'>TEST</button>
+    <br>
+    <br>
     <button onclick="UpdateTables()">Update Nicknames</button>
     <br>
     <button onclick="GetPastGames()">Get Past Games</button>
@@ -32,6 +40,8 @@
     <br>
     <button onclick="CopyPastGamesHTML()">Copy Past Games HTML</button>
     <button onclick="CopyFutureGamesHTML()">Copy Future Games HTML</button>
+
+
 
     <div id='past-games-container'></div>
     <br><br>

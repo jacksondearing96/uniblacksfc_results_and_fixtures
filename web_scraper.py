@@ -18,6 +18,7 @@ class Game(object):
         self.year = year
         self.date = None
         self.time = None
+        self.url = None
 
         self.opposition = None
         self.image_url = None
@@ -40,6 +41,7 @@ def PastGameJson(game):
         "nickname": None,
         "round": game.round,
         "date": game.date,
+        "url": game.url,
         "opposition": game.opposition,
         "result": "",
         "score_for": game.score_for,
@@ -55,6 +57,7 @@ def FutureGameJson(game):
         "nickname": None,
         "round": game.round,
         "date": game.date,
+        "url": game.url,
         "opposition": game.opposition,
         "location": game.location,
         "location_nickname": '',
@@ -184,6 +187,7 @@ def GetGame(url, round, year=2020, past_game=True):
 
     game = Game(round, year)
 
+    game.url = url
     game.year = GetAndVerifyYear(html, game, year)
     if game.year == None:
         return None
@@ -257,21 +261,25 @@ def GetGame(url, round, year=2020, past_game=True):
 
 def GetPastGames(games):
     past_games = []
+
     for game in games:
-        game['year'] = "2020"  # TODO: generalise this
         url = url_generator.GetUrl(
             int(game['year']), game['gender'], game['division'], game['round'])
+
         past_games.append(PastGameJson(
             GetGame(url, game['round'], game['year'], PAST_GAME)))
+
     return json.dumps(past_games)
 
 
 def GetFutureGames(games):
     future_games = []
+
     for game in games:
-        game["year"] = "2020"  # TODO: generalise this
         url = url_generator.GetUrl(
             int(game["year"]), game["gender"], game["division"], game["round"])
+
         future_games.append(FutureGameJson(
             GetGame(url, game["round"], game["year"], FUTURE_GAME)))
+
     return json.dumps(future_games)
