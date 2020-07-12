@@ -1,8 +1,14 @@
+const NUMBER_OF_TEAMS = 8;
+
 past_teams = [];
 past_table = null;
 
 future_teams = [];
 future_table = null;
+
+future_games_HTML = [];
+past_games_HTML = [];
+winning_verbs = []
 
 function PastContent() {
   return {
@@ -82,42 +88,38 @@ const month_abbreviations = {
   'Dec': 'December'
 };
 
-function PastContentArrayToJson(row_content) {
-  return {
-    nickname: row_content[0],
-    round: row_content[1],
-    division: row_content[2],
-    gender: row_content[3],
-    year: row_content[4],
-    landing_page: row_content[5],
-    date: row_content[6],
-    opposition: row_content[7],
-    opposition_nickname: row_content[8],
-    result: row_content[9],
-    score_for: row_content[10],
-    score_against: row_content[11],
-    goal_kickers: row_content[12],
-    best_players: row_content[13],
-    image_url: row_content[14],
-  }
+function UpdatePastGameWithArray(game, row_content) {
+  game.nickname = row_content[0];
+  game.round = row_content[1];
+  game.division = row_content[2];
+  game.gender = row_content[3];
+  game.year = row_content[4];
+  game.landing_page = row_content[5];
+  game.date = row_content[6];
+  game.opposition = row_content[7];
+  game.opposition_nickname = row_content[8];
+  game.result = row_content[9];
+  game.score_for = row_content[10];
+  game.score_against = row_content[11];
+  game.goal_kickers = row_content[12];
+  game.best_players = row_content[13];
+  game.image_url = row_content[14];
 }
 
-function FutureContentArrayToJson(row_content) {
-  return {
-    nickname: row_content[0],
-    round: row_content[1],
-    division: row_content[2],
-    gender: row_content[3],
-    year: row_content[4],
-    landing_page: row_content[5],
-    date: row_content[6],
-    opposition: row_content[7],
-    opposition_nickname: row_content[8],
-    location: row_content[9],
-    location_nickname: row_content[10],
-    time: row_content[11],
-    image_url: row_content[12],
-  }
+function UpdateFutureGameWithArray(game, row_content) {
+  game.nickname = row_content[0];
+  game.round = row_content[1];
+  game.division = row_content[2];
+  game.gender = row_content[3];
+  game.year = row_content[4];
+  game.landing_page = row_content[5];
+  game.date = row_content[6];
+  game.opposition = row_content[7];
+  game.opposition_nickname = row_content[8];
+  game.location = row_content[9];
+  game.location_nickname = row_content[10];
+  game.time = row_content[11];
+  game.image_url = row_content[12];
 }
 
 function GetCurrentYear() {
@@ -127,30 +129,31 @@ function GetCurrentYear() {
 
 // TODO: Make use of browser localStorage !!!
 
-function UpdatePastTeamsFromDOM() {
-  past_table.rows().every(function (row_index) {
-    if (row_index !== 0) {
-      let row = document.getElementById('past-games-table').rows[row_index];
-      let row_content = [];
-      for (let i = 0; i < row.cells.length; ++i) {
-        row_content.push(row.cells[i].innerHTML);
-      }
-      past_teams[row_index - 1] = PastContentArrayToJson(row_content);
-    }
-  });
+function UpdatePastTeamsFromDOM(row_index) {
+
+  // TODO: Only update the relevant cell. This naively updates the entire row.
+  let row = document.getElementById('past-games-table').rows[row_index + 1];
+  let row_content = [];
+
+  for (let i = 0; i < row.cells.length; ++i) {
+    row_content.push(row.cells[i].innerHTML);
+  }
+  UpdatePastGameWithArray(past_teams[row_index], row_content);
+
+  past_table.rows().invalidate().draw();
 }
 
-function UpdateFutureTeamsFromDOM() {
-  future_table.rows().every(function (row_index) {
-    if (row_index !== 0) {
-      let row = document.getElementById('future-games-table').rows[row_index];
-      let row_content = [];
-      for (let i = 0; i < row.cells.length; ++i) {
-        row_content.push(row.cells[i].innerHTML);
-      }
-      future_teams[row_index - 1] = FutureContentArrayToJson(row_content);
-    }
-  });
+function UpdateFutureTeamsFromDOM(row_index) {
+
+  let row = document.getElementById('future-games-table').rows[row_index + 1];
+  let row_content = [];
+
+  for (let i = 0; i < row.cells.length; ++i) {
+    row_content.push(row.cells[i].innerHTML);
+  }
+  UpdateFutureGameWithArray(future_teams[row_index], row_content);
+
+  future_table.rows().invalidate().draw();
 }
 
 function InitialisePastGamesTable() {
@@ -165,7 +168,7 @@ function InitialisePastGamesTable() {
     cell.addEventListener("blur", function (e) {
       if (original !== e.target.textContent) {
         const row = past_table.row(e.target.parentElement)
-        UpdatePastTeamsFromDOM();
+        UpdatePastTeamsFromDOM(row.index());
       }
     })
   }
@@ -212,7 +215,7 @@ function InitialiseFutureGamesTable() {
     cell.addEventListener("blur", function (e) {
       if (original !== e.target.textContent) {
         const row = future_table.row(e.target.parentElement)
-        UpdateFutureTeamsFromDOM();
+        UpdateFutureTeamsFromDOM(row.index());
       }
     })
   }
@@ -284,12 +287,19 @@ function UpdatePastTeamsWithInfoFromServer(server_teams) {
     past_teams[i]['best_players'] = server_teams[i]['best_players']
     past_teams[i]['image_url'] = server_teams[i]['image_url']
     past_teams[i]['landing_page'] = server_teams[i]['url']
+
+    if (past_teams[i]['opposition'] in override_image_urls) {
+      past_teams[i]['image_url'] = override_image_urls[past_teams[i]['opposition']]
+    } else {
+      past_teams[i]['image_url'] = server_teams[i]['image_url']
+    }
   }
   past_table.rows().invalidate().draw();
 }
 
 function GetPastGames() {
   return new Promise((resolve) => {
+    console.log(past_teams)
     fetch('/get_past_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(past_teams) })
       .then(response => response.text())
       .then(data => {
@@ -302,7 +312,7 @@ function GetPastGames() {
 function GetFutureGamesFromTable(callback) {
   future_teams = [];
   future_table.rows().every(function () {
-    let game = FutureContentArrayToJson(this.data());
+    let game = UpdateFutureGameWithArray(this.data());
     if (game.nickname === 'Nickname') return; // Skip the title row.
     future_teams.push(game);
     if (future_teams.length == NUMBER_OF_TEAMS) callback();
@@ -352,12 +362,6 @@ function GetFutureGames() {
       });
   });
 }
-
-const NUMBER_OF_TEAMS = 8;
-
-future_games_HTML = [];
-past_games_HTML = [];
-winning_verbs = []
 
 function GetScoreTotal(score_str) {
   var dash_index = score_str.indexOf('-');
@@ -484,6 +488,12 @@ function FindNickname(options, name) {
     }
   }
 
+  // Remove apostrophe if it exists.
+  if (name.includes("'")) {
+    name = name.replace("'", '');
+    return FindNickname(options, name);
+  }
+
   // Remove the last word and try again.
   if (name.includes(' ')) {
     var lastIndex = name.lastIndexOf(" ");
@@ -557,8 +567,6 @@ function ProcessLocation(game) {
   }
   game.location = '(' + game.location + ')';
 }
-
-
 
 function FormatPastGames() {
 
