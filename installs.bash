@@ -1,8 +1,5 @@
 #!/bin/bash
 
-pip install  npm
-npm install express
-
 # Upgrade pip.
 pip install --upgrade pip
 
