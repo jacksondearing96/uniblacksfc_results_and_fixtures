@@ -1,0 +1,29 @@
+#automate-substandard-button {
+  background-color: lawngreen;
+}
+
+#automate-bowlies-button {
+  background-color: lawngreen;
+}
+
+#test-button {
+  /* background-color: blue; */
+}
+
+#test-tick {
+  height: 10px;
+  display: none;
+}
+
+#test-cross {
+  height: 10px;
+  display: none;
+}
+
+#copy-all-button {
+  /* background-color: lightblue; */
+}
+
+#more-options {
+  display: none;
+}

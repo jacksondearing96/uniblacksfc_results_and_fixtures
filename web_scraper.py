@@ -1,10 +1,19 @@
+import url_generator
+import urllib2
+import cookielib
 import requests
 from enum import Enum
 from bs4 import BeautifulSoup
 import json
 import urllib
+from selenium import webdriver
+import time
 
-import url_generator
+# Character encoding hack to make it work.
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
 
 debug = True
 
@@ -35,6 +44,8 @@ class Game(object):
         self.goal_kickers = None
         self.best_players = None
 
+        self.option = 'SUBSTANDARD'
+
 
 def PastGameJson(game):
     return {
@@ -48,7 +59,8 @@ def PastGameJson(game):
         "score_against": game.score_against,
         "goal_kickers": game.goal_kickers,
         "best_players": game.best_players,
-        "image_url": game.image_url
+        "image_url": game.image_url,
+        "location": game.location,
     }
 
 
@@ -137,6 +149,13 @@ def GetAndVerifyYear(html, game, year):
     #     <option value="5696920" selected="">2018</option>
     # ...
     #
+
+    # Handle exception where year is not explicitly given.
+    try:
+        int(year)
+    except ValueError:
+        return year
+
     yearSelectionBoxStr = str(html.find('select', id='id_seasonID'))
     target = 'selected=""'
     selectedIndex = yearSelectionBoxStr.find(target)
@@ -178,7 +197,92 @@ def ExtractGoalKickersAndBestPlayers(goal_kickers_and_best_players):
     return goal_kickers, best_players
 
 
-def GetGame(url, round, year=2020, past_game=True):
+def UpdatePlayerNamesFromDatabase():
+    # Open headless chrome.
+    options = webdriver.ChromeOptions()
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--incognito')
+    options.add_argument('--headless')
+    driver = webdriver.Chrome(
+        "/Users/jacksondearing/Desktop/football_results_automation/chromedriver", chrome_options=options)
+
+    # AUFC database.
+    driver.get("http://uniblacksfc.com.au/members/index.php")
+
+    # Fill in username and password.
+    driver.find_element_by_id('username').send_keys('bobneil')
+    driver.find_element_by_id('password').send_keys('bobneil134!')
+    login_button_selector = 'body > div > div.row > div:nth-child(2) > form > button'
+    driver.find_element_by_css_selector(login_button_selector).click()
+    driver.find_element_by_id("db-menu-registration").click()
+    time.sleep(1)
+
+    # Perform an empty search to get all registered players.
+    driver.find_element_by_css_selector(
+        '#form-registration-search > button').click()
+    time.sleep(3)
+
+    names = driver.find_elements_by_class_name('registration-edit-name')
+    names = map(lambda x: x.get_attribute('innerHTML'), names)
+    nicknames = driver.find_elements_by_css_selector(
+        '.registration-edit-name + td')
+    nicknames = map(lambda x: x.get_attribute('innerHTML'), nicknames)
+
+    if (len(names) != len(nicknames)):
+        Error('Scraped a different number of names and nicknames')
+
+    with open('registered_players.csv', 'w') as file:
+        for name, nickname in zip(names, nicknames):
+            name_parts = name.split(', ')
+            initial = name_parts[1][0] + '.'
+            full_name = name_parts[1] + ' ' + name_parts[0]
+            file.write(
+                initial + ' ' + name_parts[0] + ':' + str(nickname) + ' (' + full_name + ')' + '\n')
+
+    driver.close()
+    return True
+
+
+def GetPlayerNamesFromCache():
+    names_and_nicknames = {}
+    with open('registered_players.csv', 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            parts = line.split(':')
+            names_and_nicknames[parts[0]] = parts[1]
+    return names_and_nicknames
+
+
+def InsertNicknames(names, names_and_nicknames):
+    names = names.split(', ')
+    for i in range(len(names)):
+
+        if len(names[i]) == 0:
+            continue
+
+        # Save and remove the number of goals kicked
+        goals = ''
+        while names[i][-1].isdigit() or names[i][-1] == ' ':
+            goals = names[i][-1] + goals
+            names[i] = names[i][:-1]
+            if len(names) == 0:
+                break
+
+        if names[i] in names_and_nicknames:
+            names[i] = names_and_nicknames[names[i]]
+
+            # This means there is no nickname for this name:
+            if names[i][0:2] == ' (':
+                names[i] = '<NO NICKNAME>' + names[i]
+        else:
+            names[i] = '<PLAYER NOT IN DATABASE>' + names[i]
+
+        names[i] = {'name': names[i], 'goals': goals}
+
+    return names
+
+
+def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
     if 'sportstg.com' not in url:
         return None
 
@@ -256,6 +360,13 @@ def GetGame(url, round, year=2020, past_game=True):
         if game.score_for == u'10.0-60':
             game.result = 'OPPOSITION_FORFEIT'
 
+    if option == 'BOWLIES':
+        names_and_nicknames = GetPlayerNamesFromCache()
+        game.goal_kickers = InsertNicknames(
+            game.goal_kickers, names_and_nicknames)
+        game.best_players = InsertNicknames(
+            game.best_players, names_and_nicknames)
+
     return game
 
 
@@ -267,7 +378,7 @@ def GetPastGames(games):
             int(game['year']), game['gender'], game['division'], game['round'])
 
         past_games.append(PastGameJson(
-            GetGame(url, game['round'], game['year'], PAST_GAME)))
+            GetGame(url, game['round'], game['year'], PAST_GAME, game['option'])))
 
     return json.dumps(past_games)
 
@@ -280,6 +391,6 @@ def GetFutureGames(games):
             int(game["year"]), game["gender"], game["division"], game["round"])
 
         future_games.append(FutureGameJson(
-            GetGame(url, game["round"], game["year"], FUTURE_GAME)))
+            GetGame(url, game["round"], game["year"], FUTURE_GAME, 'SUBSTANDARD')))
 
     return json.dumps(future_games)

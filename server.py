@@ -37,6 +37,14 @@ def get_future_games():
     return web_scraper.GetFutureGames(games)
 
 
+@app.route('/update_player_names_from_database')
+def update_player_names_from_database():
+    if web_scraper.UpdatePlayerNamesFromDatabase():
+        return 'SUCCESS'
+    else:
+        return 'FAIL'
+
+
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def send_file(path):
     if request.method == 'POST':

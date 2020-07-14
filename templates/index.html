@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/subAuto.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bowlies.css') }}">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
@@ -16,32 +18,47 @@
     <script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
     <script src="https://editor.datatables.net/extensions/Editor/js/dataTables.editor.min.js"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bowlies.js') }}"></script>
     <script src="{{ url_for('static', filename='js/copy.js') }}"></script>
     <script src="{{ url_for('static', filename='js/test.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/priority_queue.js') }}"></script>
   </head>
 
   <body>
 
-    <button onclick="Automate()" style='background-color: lawngreen'>AUTOMATE</button>
+    <button onclick="AutomateSubstandard()" id='automate-substandard-button'>Substandard Results</button>
+    <button onclick="CopyAll()" id='copy-all-button'>COPY</button>
     <br>
-    <button onclick="CopyAll()" style='background-color: lightblue'>COPY</button>
+
+    <button onclick="AutomateBowlies()" id="automate-bowlies-button">Bowlies Results</button>
+    <button onclick="UpdatePlayerNamesFromDatabase()">Update Players from Database</button>
     <br>
-    <button onclick="RunUnitTests()" style='background-color: red'>TEST</button>
+
+    <button onclick="RunUnitTests()" id='test-button'>
+      TEST
+      <img id='test-tick' src="{{ url_for('static', filename='img/tick.svg') }}">
+      <img id='test-cross' src="{{ url_for('static', filename='img/cross.svg') }}">
+    </button>
     <br>
     <br>
-    <button onclick="UpdateTables()">Update Nicknames</button>
-    <br>
-    <button onclick="GetPastGames()">Get Past Games</button>
-    <button onclick="GetFutureGames()">Get Future Games</button>
-    <br>
-    <button onclick="FormatPastGames()">Format Past Games</button>
-    <button onclick="FormatFutureGames()">Format Future Games</button>
-    <br>
-    <button onclick="CopyPastGamesHTML()">Copy Past Games HTML</button>
-    <button onclick="CopyFutureGamesHTML()">Copy Future Games HTML</button>
 
 
+    <div id='more-options'>
+      <button onclick="UpdateTables()">Update Nicknames</button>
+      <br><br>
+      <button onclick="GetPastGames()">Get Past Games</button>
+      <button onclick="GetFutureGames()">Get Future Games</button>
+      <br><br>
+      <button onclick="FormatPastGames()">Format Past Games</button>
+      <button onclick="FormatFutureGames()">Format Future Games</button>
+      <br><br>
+      <button onclick="CopyPastGamesHTML()">Copy Past Games HTML</button>
+      <button onclick="CopyFutureGamesHTML()">Copy Future Games HTML</button>
+    </div>
 
+    <br>
+    <div id='bowlies-container'></div>
+    <br>
     <div id='past-games-container'></div>
     <br><br>
     <div id='future-games-container'></div>

@@ -27,10 +27,23 @@ function ExpectNotEqual(actual, not_expected, test, description) {
 }
 
 function RunUnitTests() {
+  let all_passed = true;
+
   for (let i in test_functions) {
     let test = { result: PASS };
     test_functions[i](test)
-    if (test.result == PASS) Pass(test_functions[i].name);
+    if (test.result == PASS) Pass(test_functions[i].name)
+    else all_passed = false;
+  }
+
+  if (all_passed) {
+    $('#test-tick').css('display', 'inline');
+    $('#test-button').css('background-color', 'lawngreen');
+    $('#test-cross').css('display', 'none');
+  } else {
+    $('#test-cross').css('display', 'inline');
+    $('#test-button').css('background-color', 'red');
+    $('#test-tick').css('display', 'none');
   }
 }
 

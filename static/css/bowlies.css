@@ -1,0 +1,113 @@
+body {
+  text-align: center;
+}
+
+#bowlies-container {
+  text-align: center;
+}
+
+#bowlies-title {
+  font-size: 25px;
+  color: rgb(75, 75, 75);
+  text-align: center;
+}
+
+#left-top-level-table-cell {
+  width: 300px;
+}
+
+#bowlies-container, #win-loss-summary {
+  text-align: center;
+}
+
+#bowlies-container {
+  background-color: white;
+  font-family:"Arial",sans-serif;
+  color: rgb(75,75,75);
+  padding: 20px;
+  padding-top: 0px;
+  text-align: center;
+}
+
+#goal-kickers, #best-players {
+  width: 300px;
+}
+
+#goal-kickers .goals {
+  background-color:yellow;
+}
+
+#goal-kickers .spacer, #best-players .spacer {
+  display:block;
+  height: 10px;
+}
+
+.location-logo-cell {
+  text-align: center;
+}
+
+.location-logo {
+  height: 20px;
+  display: inline;
+}
+
+#bowlies-container .logo {
+  width: 50px;
+}
+
+#bowlies-container .result {
+  text-align: center;
+}
+
+#bowlies-container table, #bowlies-container td, #bowlies-container tr {
+  border: 0px;
+  color: rgb(75,75,75);
+}
+
+#bowlies-container .past-game {
+  background-color: transparent;
+  color: rgb(75,75,75);
+}
+
+#bowlies-container img {
+  max-height: 45px;
+  max-width: 60px;
+  float: right;
+  margin-right: 5px;
+}
+
+#bowlies-container .date {
+  text-align: center;
+  color: grey;
+  font-size: 17px;
+}
+
+#bowlies-container .label {
+  padding-right: 12px;
+  padding-top: 10px;
+}
+
+#bowlies-container .bottom-divider > td {
+  padding-bottom: 10px;
+  border-bottom: 1px solid lightgrey;
+}
+
+#bowlies-container .top-divider td {
+  padding-top: 10px;
+}
+
+#bowlies-container .icons td {
+  padding-bottom: 0px;
+  padding-top: 0px;
+  border: 0px;
+  padding-left: 10px;
+}
+
+#bowlies-container #round-number {
+  width: 80px;
+  font-size: 14px;
+}
+
+#bowlies-container .bottom-divider {
+  border-bottom: 1px solid grey;
+}
