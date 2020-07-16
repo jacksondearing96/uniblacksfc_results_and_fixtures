@@ -109,11 +109,13 @@ def GetMatchesJson(html):
 
     # Look through all the <script> elements.
     scripts = html.find_all('script')
-    for scriptString in (script.text for script in scripts):
-        if 'var matches =' in scriptString:
+
+    for script in scripts:
+        script = str(script)
+        if 'var matches =' in script:
             # Strip away the javascript wrapping.
-            text = scriptString.strip('var matches =')
-            text = text.strip(';')
+            text = script.strip('<script>var matches =')
+            text = text.strip(';</script>')
             try:
                 matchesJSON = json.loads(text)
                 return matchesJSON

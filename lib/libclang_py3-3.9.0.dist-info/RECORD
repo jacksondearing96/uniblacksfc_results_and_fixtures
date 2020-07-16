@@ -1,0 +1,11 @@
+clang/__init__.py,sha256=rgF6N6sInlnVz715DU8P_Y9PQacniHL68WP4ALtgjZo,565
+clang/__init__.pyc,,
+clang/cindex.py,sha256=5aKS3a_0nBjAZG2OpZxFSo01W7sZ3GJgm0HKEfDgyQ4,112752
+clang/cindex.pyc,,
+clang/enumerations.py,sha256=Da6Xh9IGGTX-D1bUJOcKGhdFqmQ5PN4h0_pLlQ1TFG8,1077
+clang/enumerations.pyc,,
+libclang_py3-3.9.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+libclang_py3-3.9.0.dist-info/METADATA,sha256=JiOfZzThQ-U0dHN_E_l7l_hrWqqNYqLBJ_jo3PVHnfI,671
+libclang_py3-3.9.0.dist-info/RECORD,,
+libclang_py3-3.9.0.dist-info/WHEEL,sha256=CbUdLTqD3-4zWemf83rgR_2_MC4TeXw9qXwrXte5w4w,92
+libclang_py3-3.9.0.dist-info/top_level.txt,sha256=VCqnbTg_nMMxDrCrGkh2eHoKHoKz9p-DeBjWjSGjJ4c,6

@@ -27,3 +27,7 @@
 #more-options {
   display: none;
 }
+
+button:hover {
+  cursor: pointer;
+}

@@ -15,3 +15,4 @@ brew install python3
 
 # Flask for python
 pip install flask
+pip install selenium

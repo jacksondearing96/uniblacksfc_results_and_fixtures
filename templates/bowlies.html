@@ -15,7 +15,7 @@
             <br>
             <b>{{ teams.nickname }}</b>
             </br>
-            {{ teams.score_for }}
+            <span class='score'>{{ teams.score_for }}</span>
           </td>
         </tr>
 
@@ -46,11 +46,11 @@
             ({{ teams.opposition }})
             <br>
 
-            {{ teams.score_against }}
+            <span class='score'>{{ teams.score_against }}</span>
           </td>
         </tr>
 
-        <tr>
+        <tr class='location-logo-row'>
           <td class='location-logo-cell'>
             <img class='location-logo'
               src='https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'>

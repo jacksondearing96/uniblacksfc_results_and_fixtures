@@ -16,8 +16,13 @@ body {
   width: 300px;
 }
 
-#bowlies-container, #win-loss-summary {
-  text-align: center;
+#winn-loss-summary {
+  width: 340px;
+  color: white;
+  background-color: slategrey;
+  margin: 0 auto;
+  height: 20px;
+  padding: 5px;
 }
 
 #bowlies-container {
@@ -46,6 +51,10 @@ body {
   text-align: center;
 }
 
+.location-logo-row td {
+  padding-top: 10px;
+}
+
 .location-logo {
   height: 20px;
   display: inline;
@@ -57,6 +66,7 @@ body {
 
 #bowlies-container .result {
   text-align: center;
+  padding: 8px 0px;
 }
 
 #bowlies-container table, #bowlies-container td, #bowlies-container tr {
@@ -67,6 +77,10 @@ body {
 #bowlies-container .past-game {
   background-color: transparent;
   color: rgb(75,75,75);
+}
+
+#bowlies-container .score {
+  background-color: lightsteelblue;
 }
 
 #bowlies-container img {
@@ -109,5 +123,5 @@ body {
 }
 
 #bowlies-container .bottom-divider {
-  border-bottom: 1px solid grey;
+  border-bottom: 3px solid grey;
 }

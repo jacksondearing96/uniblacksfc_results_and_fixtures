@@ -86,7 +86,6 @@ function UpdatePlayerNamesFromDatabase() {
 function AutomateBowlies() {
   SetBowliesFlag();
   GetPastGames().then(() => {
-    console.log(past_teams)
     UpdateTables(() => {
       OrderTeamsBasedOnMargins();
       FormatBowlies();
