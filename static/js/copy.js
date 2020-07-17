@@ -1,3 +1,4 @@
+// TODO: Vectorise this function to simplify.
 // Embeds the CSS file and copies the HTML ready for pasting directly into MailChimp.
 function CopyHTML(selector, all = false) {
   var HTML = document.createElement('textarea');
@@ -24,14 +25,10 @@ function CopyHTML(selector, all = false) {
     });
 }
 
-function CopyPastGamesHTML() {
-  CopyHTML('#past-games-container');
+function CopyBowliesResults() {
+  CopyHTML('#bowlies-container');
 }
 
-function CopyFutureGamesHTML() {
-  CopyHTML('#future-games-container');
-}
-
-function CopyAll() {
+function CopySubstandardResults() {
   CopyHTML('', true);
 }

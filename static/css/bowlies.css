@@ -1,9 +1,16 @@
 body {
   text-align: center;
+  background-color: lightgrey !important;
+  max-width: 1000px;
 }
 
 #bowlies-container {
   text-align: center;
+}
+
+b {
+  float: left;
+  text-align: left;
 }
 
 #bowlies-title {
@@ -13,42 +20,51 @@ body {
 }
 
 #left-top-level-table-cell {
-  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
 }
 
-#winn-loss-summary {
-  width: 340px;
-  color: white;
-  background-color: slategrey;
+#win-loss-summary {
+  color: dodgerblue;
+}
+
+#win-loss-summary, #bowlies-title, #bowlies-container .date {
   margin: 0 auto;
-  height: 20px;
-  padding: 5px;
+  text-align: center;
 }
 
 #bowlies-container {
   background-color: white;
   font-family:"Arial",sans-serif;
   color: rgb(75,75,75);
-  padding: 20px;
-  padding-top: 0px;
+  padding: 5px;
+  padding-top: 20px;
   text-align: center;
 }
 
-#goal-kickers, #best-players {
-  width: 300px;
+.goal-kickers, .best-players {
+  text-align: left;
 }
 
-#goal-kickers .goals {
+#bowlies-container span.label {
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+}
+
+#bowlies-container .goals {
   background-color:yellow;
+  color: rgb(30,30,30)
+}
+
+.bp-position {
+  font-weight: bold;
 }
 
 #goal-kickers .spacer, #best-players .spacer {
   display:block;
   height: 10px;
-}
-
-.location-logo-cell {
-  text-align: center;
 }
 
 .location-logo-row td {
@@ -58,6 +74,7 @@ body {
 .location-logo {
   height: 20px;
   display: inline;
+  float: left;
 }
 
 #bowlies-container .logo {
@@ -74,20 +91,26 @@ body {
   color: rgb(75,75,75);
 }
 
-#bowlies-container .past-game {
-  background-color: transparent;
+#bowlies-container {
+  background-color: lightgrey;
   color: rgb(75,75,75);
 }
 
 #bowlies-container .score {
-  background-color: lightsteelblue;
+  color: dodgerblue;
 }
 
-#bowlies-container img {
-  max-height: 45px;
-  max-width: 60px;
-  float: right;
-  margin-right: 5px;
+.bowlies-table {
+  display: inline-block;
+}
+
+.bowlies-game:nth-child(even) {
+  background-color: rgb(30,30,30);
+  color: rgb(180,180,180)
+}
+
+.bowlies-game {
+  padding: 10px 5px;
 }
 
 #bowlies-container .date {
@@ -103,7 +126,6 @@ body {
 
 #bowlies-container .bottom-divider > td {
   padding-bottom: 10px;
-  border-bottom: 1px solid lightgrey;
 }
 
 #bowlies-container .top-divider td {
@@ -117,11 +139,6 @@ body {
   padding-left: 10px;
 }
 
-#bowlies-container #round-number {
-  width: 80px;
-  font-size: 14px;
-}
-
-#bowlies-container .bottom-divider {
-  border-bottom: 3px solid grey;
+.nickname {
+  font-weight: bold;
 }

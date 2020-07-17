@@ -22,15 +22,15 @@ function IncludeWinLossSummary() {
     if (team.margin < 0) ++losses;
   });
 
-  let winning_percentage = wins / (wins + losses) * 100;
+  let winning_percentage = Math.round(wins / (wins + losses) * 100);
   let grade = CalculateGrade(winning_percentage);
 
-  $('#bowlies-container').append(`<p id='winn-loss-summary'>Won ${wins} out of ${wins + losses} = ${winning_percentage}% => ${grade}</p>`)
+  $('#bowlies-container').append(`<div class='row'><div class='col-md-12' id='win-loss-summary'>Won ${wins} out of ${wins + losses} = ${winning_percentage}% => ${grade}</div></div>`)
 }
 
 function FormatBowlies() {
   // Clear current content, populate with only the title.
-  $('#bowlies-container').html('<p id="bowlies-title"><b><i>Bowlies Results</i></b></p>');
+  $('#bowlies-container').html('<div class="row"><div class="col-md-12" id="bowlies-title">Hold Your Bowlies</div></div>');
 
   IncludeWinLossSummary();
 
@@ -83,12 +83,69 @@ function UpdatePlayerNamesFromDatabase() {
     .then(() => console.log('Updated player names from database'));
 }
 
+function SaveBowliesResults() {
+
+  var bowlies_results = $('#bowlies-container').html();
+  if (bowlies_results === '') return;
+
+  fetch('/save_bowlies_results', { method: 'POST', 'Content-Type': 'text/html', body: bowlies_results })
+    .then(response => {
+
+      let save_button = $('#save-bowlies-button');
+
+      console.log(response)
+      if (response.status == 200) {
+        save_button.removeClass('btn-primary');
+        save_button.addClass('btn-success');
+        save_button.html('saved')
+      } else {
+        save_button.removeClass('btn-primary');
+        save_button.addClass('btn-danger');
+        save_button.html('Save failed')
+      }
+    });
+}
+
+function RestoreBowliesResults() {
+  StartLoading();
+
+  fetch('/restore_bowlies_results', { method: 'GET' })
+    .then(response => response.text())
+    .then(data => {
+      EndLoading();
+
+      let restore_button = $('#restore-button');
+
+      if (data !== 'ERROR') {
+        restore_button.removeClass('btn-primary');
+        restore_button.addClass('btn-success');
+        restore_button.html('Restored');
+        $('#bowlies-container').html(data);
+        $('#bowlies-container').css('display', 'block');
+      } else {
+        restore_button.removeClass('btn-primary');
+        restore_button.addClass('btn-danger');
+        restore_button.html('Restore failed')
+      }
+    });
+}
+
+
 function AutomateBowlies() {
+
+  StartLoading();
+
+  // Hide the irrelevant tables.
+  $('#past-games-table').css('display', 'none');
+  $('#future-games-table').css('display', 'none');
+  $('#bowlies-container').css('display', 'block');
+
   SetBowliesFlag();
   GetPastGames().then(() => {
     UpdateTables(() => {
       OrderTeamsBasedOnMargins();
       FormatBowlies();
+      EndLoading();
     });
   });
 }

@@ -61,11 +61,6 @@
   text-align: center; 
 }
 
-#past-games-container .indent td {
-  padding-left: 15px;
-  padding-top: 4px;
-}
-
 #past-games-container .expand {
   width: 52%;
   padding: 4px;
@@ -100,6 +95,10 @@
 #past-games-container #round-number {
   width: 80px;
   font-size: 14px;
+}
+
+#future-games-container b {
+  text-align: center !important;
 }
 
 #future-games-container {
@@ -162,11 +161,6 @@
 
 #future-games-container .centre {
   text-align: center; 
-}
-
-#future-games-container .indent td {
-  padding-left: 15px;
-  padding-top: 4px;
 }
 
 #future-games-container .expand {

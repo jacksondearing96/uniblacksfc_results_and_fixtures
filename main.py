@@ -1,3 +1,6 @@
+# Initialise gcloud
+# ./~/google-cloud-sdk/bin/gcloud init
+#
 # Run a test server (this will be similar to what is deployed on app engine)
 #  dev_appserver.py --application=sub-auto app.yaml
 #
@@ -10,16 +13,17 @@
 # Exit the venv
 # deactivate
 #
-# Deploy application
-# 
-#
 # Update requirements based on what pip has in the virtual env
 # pip freeze > requirements.txt
 #
 # Install the requirements into the lib dir
 # pip install -t lib -r requirements.txt 
 #
-# 
+# Deploy application
+# gcloud app deploy
+#
+# View application
+# gcloud app browse
 #
 
 from flask import Flask, render_template, request
@@ -69,6 +73,21 @@ def update_player_names_from_database():
     else:
         return 'FAIL'
 
+
+@app.route('/save_bowlies_results', methods=['POST'])
+def save_bowlies_results():
+    with open('bowlies_saved_results.txt', 'w') as file:
+        file.write(request.get_data())
+    return 'SUCCESS'
+
+
+@app.route('/restore_bowlies_results', methods=['GET'])
+def restore_bowlies_results():
+    data = 'ERROR'
+    with open('bowlies_saved_results.txt', 'r') as file:
+        data = file.read()
+    return data
+    
 
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def send_file(path):

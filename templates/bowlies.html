@@ -1,102 +1,70 @@
-<!-- Past game -->
+<!-- Bowlies game -->
+<div contenteditable='true' class='bowlies-game row'>
 
-<table>
-  <tr class='bottom-divider'>
-    <td id='left-top-level-table-cell'>
-      <table class='past-game'>
+  <div class='col-md-4'>
+    {{ teams.gender }} Div {{ teams.division }}
+    <br>
+    <span class='nickname'>{{ teams.nickname }}</span>
+    <br>
+    <span class='score'>{{ teams.score_for }}</span>
+    <br>
+    @ {{ teams.location_nickname }} ({{ teams.location }})
+    <br>
+    Round {{ teams.round }} vs
+    <br>
+    <span class='nickname'>{{ teams.opposition_nickname }}</span>
+    <br>
+    ({{ teams.opposition }})
+    <br>
+    <span class='score'>{{ teams.score_against }}</span>
+    <br>
 
-        <!-- Uni team -->
-        <tr class='top-divider'>
-          <td class='logo'><img
-              src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png">
+    {% if teams.margin < 0 %}
+    <span style='color:red'>
+      LOSS
+      {% else %}
+      <span style='color:green'>
+        WIN
+        <br>
+        {% endif %}
 
-          <td class='expand'>
-            {{ teams.gender }} Div {{ teams.division }}
-            <br>
-            <b>{{ teams.nickname }}</b>
-            </br>
-            <span class='score'>{{ teams.score_for }}</span>
-          </td>
-        </tr>
+        ({% if teams.margin > 0 %}+{% endif %}{{ teams.margin }})
+      </span>
+  </div>
 
-        <!-- Result -->
-        <tr>
-          <td colspan='2' class='result' class='centre'>
+  <div class='col-md-4 goal-kickers'>
+    <span class='label'>Goal Kickers:</span>
+    <br>
+    {% for name in teams.goal_kickers %}
+    {{ name['name'] }} <span class='goals'>{{ name['goals'] }}</span>
+    <br>
+    <span class='spacer'></span>
+    {% endfor %}
+  </div>
 
-            {% if teams.margin < 0 %}
-            <span style='color:red'>
-              LOSS
-              {% else %}
-              <span style='color:green'>
-                WIN
-                <br>
-                {% endif %}
+  <div class='col-md-4 best-players'>
+    <span class='label'>Best Players:</span>
+    <br>
 
-                ({% if teams.margin > 0 %}+{% endif %}{{ teams.margin }})
-              </span>
-          </td>
-        </tr>
+    <span class='bp-position'>5th:</span> {{ teams.best_players[4]['name'] }}
+    <br>
+    <span class='spacer'></span>
 
-        <!-- Opposition -->
-        <tr>
-          <td class='logo'> <img src="{{ teams.image_url }}"></td>
-          <td class='right expand'>
-            {{ teams.opposition_nickname }}
-            </br>
-            ({{ teams.opposition }})
-            <br>
+    <span class='bp-position'>4th:</span> {{ teams.best_players[3]['name'] }}
+    <br>
+    <span class='spacer'></span>
 
-            <span class='score'>{{ teams.score_against }}</span>
-          </td>
-        </tr>
+    <span class='bp-position'>3rd:</span> {{ teams.best_players[2]['name'] }}
+    <br>
+    <span class='spacer'></span>
 
-        <tr class='location-logo-row'>
-          <td class='location-logo-cell'>
-            <img class='location-logo'
-              src='https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'>
-          </td>
-          <td>
-            {{ teams.location_nickname }} ({{ teams.location }})
-          </td>
-        </tr>
+    <span class='bp-position'>2nd:</span> {{ teams.best_players[1]['name'] }}
+    <br>
+    <span class='spacer'></span>
 
-      </table>
-    </td>
+    <span class='bp-position'>1st:</span> {{ teams.best_players[0]['name'] }}
+    <br>
+    <span class='spacer'></span>
+  </div>
 
-    <td id='goal-kickers'>
-      <span class='label'><b>Goal Kickers:</b></span>
-      <br>
-      {% for name in teams.goal_kickers %}
-      {{ name['name'] }} <span class='goals'>{{ name['goals'] }}</span>
-      <br>
-      <span class='spacer'></span>
-      {% endfor %}
-    </td>
-
-    <td id='best-players'>
-      <span class='label'><b>Best Players:</b></span>
-      <br>
-
-      5th: {{ teams.best_players[4]['name'] }}
-      <br>
-      <span class='spacer'></span>
-
-      4th: {{ teams.best_players[3]['name'] }}
-      <br>
-      <span class='spacer'></span>
-
-      3rd: {{ teams.best_players[2]['name'] }}
-      <br>
-      <span class='spacer'></span>
-
-      2nd: {{ teams.best_players[1]['name'] }}
-      <br>
-      <span class='spacer'></span>
-
-      1st: {{ teams.best_players[0]['name'] }}
-      <br>
-      <span class='spacer'></span>
-
-    </td>
-  </tr>
-</table>
+</div>

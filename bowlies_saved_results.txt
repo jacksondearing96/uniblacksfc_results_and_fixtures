@@ -1,0 +1,789 @@
+<div class="row"><div class="col-md-12" id="bowlies-title">Hold Your Bowlies</div></div><div class="row"><div class="col-md-12" id="win-loss-summary">Won 3 out of 8 = 37.5% =&gt; Fail</div></div><div class="row date"><div class="col-md-12"><p>                     Saturday 4 July, 2020                  </p></div></div><!-- Bowlies game -->
+<div contenteditable="true" class="bowlies-game">
+
+  <div class="row">
+    <div class="col-md-4">
+      Mens Div 1 Res
+      <br>
+      <span class="nickname">Pup and His Young Dawgz</span>
+      <br>
+      <span class="score">7.8-50</span>
+      <br>
+      @ Home For Horribles (Kingswood Oval)
+      <br>
+      vs
+      <br>
+      <span class="nickname">Ugly</span>
+      <br>
+      (Unley Mercedes Jets)
+      <br>
+      <span class="score">16.6-102</span>
+      <br>
+
+      
+      <span style="color:red">
+        LOSS
+        
+
+          (-52)
+        </span>
+    </div>
+
+    <div class="col-md-4 goal-kickers">
+      <span class="label">Goal Kickers:</span>
+      <br>
+      
+      Rose McGowan (William McGowan)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Crispy Strips (Ben Sanders)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Luke Parker (Angus Parker)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      &lt;&gt; (Mani Draper)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Dirty Harry (Harry Edmonds)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Robinson Crusoe (Braden Robinson)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+    </div>
+
+    <div class="col-md-4 best-players">
+      <span class="label">Best Players:</span>
+      <br>
+
+      <span class="bp-position">5th:</span> 180 (Edward Dart)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">4th:</span> Stuart Little (Stuart Henshall)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">3rd:</span> Rose McGowan (William McGowan)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">2nd:</span> &lt;NO NICKNAME&gt; (Mani Draper)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">1st:</span> Richard III (Shaughn King)
+
+      <br>
+      <span class="spacer"></span>
+    </div>
+
+  </div>
+
+</div><!-- Bowlies game -->
+<div contenteditable="true" class="bowlies-game">
+
+  <div class="row">
+    <div class="col-md-4">
+      Womens Div 1
+      <br>
+      <span class="nickname">Moodog and His A Grade Vintage</span>
+      <br>
+      <span class="score">1.5-11</span>
+      <br>
+      @ Fake Field (West Lakes Shore Oval)
+      <br>
+      vs
+      <br>
+      <span class="nickname">SMUSH West Fakes</span>
+      <br>
+      (SMOSH West Lakes)
+      <br>
+      <span class="score">8.1-49</span>
+      <br>
+
+      
+      <span style="color:red">
+        LOSS
+        
+
+          (-38)
+        </span>
+    </div>
+
+    <div class="col-md-4 goal-kickers">
+      <span class="label">Goal Kickers:</span>
+      <br>
+      
+      The Birth of Christ (Chelsea Manger)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+    </div>
+
+    <div class="col-md-4 best-players">
+      <span class="label">Best Players:</span>
+      <br>
+
+      <span class="bp-position">5th:</span> A Day at the Races (Gigi Dadds)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">4th:</span> &lt;NO NICKNAME&gt; (Brooklyn Kraft)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">3rd:</span> FitBit (Alexandra Fitridge)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">2nd:</span> Garfield (Tiarna Harfield)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">1st:</span> Macy Gray (Georgie Gray)
+
+      <br>
+      <span class="spacer"></span>
+    </div>
+
+  </div>
+
+</div><!-- Bowlies game -->
+<div contenteditable="true" class="bowlies-game">
+
+  <div class="row">
+    <div class="col-md-4">
+      Mens Div 1
+      <br>
+      <span class="nickname">Benny and His Jets</span>
+      <br>
+      <span class="score">10.6-66</span>
+      <br>
+      @ Home For Horribles (Kingswood Oval)
+      <br>
+      vs
+      <br>
+      <span class="nickname">Ugly</span>
+      <br>
+      (Unley Mercedes Jets)
+      <br>
+      <span class="score">12.9-81</span>
+      <br>
+
+      
+      <span style="color:red">
+        LOSS
+        
+
+          (-15)
+        </span>
+    </div>
+
+    <div class="col-md-4 goal-kickers">
+      <span class="label">Goal Kickers:</span>
+      <br>
+      
+      &lt;NO NICKNAME&gt; (Ben Edwards)
+ <span class="goals"> 7</span>
+      <br>
+      <span class="spacer"></span>
+      
+      The Backyard Cricketer (Jack Strange)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Son of a Gun (Maris Olekalns)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Tim May/Fcuk Offe (Aidan Offe)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+    </div>
+
+    <div class="col-md-4 best-players">
+      <span class="label">Best Players:</span>
+      <br>
+
+      <span class="bp-position">5th:</span> Wallace &amp;amp; Gromit (Hamish Wallace)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">4th:</span> The Adams Family (Ben Adams)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">3rd:</span> Cunninghams Warehouse, Yes Sir-eee!!! (Damian Cunningham)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">2nd:</span> The Backyard Cricketer (Jack Strange)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">1st:</span> &lt;NO NICKNAME&gt; (Ben Edwards)
+
+      <br>
+      <span class="spacer"></span>
+    </div>
+
+  </div>
+
+</div><!-- Bowlies game -->
+<div contenteditable="true" class="bowlies-game">
+
+  <div class="row">
+    <div class="col-md-4">
+      Womens Div 1 Res
+      <br>
+      <span class="nickname">The Big Lez Show</span>
+      <br>
+      <span class="score">0.2-2</span>
+      <br>
+      @ Fake Field (West Lakes Shore Oval)
+      <br>
+      vs
+      <br>
+      <span class="nickname">SMUSH West Fakes</span>
+      <br>
+      (SMOSH West Lakes)
+      <br>
+      <span class="score">2.4-16</span>
+      <br>
+
+      
+      <span style="color:red">
+        LOSS
+        
+
+          (-14)
+        </span>
+    </div>
+
+    <div class="col-md-4 goal-kickers">
+      <span class="label">Goal Kickers:</span>
+      <br>
+      
+       <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+    </div>
+
+    <div class="col-md-4 best-players">
+      <span class="label">Best Players:</span>
+      <br>
+
+      <span class="bp-position">5th:</span> Hop Growing in the Woods (Callie Hopwood)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">4th:</span> Charles Manson (Isabel Joan Manson)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">3rd:</span> Dingo Ate My Baby! (Briony Chamberlayne)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">2nd:</span> Erin Brockovich (Erin Roberts)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">1st:</span> The Powermedic (Julie Power)
+
+      <br>
+      <span class="spacer"></span>
+    </div>
+
+  </div>
+
+</div><!-- Bowlies game -->
+<div contenteditable="true" class="bowlies-game">
+
+  <div class="row">
+    <div class="col-md-4">
+      Mens Div C1
+      <br>
+      <span class="nickname">The Chardonnay Socialists</span>
+      <br>
+      <span class="score">6.11-47</span>
+      <br>
+      @ Home For Horribles (Kingswood Oval)
+      <br>
+      vs
+      <br>
+      <span class="nickname">Ugly</span>
+      <br>
+      (Unley Mercedes Jets)
+      <br>
+      <span class="score">8.7-55</span>
+      <br>
+
+      
+      <span style="color:red">
+        LOSS
+        
+
+          (-8)
+        </span>
+    </div>
+
+    <div class="col-md-4 goal-kickers">
+      <span class="label">Goal Kickers:</span>
+      <br>
+      
+      Martin Leslie/VB/Les Bien (Michael Leslie)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Down the Corridor (Wade Hall)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Ang Christou/The Woof (Matt Stuart)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Ishant Sharma (Michael Hogg)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      W@nk Bank (Craig Bankes)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+    </div>
+
+    <div class="col-md-4 best-players">
+      <span class="label">Best Players:</span>
+      <br>
+
+      <span class="bp-position">5th:</span> Pup (Michael Heath)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">4th:</span> &lt;NO NICKNAME&gt; (Henry Birch)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">3rd:</span> Big Will (Alex Minson)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">2nd:</span> Henry VIII (Henry Brooks)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">1st:</span> Yothu Yindi (Michael Yunupingu)
+
+      <br>
+      <span class="spacer"></span>
+    </div>
+
+  </div>
+
+</div><!-- Bowlies game -->
+<div contenteditable="true" class="bowlies-game">
+
+  <div class="row">
+    <div class="col-md-4">
+      Mens Div C6
+      <br>
+      <span class="nickname">THE SCUM</span>
+      <br>
+      <span class="score">15.8-98</span>
+      <br>
+      @ The Cathedral (St Pauls College)
+      <br>
+      vs
+      <br>
+      <span class="nickname">Saint Paul</span>
+      <br>
+      (St Paul's OS)
+      <br>
+      <span class="score">2.5-17</span>
+      <br>
+
+      
+        <span style="color:green">
+          WIN
+          <br>
+          
+
+          (+81)
+        </span>
+    </div>
+
+    <div class="col-md-4 goal-kickers">
+      <span class="label">Goal Kickers:</span>
+      <br>
+      
+      Boags Draught (Lachlan Boag)
+ <span class="goals"> 3</span>
+      <br>
+      <span class="spacer"></span>
+      
+      The Future Premier (Peter Malinauskas)
+ <span class="goals"> 3</span>
+      <br>
+      <span class="spacer"></span>
+      
+      &lt;NO NICKNAME&gt; (Jack Clark)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      The Pied (Noah Piper)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Chimp (Alex Martinson)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Keith (Joshua Richards)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Pumpkin (Robert Gardner)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      U2 - The Edge/Ronan Keating (Darragh Coughlan)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Penny / Cam I Am (Camron-Jay Lane)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+    </div>
+
+    <div class="col-md-4 best-players">
+      <span class="label">Best Players:</span>
+      <br>
+
+      <span class="bp-position">5th:</span> kenny (McKenzie Schinckel)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">4th:</span> &lt;NO NICKNAME&gt; (Jack Clark)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">3rd:</span> U2 - The Edge/Ronan Keating (Darragh Coughlan)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">2nd:</span> pewbs (Thomas Newberry)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">1st:</span> Jesus (James Martin)
+
+      <br>
+      <span class="spacer"></span>
+    </div>
+
+  </div>
+
+</div><!-- Bowlies game -->
+<div contenteditable="true" class="bowlies-game">
+
+  <div class="row">
+    <div class="col-md-4">
+      Mens Div C7
+      <br>
+      <span class="nickname">The Brady Bunch</span>
+      <br>
+      <span class="score">16.17-113</span>
+      <br>
+      @ Chocka Bloch Oval (Fred Bloch Oval)
+      <br>
+      vs
+      <br>
+      <span class="nickname">North Haven for Hobos</span>
+      <br>
+      (North Haven)
+      <br>
+      <span class="score">2.0-12</span>
+      <br>
+
+      
+        <span style="color:green">
+          WIN
+          <br>
+          
+
+          (+101)
+        </span>
+    </div>
+
+    <div class="col-md-4 goal-kickers">
+      <span class="label">Goal Kickers:</span>
+      <br>
+      
+      Coach Carter (James Carter)
+ <span class="goals"> 5</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Son of Smith (Joel Smith)
+ <span class="goals"> 3</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Premier John Olsen (Andrew Olsen)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Stuart Little (Stuart Harris)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Hutton Season (Samuel Hutton)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Nacho Libre (Christopher Baker)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      The Ascension of Christ (Blake Ascione)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      &lt;NO NICKNAME&gt; (Benjamin Goddard)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+    </div>
+
+    <div class="col-md-4 best-players">
+      <span class="label">Best Players:</span>
+      <br>
+
+      <span class="bp-position">5th:</span> Stuart Little (Stuart Harris)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">4th:</span> Premier John Olsen (Andrew Olsen)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">3rd:</span> Spicy Chicken Takos (James Takos)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">2nd:</span> Malcolm Turnbull (Zac Turnbull)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">1st:</span> Coach Carter (James Carter)
+
+      <br>
+      <span class="spacer"></span>
+    </div>
+
+  </div>
+
+</div><!-- Bowlies game -->
+<div contenteditable="true" class="bowlies-game">
+
+  <div class="row">
+    <div class="col-md-4">
+      Mens Div C4
+      <br>
+      <span class="nickname">The B@stards</span>
+      <br>
+      <span class="score">19.15-129</span>
+      <br>
+      @ Bob Neil #1 (University Oval)
+      <br>
+      vs
+      <br>
+      <span class="nickname">Gepps Double Cross</span>
+      <br>
+      (Gepps Cross)
+      <br>
+      <span class="score">2.5-17</span>
+      <br>
+
+      
+        <span style="color:green">
+          WIN
+          <br>
+          
+
+          (+112)
+        </span>
+    </div>
+
+    <div class="col-md-4 goal-kickers">
+      <span class="label">Goal Kickers:</span>
+      <br>
+      
+      Kerb Your Enthusiasm (Samuel Kerber)
+ <span class="goals"> 3</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Women's Weekly (Daniel Weekley)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      The Futon (Charlie Wootton)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Lester (Ben Ellis)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Fingers (Jock Forbes)
+ <span class="goals"> 2</span>
+      <br>
+      <span class="spacer"></span>
+      
+      Jumpin Jack Flash (Jack McGowan)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      The Brazilian Mafia (Ashley Di Silvio)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Uncle Buck (Alex Buckby)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      The Life of Riley (Andrew Riley)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      The Fcuk Truck (Fraser Thomson)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Craig Johnston (Jack Johnston)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      &lt;PLAYER NOT IN DATABASE&gt;M. Allan <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+      Maxed Out His Credit Card (Jason Maxted)
+ <span class="goals"></span>
+      <br>
+      <span class="spacer"></span>
+      
+    </div>
+
+    <div class="col-md-4 best-players">
+      <span class="label">Best Players:</span>
+      <br>
+
+      <span class="bp-position">5th:</span> Fingers (Jock Forbes)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">4th:</span> The Phoenix (Jock Blight)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">3rd:</span> The Futon (Charlie Wootton)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">2nd:</span> The Life of Riley (Andrew Riley)
+
+      <br>
+      <span class="spacer"></span>
+
+      <span class="bp-position">1st:</span> Kerb Your Enthusiasm (Samuel Kerber)
+
+      <br>
+      <span class="spacer"></span>
+    </div>
+
+  </div>
+
+</div>

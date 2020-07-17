@@ -256,6 +256,9 @@ def GetPlayerNamesFromCache():
 
 
 def InsertNicknames(names, names_and_nicknames):
+    if names == None or names == '':
+        return []
+
     names = names.split(', ')
     for i in range(len(names)):
 
@@ -305,6 +308,13 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
 
     game_json = GetGameJsonForAdelaideUni(GetMatchesJson(html))
 
+    if past_game and game_json['PastGame'] != 1:
+        # If we detect this error, simply proceed as if it is a future game and
+        # flag inside the content that the results had not been finalised.
+        Error('This is not a past game.')
+        game.score_for = 'ERROR - MATCH HAS NOT BEEN PLAYED YET'
+        past_game = False
+
     # TODO: Improve. Use regex.
     str_with_round_embedded = game_json['Venue']
     str_with_round_embedded = str_with_round_embedded.split('round=')
@@ -313,6 +323,7 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
     str_with_round_embedded = str_with_round_embedded[0]
     game.round = int(str_with_round_embedded)
 
+    print(game_json)
     # TODO: Make use of these attributes in the JSON:
     # isBye
     # PastGame
@@ -368,6 +379,11 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
             game.goal_kickers, names_and_nicknames)
         game.best_players = InsertNicknames(
             game.best_players, names_and_nicknames)
+
+        # Need to make sure there are 5 elements for the HTML template.
+        # TODO: Test the case where there is less than 5 in the best.
+        while len(game.best_players) < 5:
+            game.best_players.append('')
 
     return game
 

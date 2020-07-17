@@ -381,6 +381,7 @@ function GetFutureGames() {
 }
 
 function GetScoreTotal(score_str) {
+  if (score_str === null) return -1;
   var dash_index = score_str.indexOf('-');
   if (dash_index == -1) return -1;
   var score_for = score_str.substring(dash_index + 1, score_str.length);
@@ -431,7 +432,7 @@ nicknames = { "Edwardstown": "Edwards Clowns", "Broadview": "Abroadsview", "Athe
 ground_names = { "University Oval": "Bob Neil #1", "Fred Bloch Oval": "Chocka Bloch Oval", "Park 10": "Bob Neil #2", "Broadview Oval": "Prostitute Park", "Henley Oval": "The Opium Den", "Largs Reserve": "Largs Loony Bin", "Blair Athol Reserve": "Kill Burn Maim & Destroy Oval", "Edwardstown Oval": "Clown Town", "Torrens Valley Oval": "Rat Reserve", "Goodwood Oval": "Sin Stadium", "Pertaringa Oval": "The Comedy Colosseum", "Camden Oval": "Fos's Farm", "Prospect Oval": "Wembley of the North", "West Lakes Reserve": "Fake Field", "Rostrevor College": "Abode of the Angelic Umpire", "Payneham Oval": "Arse Park", "Port Reserve": "Port Wildlife Reserve", "St Marys Oval": "The Dog Pound", "Foxfield Oval": "Rat Reserve", "Eric Sutton Oval": "Perfume Park", "LJ. Lewis Reserve": "Yatala Jail", "Klemzig Reserve": "Mardi Gras Park", "Salisbury North Oval": "Unemployment Park", "Campbelltown Oval": "Campbell's Cow Paddock", "Pedlar Reserve": "The Tram Terminus", "Daly Oval": "Arfur Daly Oval", "Mortlock Park": "The Rubbish Bin", "Cnr Sth Tce and Goodwood Rd": "South Terrace Lavatories", "Cnr Greenhill and Glen Osmond Rd": "Big Als' Toilet", "Plympton Oval": "Pimp Park", "Newlands Reserve": "Imperial Park", "Webb Oval": "Starvation Stadium", "Renown Park Oval": "Unrenown Park", "Kingswood Oval": "Home For Horribles", "Dwight Reserve": "Elton John Reserve", "Flinders University Oval": "The Gulag", "Cane Reserve": "Dog Poo/Postage Stamp Park", "Brahma Lodge Oval": "Fudge Field", "Houghton Oval": "Faraway Field", "Duncan Fraser Reserve": "Animal Farm", "Edward Smith Reserve": "Paint Pot Park", "Modbury Oval": "The Mud Heap", "Paralowie Oval": "The Flea Pit", "Lindholm Park": "Poo Park", "Salisbury Downs Oval": "Salisbury Downs Syndrome", "Windsor Gardens High School": "The Citadel", "Flinders Park Oval": "Paedophile Playground", "Park 9": "Bob Neil Four", "Wilson Oval, St Peters College": "Hackney High", "Unley Oval": "Jack Oatey Stables", "Walkerville Oval": "Tangle Park", "Thomas More College": "Bob Neil Three", "Hawthorn Oval": "Hawthorn Odeon", "Ledger Oval": "General Ledger", "Adelaide Oval": "The Light Towers", "Eastern Parade Reserve": "Rubbish Reserve", "Morgan Oval, South Tce": "Sock City", "Rowe Park": "Giggle Ground", "Sacred Heart Middle School": "Stink Stadium", "Sacred Heart Junior School": "Stink Stadium", "Salisbury Oval": "Tiny Town", "Mofflin Reserve": "The Welfare Office", "Andrew Smith Reserve": "Paint Pot Park", "Largs North Reserve": "Largs North Toilets", "Fawk Reserve": "Guy Fawkes Reserve", "Alberton Oval": "Al and Bert's Unit", "Brighton Oval": "Brighton-On-Sludge", "Railways Oval": "The Acropolis", "EP. Nazer Reserve": "Nazi Reserve", "McNally Oval": "The Reformatory", "PA.C. Park Oval": "Bob Neil Five", "Carnegie Reserve": "Carnegie Hall", "Brookway Park Oval": "Layabout Lounge", "Saint Pauls College": "The Cathedral", "Parafield Gardens High School": "", "Daws Road High School": "", "The Levels": "", "Sturt CAE Oval": "", "Scotch College Oval": "Rock Reserve", "Bartels Road Oval": "Bob Neil Six", "Bill Cooper Oval": "", "Lockleys Oval": "Padlock Park", "Bourke Oval, St Ignatius College": "Old Folks Home", "Hope Valley Oval": "Home for Incurables", "Adelaide High School Oval": "The Acropolis", "Salisbury CA.E. Oval": "", "Haslam Oval": "Don Haslam Oval", "STA Employees Club Oval": "", "Almond Tree Flat": "", "Memorial Oval, Rostrevor College": "Abode of the Angelic Oval", "Caterer Oval, St Peters College": "Hackney High", "Sacred Heart Senior School": "Stink Stadium", "Ferryden Park Reserve": "Fairies' Den", "St Peters College Front Oval": "Hackney High", "Northfield High School": "", "Saint Clair Oval": "", "Atkinson Oval, St Ignatius College": "Old Folks Home", "Magill CA.E. Oval": "", "Unley High School": "", "Myer Sports Ground": "", "Pennington Oval": "", "Paddocks Oval": "The Dopey Dugout", "Post Tel Oval, West Tce": "", "West Lakes High School": "", "Glandore Oval": "The Brothel", "Norwood Oval": "", "Park 25": "", "Graduates Oval": "", "Barratt Reserve": "Stink Stadium", "Plympton High School": "", "Immanuel College": "", "Parks Community Centre": "", "Colonel Waite Oval": "", "Fitzroy Terrace": "", "Thebarton Oval": "", "Mawson High School": "", "Glengowrie High School": "", "Brighton High School": "", "PA.C.": "", "Weigall Oval": "", "Tubemakers Oval": "", "Devitt Oval": "", "Baulderstone Oval, St Ignatius College": "Old Folks Home", "Cnr Pulteney St & Sth Tce": "Sock City", "Banksia Park High School": "", "Enfield High School": "", "Park 17, Greenhill Road": "", "Park 19": "", "Meyer Oval": "", "Findon High School": "", "Challa Gardens Primary School": "", "Marion High School": "", "Thorndon High School": "", "Hillcrest Hospital Oval": "", "Saint Michaels College": "", "Urrbrae College": "", "Australian National University": "", "Melbourne University": "", "Allard Park, Brunswick": "", "Prince Park No 2": "", "Sydney University": "", "Surfers Paradise": "", "Albert Park Oval": "", "Monash University": "", "Cazaly Park": "", "Jack Dyer Oval": "", "Labrador Oval": "", "Westminster College": "Heaven Number Two", "Greenwith Community Centre": "Grovel Park", "Underdale High School": "Worry Park", "Yalumba Drive Reserve": "The Flea Pit", "Croydon High School": "Surrender Stadium", "Bye": "", "Kensington Oval": "Bradman Park", "Smithfield Oval": "", "Woodville Oval": "", "Richmond Oval": "", "Newcastle University": "", "Argana Park": "", "Kilburn Oval": "Kill Burn Maim & Destroy Oval", "Harpers Field": "", "Salisbury West Oval": "", "Mitchell Park Oval": "", "Mawson Lakes Oval": "South Pole Mawson Lakes", "West Lakes Shore Oval": "", "Vaughton Oval": "", "St Dominics Oval": "Sherwood Forest", "Roseworthy Oval": "", "Elliott Goodger Memorial Park": "Beyond the Black Stump", "Fitzroy Sports Club": "", "Ottoway Reserve": "", "Lyrup": "Lyrup", "Reynella": "Reynella", "The Paddocks": "The Cow Paddock", "Thomas Farms Oval (Price Memorial Oval)": "The Meat Works", "Max Amber Sportsfield (Torrens Valley Oval)": "Rat Reserve", "John Bice Memorial Oval": "Bicep Oval", "Kellett Reserve": "The Pastie", "Happy Valley Sports Park": "Unhappy Land" };
 
 override_nicknames = { "Angle Vale": "Angle Fail", "St Paul's OS": "Saint Paul", "Payneham Norwood Union": "Payneham in the @rse" };
-override_ground_names = { 'Payneham Oval': '@rse Park', 'West Lakes Shore Oval': 'Fake Field', 'St Pauls College': 'The Cathedral' };
+override_ground_names = { 'Payneham Oval': '@rse Park', 'West Lakes Shore Oval': 'Fake Field', 'St Pauls College': 'The Cathedral', 'Hunter Park': 'The Nursing Home' };
 
 function PopulateNicknames(game) {
 
@@ -520,20 +521,21 @@ function FindNickname(options, name) {
 }
 
 // Loads a HTML template with the given data and appends it to the list given by destination.
-function LoadHTMLTemplateToList(template_selector, destination, teams, final_destination) {
+function LoadHTMLTemplateToList(template_selector, destination, teams, final_destination, callback) {
   fetch(template_selector, { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(teams) })
     .then(response => response.text())
     .then(data => {
       destination.push(data);
       ReOrderTeams(final_destination);
+      if (callback) callback();
     });
 }
 
 // Appends the given date to the past-games-container.
 function IncludeDate(selector, date) {
-  let date_HTML = "<p class='date'>\
-                     <b>" + date + ", 2020</b>\
-                  </p>";
+  let date_HTML = "<div class='row date'><div class='col-md-12'><p>\
+                     " + date + ", 2020\
+                  </p></div></div>";
   $(selector).append(date_HTML);
 }
 
@@ -576,14 +578,16 @@ function ReOrderTeams(selector) {
 }
 
 function ProcessLocation(game) {
-  if (game.location === 'University Oval' || game.location === 'Fred Bloch Oval') {
+  if (game.location === 'University Oval' || game.location === 'Fred Bloch Oval' || game.location === '') {
     game.location = '';
     return;
   }
   game.location = '(' + game.location + ')';
 }
 
-function FormatPastGames() {
+function FormatPastGames(callback) {
+
+  $('#past-games-container').css('display', 'block');
 
   // Clear current content, populate with only the title.
   $('#past-games-container').html('<p id="past-games-title"><b><i>"If winning is all there is, we want no part of it"</i></b></p>');
@@ -596,11 +600,15 @@ function FormatPastGames() {
   past_games_HTML = [];
 
   for (let i in past_teams) {
-    LoadHTMLTemplateToList('/past-game.html', past_games_HTML, past_teams[i], '#past-games-container');
+    let callback_to_send = callback;
+    if (i != past_teams.length - 1) callback_to_send = null;
+    LoadHTMLTemplateToList('/past-game.html', past_games_HTML, past_teams[i], '#past-games-container', callback_to_send);
   }
 }
 
-function FormatFutureGames() {
+function FormatFutureGames(callback) {
+
+  $('#future-games-container').css('display', 'block');
 
   // Clear current content, populate with only the title.
   $('#future-games-container').html("<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>");
@@ -613,8 +621,9 @@ function FormatFutureGames() {
   future_games_HTML = []
 
   for (let i in future_teams) {
-    ProcessLocation(future_teams[i]); // Add the braces around the real location and ignore home ground real names.
-    LoadHTMLTemplateToList('/future-game.html', future_games_HTML, future_teams[i], '#future-games-container');
+    let callback_to_send = callback;
+    if (i != future_teams.length - 1) callback_to_send = null;
+    LoadHTMLTemplateToList('/future-game.html', future_games_HTML, future_teams[i], '#future-games-container', callback_to_send);
   }
 }
 
@@ -638,6 +647,9 @@ function UpdateTables(callback) {
 }
 
 function AutomateSubstandard() {
+
+  StartLoading();
+
   const get_past_games = GetPastGames();
   const get_future_games = GetFutureGames();
 
@@ -646,10 +658,37 @@ function AutomateSubstandard() {
     get_future_games
   ]).then(() => {
     UpdateTables(function () {
-      FormatPastGames();
-      FormatFutureGames();
+      FormatPastGames(() => {
+        FormatFutureGames(() => EndLoading());
+      });
     });
   });
+}
+
+function MoreOptions() {
+  var more_options_section = $('#more-options');
+
+  if (more_options_section.css('display') === 'none') {
+    more_options_section.css('display', 'block');
+    $('#more-options-button').html('Less');
+  } else {
+    more_options_section.css('display', 'none');
+    $('#more-options-button').html('More');
+  }
+}
+
+function StartLoading() {
+  $('#loading-container').css('display', 'block');
+}
+
+function EndLoading() {
+  $('#loading-container').css('display', 'none');
+}
+
+function ShowTables() {
+  console.log('showing tables')
+  $('#past-games-table').css('display', 'block');
+  $('#future-games-table').css('display', 'block');
 }
 
 $(document).ready(function () {
