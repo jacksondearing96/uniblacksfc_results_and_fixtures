@@ -54,15 +54,16 @@ b {
 }
 
 #bowlies-container .goals {
-  background-color:yellow;
-  color: rgb(30,30,30)
+  color: magenta;
+  padding: 2px;
 }
 
 .bp-position {
   font-weight: bold;
+  color: magenta;
 }
 
-#goal-kickers .spacer, #best-players .spacer {
+.spacer {
   display:block;
   height: 10px;
 }
@@ -106,7 +107,7 @@ b {
 
 .bowlies-game:nth-child(even) {
   background-color: rgb(30,30,30);
-  color: rgb(180,180,180)
+  color: rgb(200,200,200)
 }
 
 .bowlies-game {
@@ -141,4 +142,45 @@ b {
 
 .nickname {
   font-weight: bold;
+}
+
+.location-pin {
+  height: 20px;
+}
+
+.bowlies-game:nth-child(even) .dull {
+  opacity: 0.4;
+}
+
+.bowlies-game:nth-child(odd) .dull {
+  opacity: 0.6;
+}
+
+#bowlies-container .uni-logo, #bowlies-container .opposition-logo {
+  height: 30px;
+}
+
+#bowlies-container .results-table {
+  text-align: center;
+  width: 100%;
+  margin-top: 15px
+}
+
+.error-message {
+  background-color: red;
+  color: white;
+  padding: 3px;
+}
+
+.bigger {
+  font-size: 1.3em;
+}
+
+.dull {
+  font-size: 0.7em;
+}
+
+.sandy-coburn-cup-points {
+  font-size: 0.7em;
+  color: seagreen;
 }

@@ -1,50 +1,83 @@
 <!-- Bowlies game -->
 <div contenteditable='true' class='bowlies-game row'>
 
-  <div class='col-md-4'>
+  <div class='col-sm-4 bigger'>
+    <span class='sandy-coburn-cup-points'>{{ teams.sandy_points }} Sandy Coburn Cup Points</span>
+    <br>
     {{ teams.gender }} Div {{ teams.division }}
+    <i class='dull'>known as</i>
     <br>
     <span class='nickname'>{{ teams.nickname }}</span>
+
     <br>
-    <span class='score'>{{ teams.score_for }}</span>
+    <span class='spacer'></span>
+    <img class='location-pin'
+      src="https://www.freepnglogos.com/uploads/pin-png/file-map-pin-icon-svg-wikimedia-commons-8.png">
+    {{ teams.location_nickname }}
     <br>
-    @ {{ teams.location_nickname }} ({{ teams.location }})
+    <span class='dull'>vs</span>
     <br>
-    Round {{ teams.round }} vs
-    <br>
+    <span class='spacer'></span>
     <span class='nickname'>{{ teams.opposition_nickname }}</span>
     <br>
-    ({{ teams.opposition }})
+    <span class='dull'>({{ teams.opposition }})</span>
+
     <br>
-    <span class='score'>{{ teams.score_against }}</span>
-    <br>
+
+    {% if teams.error != '' %}
+    <span class='error-message'>Round {{ teams.round }}: {{ teams.error }}</span>
+    {% else %}
+
+    <table class='results-table'>
+      <tr>
+        <td><img class='uni-logo'
+            src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png"></td>
+        <td><img class='opposition-logo' src="{{ teams.image_url }}"></td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td><span class='score'>{{ teams.score_for }}</span></td>
+        <td><span class='score'>{{ teams.score_against }}</span></td>
+      </tr>
+    </table>
+
+
 
     {% if teams.margin < 0 %}
     <span style='color:red'>
-      LOSS
+      Losing margin of:
       {% else %}
       <span style='color:green'>
-        WIN
+        Winning margin of:
         <br>
         {% endif %}
 
-        ({% if teams.margin > 0 %}+{% endif %}{{ teams.margin }})
+        {{ teams.margin }} points
       </span>
+
+
+
   </div>
 
-  <div class='col-md-4 goal-kickers'>
-    <span class='label'>Goal Kickers:</span>
+  <div class='col-sm-4 goal-kickers'>
+    <span class='label dull'>Goal Kickers:</span>
     <br>
     {% for name in teams.goal_kickers %}
-    {{ name['name'] }} <span class='goals'>{{ name['goals'] }}</span>
+    <span class='goals'>{{ name['goals'] }}</span> {{ name['name'] }}
     <br>
     <span class='spacer'></span>
     {% endfor %}
   </div>
 
-  <div class='col-md-4 best-players'>
-    <span class='label'>Best Players:</span>
+  <div class='col-sm-4 best-players'>
+    <span class='label dull'>Best Players:</span>
     <br>
+
+    {% if teams.best_players|length > 5 %}
+    <span class='bp-position'>6th:</span> {{ teams.best_players[5]['name'] }}
+    <br>
+    {% endif %}
 
     <span class='bp-position'>5th:</span> {{ teams.best_players[4]['name'] }}
     <br>
@@ -64,7 +97,12 @@
 
     <span class='bp-position'>1st:</span> {{ teams.best_players[0]['name'] }}
     <br>
+
     <span class='spacer'></span>
+
+    <!-- This is for displaying/hiding the section when there is an error -->
+    {% endif %}
+
   </div>
 
 </div>

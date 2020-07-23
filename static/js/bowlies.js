@@ -67,8 +67,14 @@ function OrderTeamsBasedOnMargins() {
   }
 
   past_teams = []
+
+  let sandy_coburn_cup_points = 1;
+
   while (priority_queue.isEmpty() === false) {
-    past_teams.push(priority_queue.dequeue().element);
+    let team = priority_queue.dequeue().element
+    team['sandy_points'] = sandy_coburn_cup_points;
+    ++sandy_coburn_cup_points;
+    past_teams.push(team);
   }
 }
 
@@ -78,9 +84,13 @@ function SetBowliesFlag() {
   }
 }
 
-function UpdatePlayerNamesFromDatabase() {
+// TODO: Make this a generic update from database function.
+function UpdatePlayerNamesFromDatabase(callback) {
   fetch('/update_player_names_from_database', { method: 'GET' })
-    .then(() => console.log('Updated player names from database'));
+    .then(() => {
+      console.log('Updated player names from database');
+      if (callback) callback();
+    });
 }
 
 function SaveBowliesResults() {

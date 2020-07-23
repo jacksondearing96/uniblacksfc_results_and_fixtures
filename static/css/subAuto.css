@@ -97,6 +97,10 @@
   font-size: 14px;
 }
 
+#past-games-container .nickname {
+  font-weight: bold;
+}
+
 #future-games-container b {
   text-align: center !important;
 }
@@ -197,4 +201,8 @@
 #future-games-container #round-number {
   width: 80px;
   font-size: 14px;
+}
+
+#future-games-container .nickname {
+  font-weight: bold;
 }

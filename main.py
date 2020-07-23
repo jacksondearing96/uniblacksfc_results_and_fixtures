@@ -27,10 +27,18 @@
 #
 
 from flask import Flask, render_template, request
+from datetime import datetime
 import web_scraper
 import os
 
 app = Flask(__name__, template_folder='templates')
+
+
+last_update_time = datetime.now()
+
+
+def update_is_required():
+    return last_update_time.date() < datetime.today().date()
 
 
 def ReadFileToString(filename):
@@ -68,7 +76,11 @@ def get_future_games():
 
 @app.route('/update_player_names_from_database')
 def update_player_names_from_database():
+    if not update_is_required(): return 'UPDATE NOT REQUIRED'
+
+    print('updating players from database')
     if web_scraper.UpdatePlayerNamesFromDatabase():
+        last_update_time = datetime.now()
         return 'SUCCESS'
     else:
         return 'FAIL'

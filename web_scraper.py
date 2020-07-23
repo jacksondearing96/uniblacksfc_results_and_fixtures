@@ -45,6 +45,7 @@ class Game(object):
         self.best_players = None
 
         self.option = 'SUBSTANDARD'
+        self.error = ''
 
 
 def PastGameJson(game):
@@ -61,6 +62,7 @@ def PastGameJson(game):
         "best_players": game.best_players,
         "image_url": game.image_url,
         "location": game.location,
+        "error": game.error
     }
 
 
@@ -76,7 +78,8 @@ def FutureGameJson(game):
         "division": '',
         "gender": '',
         "time": game.time,
-        "image_url": game.image_url
+        "image_url": game.image_url,
+        "error": game.error
     }
 
 
@@ -90,6 +93,9 @@ def Error(message, expected=None, actual=None):
 
 
 def GetMatchResult(score_forStr, score_againstStr):
+    if '-' not in score_forStr:
+        return "UNKNOWN RESULT"
+
     score_forTotal = int(score_forStr.split('-')[1])
     score_againstTotal = int(score_againstStr.split('-')[1])
 
@@ -174,6 +180,10 @@ def GetAndVerifyYear(html, game, year):
 
 
 def ExtractGoalKickersAndBestPlayers(goal_kickers_and_best_players):
+    goal_kickers_present = False
+    if 'Goal Kickers:' in goal_kickers_and_best_players:
+        goal_kickers_present = True
+
     goal_kickers_and_best_players = goal_kickers_and_best_players.replace(
         'Goal Kickers:</span> ', '')
     goal_kickers_and_best_players = goal_kickers_and_best_players.replace(
@@ -190,7 +200,10 @@ def ExtractGoalKickersAndBestPlayers(goal_kickers_and_best_players):
     # TODO: Make this more robust. Check that the 'Goal Kickers' or 'Best Players' text is also present so we are sure.
     if len(goal_kickers_and_best_players) == 2:
         # This is when there are no goal kickers.
-        best_players = goal_kickers_and_best_players[1]
+        if goal_kickers_present:
+            goal_kickers = goal_kickers_and_best_players[1]
+        else:
+            best_players = goal_kickers_and_best_players[1]
 
     if len(goal_kickers_and_best_players) == 3:
         goal_kickers = goal_kickers_and_best_players[1]
@@ -276,19 +289,22 @@ def InsertNicknames(names, names_and_nicknames):
         if names[i] in names_and_nicknames:
             names[i] = names_and_nicknames[names[i]]
 
-            # This means there is no nickname for this name:
-            if names[i][0:2] == ' (':
-                names[i] = '<NO NICKNAME>' + names[i]
-        else:
-            names[i] = '<PLAYER NOT IN DATABASE>' + names[i]
+        #     # This means there is no nickname for this name:
+        #     if names[i][0:2] == ' (':
+        #         names[i] = '<NO NICKNAME>' + names[i]
+
+        # else:
+        #     names[i] = '<PLAYER NOT IN DATABASE>' + names[i]
 
         names[i] = {'name': names[i], 'goals': goals}
+        names[i]['name'] = names[i]['name'].replace('amp;', '')
 
     return names
 
 
 def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
     if 'sportstg.com' not in url:
+        Error('URL error: incorrect url with no sportstg present')
         return None
 
     page = requests.get(url)
@@ -299,21 +315,11 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
     game.url = url
     game.year = GetAndVerifyYear(html, game, year)
     if game.year == None:
-        return None
-
-    # Verify the round=X variable is present in the url.
-    if url.find('round=' + str(round)) == -1:
-        Error('Round not present in the url')
-        return None
+        Error('Error occurred with the year requested')
+        game.error = 'ERROR WITH YEAR REQUESTED'
+        return game
 
     game_json = GetGameJsonForAdelaideUni(GetMatchesJson(html))
-
-    if past_game and game_json['PastGame'] != 1:
-        # If we detect this error, simply proceed as if it is a future game and
-        # flag inside the content that the results had not been finalised.
-        Error('This is not a past game.')
-        game.score_for = 'ERROR - MATCH HAS NOT BEEN PLAYED YET'
-        past_game = False
 
     # TODO: Improve. Use regex.
     str_with_round_embedded = game_json['Venue']
@@ -323,10 +329,15 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
     str_with_round_embedded = str_with_round_embedded[0]
     game.round = int(str_with_round_embedded)
 
-    print(game_json)
-    # TODO: Make use of these attributes in the JSON:
-    # isBye
-    # PastGame
+    if past_game and game_json['PastGame'] != 1:
+        # If we detect this error, simply proceed as if it is a future game and
+        # flag inside the content that the results had not been finalised.
+        Error('This is not a past game.')
+        game.error = 'MATCH HAS NOT BEEN PLAYED YET'
+        past_game = False
+
+    if game_json['isBye'] == 1:
+        game.result = 'BYE'
 
     # Get the location.
     game.location = urllib.unquote(game_json['VenueName'])
@@ -346,7 +357,10 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
         game_json['HomeClubName']) == u'Adelaide University'
 
     if past_game and game.result != 'FORFEIT':
-        goal_kickers_and_best_players_list = game_json['MatchResults']
+        try:
+            goal_kickers_and_best_players_list = game_json['MatchResults']
+        except:
+            goal_kickers_and_best_players_list = ['', '']
 
     if game.is_home_game:
         game.opposition = urllib.unquote(game_json['AwayClubName'])
@@ -355,7 +369,10 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
             game.score_against = game_json['AwayScore']
             game.score_for = game_json['HomeScore']
             if game.result != 'FORFEIT':
-                goal_kickers_and_best_players = goal_kickers_and_best_players_list[0]
+                if len(goal_kickers_and_best_players_list) < 1:
+                    goal_kickers_and_best_players = ''
+                else:
+                    goal_kickers_and_best_players = goal_kickers_and_best_players_list[0]
     else:
         game.opposition = urllib.unquote(game_json['HomeClubName'])
         game.image_url = game_json['HomeClubLogo']
@@ -363,7 +380,15 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
             game.score_against = game_json['HomeScore']
             game.score_for = game_json['AwayScore']
             if game.result != 'FORFEIT':
-                goal_kickers_and_best_players = goal_kickers_and_best_players_list[1]
+                if len(goal_kickers_and_best_players_list) != 2:
+                    goal_kickers_and_best_players = ''
+                else:
+                    goal_kickers_and_best_players = goal_kickers_and_best_players_list[1]
+
+    if game.score_for == '&nbsp;':
+        past_game = False
+        game.error = 'RESULTS NOT ENTERED YET'
+        return game
 
     if past_game and game.result != 'FORFEIT':
         game.result = GetMatchResult(game.score_for, game.score_against)
