@@ -22,12 +22,12 @@ FUTURE_GAME = False
 
 
 class Game(object):
-    def __init__(self, round, year):
+    def __init__(self, round, year, url):
         self.round = round
         self.year = year
         self.date = None
         self.time = None
-        self.url = None
+        self.url = url
 
         self.opposition = None
         self.image_url = None
@@ -302,22 +302,19 @@ def InsertNicknames(names, names_and_nicknames):
     return names
 
 
-def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
-    if 'sportstg.com' not in url:
+def PopulateGameFromSportsTg(game, past_game=True, option='SUBSTANDARD'):
+    if 'sportstg.com' not in game.url:
         Error('URL error: incorrect url with no sportstg present')
-        return None
+        return
 
-    page = requests.get(url)
+    page = requests.get(game.url)
     html = BeautifulSoup(page.content, 'html.parser')
 
-    game = Game(round, year)
-
-    game.url = url
-    game.year = GetAndVerifyYear(html, game, year)
+    game.year = GetAndVerifyYear(html, game, game.year)
     if game.year == None:
         Error('Error occurred with the year requested')
         game.error = 'ERROR WITH YEAR REQUESTED'
-        return game
+        return
 
     game_json = GetGameJsonForAdelaideUni(GetMatchesJson(html))
 
@@ -388,7 +385,7 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
     if game.score_for == '&nbsp;':
         past_game = False
         game.error = 'RESULTS NOT ENTERED YET'
-        return game
+        return
 
     if past_game and game.result != 'FORFEIT':
         game.result = GetMatchResult(game.score_for, game.score_against)
@@ -410,7 +407,6 @@ def GetGame(url, round, year=2020, past_game=True, option='SUBSTANDARD'):
         while len(game.best_players) < 5:
             game.best_players.append('')
 
-    return game
 
 
 def GetPastGames(games):
@@ -420,8 +416,9 @@ def GetPastGames(games):
         url = url_generator.GetUrl(
             int(game['year']), game['gender'], game['division'], game['round'])
 
-        past_games.append(PastGameJson(
-            GetGame(url, game['round'], game['year'], PAST_GAME, game['option'])))
+        game_to_fill = Game(game['round'], game['year'], url)
+        PopulateGameFromSportsTg(game_to_fill, PAST_GAME, game['option'])
+        past_games.append(PastGameJson(game_to_fill))
 
     return json.dumps(past_games)
 
@@ -433,7 +430,8 @@ def GetFutureGames(games):
         url = url_generator.GetUrl(
             int(game["year"]), game["gender"], game["division"], game["round"])
 
-        future_games.append(FutureGameJson(
-            GetGame(url, game["round"], game["year"], FUTURE_GAME, 'SUBSTANDARD')))
+        game_to_fill = Game(game['round'], game['year'], url)
+        PopulateGameFromSportsTg(game_to_fill, FUTURE_GAME, 'SUBSTANDARD')
+        future_games.append(FutureGameJson(game_to_fill))
 
     return json.dumps(future_games)
