@@ -87,8 +87,9 @@ function SetBowliesFlag() {
 // TODO: Make this a generic update from database function.
 function UpdatePlayerNamesFromDatabase(callback) {
   fetch('/update_player_names_from_database', { method: 'GET' })
-    .then(() => {
-      console.log('Updated player names from database');
+    .then(response => response.text())
+    .then(data => {
+      if (data == 'SUCCESS') console.log('Updated player names from database');
       if (callback) callback();
     });
 }

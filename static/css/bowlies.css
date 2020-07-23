@@ -47,10 +47,10 @@ b {
 }
 
 #bowlies-container span.label {
-  font-weight: 600;
   display: inline-block;
   text-align: center;
   width: 100%;
+  font-size: 1em;
 }
 
 #bowlies-container .goals {
@@ -59,7 +59,6 @@ b {
 }
 
 .bp-position {
-  font-weight: bold;
   color: magenta;
 }
 
@@ -99,6 +98,7 @@ b {
 
 #bowlies-container .score {
   color: dodgerblue;
+  font-family: courier;
 }
 
 .bowlies-table {
@@ -145,7 +145,7 @@ b {
 }
 
 .location-pin {
-  height: 20px;
+  max-height: 20px !important;
 }
 
 .bowlies-game:nth-child(even) .dull {
@@ -157,7 +157,7 @@ b {
 }
 
 #bowlies-container .uni-logo, #bowlies-container .opposition-logo {
-  height: 30px;
+  height: 50px;
 }
 
 #bowlies-container .results-table {
@@ -173,7 +173,7 @@ b {
 }
 
 .bigger {
-  font-size: 1.3em;
+  font-size: 1.5em;
 }
 
 .dull {

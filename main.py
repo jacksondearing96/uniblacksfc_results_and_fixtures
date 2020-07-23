@@ -20,7 +20,7 @@
 # pip install -t lib -r requirements.txt 
 #
 # Deploy application
-# gcloud app deploy
+# ~/google-cloud-sdk/bin/gcloud app deploy
 #
 # View application
 # gcloud app browse
@@ -78,7 +78,6 @@ def get_future_games():
 def update_player_names_from_database():
     if not update_is_required(): return 'UPDATE NOT REQUIRED'
 
-    print('updating players from database')
     if web_scraper.UpdatePlayerNamesFromDatabase():
         last_update_time = datetime.now()
         return 'SUCCESS'
