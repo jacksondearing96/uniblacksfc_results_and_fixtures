@@ -42,9 +42,12 @@ def update_is_required():
 
 
 def ReadFileToString(filename):
-    with open(filename, 'r') as file:
-        data = file.read()
-    return data
+    try:
+        with open(filename, 'r') as file:
+            data = file.read()
+        return data
+    except:
+        return ''
 
 
 @app.route('/')
@@ -59,26 +62,32 @@ def get_css():
 
 @app.route('/get_teams')
 def get_teams():
-    return ReadFileToString('configurations.json')
+    return ReadFileToString('database/configurations.json')
 
 
 @app.route('/get_past_games', methods=['POST'])
 def get_past_games():
-    games = request.get_json(force=True)
-    return web_scraper.GetPastGames(games)
+    try:
+        games = request.get_json(force=True)
+        return web_scraper.GetPastGames(games)
+    except:
+        return web_scraper.ServerFailure()
 
 
 @app.route('/get_future_games', methods=['POST'])
 def get_future_games():
-    games = request.get_json(force=True)
-    return web_scraper.GetFutureGames(games)
+    try:
+        games = request.get_json(force=True)
+        return web_scraper.GetFutureGames(games)
+    except:
+        return web_scraper.ServerFailure()
 
 
 @app.route('/update_player_names_from_database')
 def update_player_names_from_database():
     if not update_is_required(): return 'UPDATE NOT REQUIRED'
 
-    if web_scraper.UpdatePlayerNamesFromDatabase():
+    if web_scraper.UpdatePlayerNamesFromDatabase('database/registered_players.csv'):
         last_update_time = datetime.now()
         return 'SUCCESS'
     else:
@@ -87,23 +96,23 @@ def update_player_names_from_database():
 
 @app.route('/save_bowlies_results', methods=['POST'])
 def save_bowlies_results():
-    with open('bowlies_saved_results.txt', 'w') as file:
+    with open('database/bowlies_saved_results.txt', 'w') as file:
         file.write(request.get_data())
-    return 'SUCCESS'
+        return 'SUCCESS'
+    return 'FAIL'
 
 
 @app.route('/restore_bowlies_results', methods=['GET'])
 def restore_bowlies_results():
-    data = 'ERROR'
-    with open('bowlies_saved_results.txt', 'r') as file:
-        data = file.read()
-    return data
+    with open('database/bowlies_saved_results.txt', 'r') as file:
+        return file.read()
+    return 'FAIL'
     
 
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def send_file(path):
     if path not in ['bowlies.html', 'future-game.html', 'past-game.html']:
-        return 'ERROR'
+        return 'ERROR - invalid url path'
 
     if request.method == 'POST':
         teams = request.get_json(force=True)

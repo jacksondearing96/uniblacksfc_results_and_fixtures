@@ -11,10 +11,23 @@
 
     <br>
     <span class='spacer'></span>
+
     <img class='location-pin'
       src="https://www.freepnglogos.com/uploads/pin-png/file-map-pin-icon-svg-wikimedia-commons-8.png">
-    {{ teams.location_nickname }}
+
+    {% if teams.location_nickname == 'FORFEIT' %}
+    <span class='error-message'>
+      {% endif %}
+
+      {{ teams.location_nickname }}
+
+      {% if teams.location_nickname == 'FORFEIT' %}
+    </span>
+    {% endif %}
+
     <br>
+
+
     <span class='dull'>vs</span>
     <br>
     <span class='spacer'></span>
@@ -79,24 +92,38 @@
     <br>
     {% endif %}
 
+    {% if teams.best_players|length > 4 %}
     <span class='bp-position'>5th:</span> {{ teams.best_players[4]['name'] }}
     <br>
     <span class='spacer'></span>
+    {% endif %}
 
+    {% if teams.best_players|length > 3 %}
     <span class='bp-position'>4th:</span> {{ teams.best_players[3]['name'] }}
     <br>
     <span class='spacer'></span>
+    {% endif %}
 
+    {% if teams.best_players|length > 2 %}
     <span class='bp-position'>3rd:</span> {{ teams.best_players[2]['name'] }}
     <br>
     <span class='spacer'></span>
+    {% endif %}
 
+    {% if teams.best_players|length > 1 %}
     <span class='bp-position'>2nd:</span> {{ teams.best_players[1]['name'] }}
     <br>
     <span class='spacer'></span>
+    {% endif %}
 
+    {% if teams.best_players|length > 0 %}
     <span class='bp-position'>1st:</span> {{ teams.best_players[0]['name'] }}
     <br>
+    {% endif %}
+
+    {% if teams.best_players|length == 0 %}
+    <span class='error-message'>No best players entered yet</span>
+    {% endif %}
 
     <span class='spacer'></span>
 

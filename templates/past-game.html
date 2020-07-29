@@ -22,6 +22,7 @@
 
   </tr>
 
+  {% if teams.result != 'forfeit' %}
   <tr class='indent'>
     <td colspan="5">
       <span class='label'>Goal Kickers:</span> {{ teams.goal_kickers }}
@@ -33,4 +34,5 @@
       <span class='label'>Best Players:</span> {{ teams.best_players }}
     </td>
   </tr>
+  {% endif %}
 </table>

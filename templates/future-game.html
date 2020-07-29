@@ -10,7 +10,12 @@
     <td id='round-number' class='centre'>
       Round {{ teams.round }}
       </br>
+      {% if teams.location == '(Forfeit)' %}
+      <!-- TODO: convey which team forfeited -->
+      Forfeit
+      {% else %}
       vs
+      {% endif %}
     </td>
 
     <td class='centre future-expand'>
@@ -20,8 +25,8 @@
     </td>
 
     <td class='icons'>
+      {% if teams.location != '(Forfeit)' %}
       <table>
-
         <tr>
           <td>
             <img src='https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'>
@@ -44,8 +49,8 @@
           </td>
           <td>{{ teams.gender }} Div {{ teams.division }}</td>
         </tr>
-
       </table>
+      {% endif %}
 
     </td>
   </tr>

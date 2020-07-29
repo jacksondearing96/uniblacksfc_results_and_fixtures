@@ -12,7 +12,8 @@ class GetFutureGameDetails(unittest.TestCase):
         self.url = 'http://websites.sportstg.com/comp_info.cgi?c=1-6951-0-522288-0&a=FIXTURE&compID=481797&round=1'
 
     def test_GetFutureGameDetails(self):
-        game = web_scraper.GetGame(self.url, 1, 2018, FUTURE_GAME)
+        game = web_scraper.Game(1, 2018, self.url)
+        web_scraper.PopulateGameFromSportsTg(game, FUTURE_GAME, 'SUBSTANDARD')
         self.assertIsNotNone(game)
         self.assertEqual(game.year, 2018)
         self.assertEqual(game.round, 1)
@@ -21,7 +22,8 @@ class GetFutureGameDetails(unittest.TestCase):
 
     def test_GetFutureGameDetails2020(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547208-0&a=FIXTURE&round=1'
-        game = web_scraper.GetGame(url, 1, 2020, FUTURE_GAME)
+        game = web_scraper.Game(1, 2020, url)
+        web_scraper.PopulateGameFromSportsTg(game, FUTURE_GAME, 'SUBSTANDARD')
         self.assertIsNotNone(game)
         self.assertEqual(game.year, 2020)
         self.assertEqual(game.round, 1)
@@ -31,7 +33,8 @@ class GetFutureGameDetails(unittest.TestCase):
 
     def test_GetFutureGameDetailsHomeGame(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?a=ROUND&round=2&client=1-114-0-547208-0&pool=1&round=2'
-        game = web_scraper.GetGame(url, 2, 2020, FUTURE_GAME)
+        game = web_scraper.Game(1, 2020, url)
+        web_scraper.PopulateGameFromSportsTg(game, FUTURE_GAME, 'SUBSTANDARD')
         self.assertIsNotNone(game)
         self.assertEqual(game.year, 2020)
         self.assertEqual(game.round, 2)

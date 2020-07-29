@@ -19,6 +19,7 @@
 # 2019 Div 1 Mens
 # a=ROUND makes sure it lands on the results page (not the ladder or something else)
 # a=MATCH will take you to Match Centre
+# a=FIXTURE will show you the next match to come
 # pool=1 makes sure it lands on the normal season games (not finals)
 # pool=0 will land on finals if they exist
 # https://websites.sportstg.com/comp_info.cgi?client=1-114-0-510206-0&pool=1&round=1&a=ROUND
@@ -66,14 +67,16 @@ def GetUrlCode(year, gender, division):
     return code
 
 
-def GetUrl(year, gender, division, round):
+def GetUrl(year, gender, division, round, past=True):
     code = GetUrlCode(year, gender, division)
     if not code:
         print('Error - could not find url code.')
         return None
     normal_season = '&pool=1'
     round = '&round=' + str(round)
-    return 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-' + code + '-0&a=FIXTURE' + round + normal_season
+    fixture_or_round = 'ROUND'
+    if not past: fixture_or_round = 'FIXTURE'
+    return 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-' + code + '-0&a=' + fixture_or_round + round + normal_season
 
 
 # TODO: Extend to account for finals matches

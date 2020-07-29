@@ -34,10 +34,7 @@ function FormatBowlies() {
 
   IncludeWinLossSummary();
 
-  // TODO: This should be checked before every game. For 2020, every  game is played on a Saturday so this is not a high priority
-  // for the 2020 season.
-  let date = past_teams[0].date;
-  IncludeDate('#bowlies-container', date);
+  // TODO: Date checks --> should be doing some sort of check here.
 
   let bowlies_HTML = [];
   let completed_count = 0;

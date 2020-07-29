@@ -1,3 +1,4 @@
 {
-  "python.pythonPath": "/Users/jacksondearing/Desktop/football_results_automation/venv/bin/python2.7"
+  "python.pythonPath": "/Users/jacksondearing/Desktop/football_results_automation/venv/bin/python2.7",
+  "python.formatting.provider": "black"
 }
