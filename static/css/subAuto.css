@@ -47,6 +47,7 @@
   text-align: center;
   color: grey;
   font-size: 17px;
+  padding-top: 20px;
 }
 
 #past-games-container .result {
@@ -153,6 +154,7 @@
   text-align: center;
   color: grey;
   font-size: 17px;
+  margin-top:20px;
 }
 
 #future-games-container #result {

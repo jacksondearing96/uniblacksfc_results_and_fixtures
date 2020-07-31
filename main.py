@@ -60,6 +60,23 @@ def get_css():
     return ReadFileToString('static/css/subAuto.css')
 
 
+@app.route('/get_rounds')
+def get_rounds():
+    return ReadFileToString('database/rounds.csv')
+
+
+@app.route('/save_rounds', methods=['POST'])
+def save_rounds():
+    try:
+        with open('database/rounds.csv', 'w') as file:
+            print(request.get_data())
+            file.write(request.get_data())
+            return 'SUCCESS'
+    except:
+        pass
+    return 'FAIL'
+
+
 @app.route('/get_teams')
 def get_teams():
     return ReadFileToString('database/configurations.json')
@@ -96,9 +113,12 @@ def update_player_names_from_database():
 
 @app.route('/save_bowlies_results', methods=['POST'])
 def save_bowlies_results():
-    with open('database/bowlies_saved_results.txt', 'w') as file:
-        file.write(request.get_data())
-        return 'SUCCESS'
+    try:
+        with open('database/bowlies_saved_results.txt', 'w') as file:
+            file.write(request.get_data())
+            return 'SUCCESS'
+    except:
+        pass
     return 'FAIL'
 
 

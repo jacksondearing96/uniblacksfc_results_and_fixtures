@@ -109,7 +109,7 @@ function SaveBowliesResults() {
       } else {
         save_button.removeClass('btn-primary');
         save_button.addClass('btn-danger');
-        save_button.html('Save failed')
+        save_button.html('Save Failed')
       }
     });
 }
@@ -139,6 +139,37 @@ function RestoreBowliesResults() {
 }
 
 
+function GetSavedRounds() {
+  return new Promise(resolve => {
+    fetch('/get_rounds', { method: 'GET' })
+      .then(response => response.text())
+      .then(data => {
+        data = JSON.parse(data);
+        let index = 0;
+        for (let team of past_teams) {
+          team.round = data[index];
+          ++index;
+        }
+        resolve();
+      });
+  });
+}
+
+function SaveRounds() {
+  return new Promise(resolve => {
+    let rounds = [];
+    for (let team of past_teams) {
+      rounds.push(team.round);
+    }
+
+    fetch('/save_rounds', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(rounds) })
+      .then(response => response.text())
+      .then(data => {
+        console.log('Saved rounds: ' + data);
+      });
+  });
+}
+
 function AutomateBowlies() {
 
   StartLoading();
@@ -149,11 +180,14 @@ function AutomateBowlies() {
   $('#bowlies-container').css('display', 'block');
 
   SetBowliesFlag();
-  GetPastGames().then(() => {
-    UpdateTables(() => {
-      OrderTeamsBasedOnMargins();
-      FormatBowlies();
-      EndLoading();
+
+  GetSavedRounds().then(() => {
+    GetPastGames().then(() => {
+      UpdateTables(() => {
+        OrderTeamsBasedOnMargins();
+        FormatBowlies();
+        EndLoading();
+      });
     });
   });
 }

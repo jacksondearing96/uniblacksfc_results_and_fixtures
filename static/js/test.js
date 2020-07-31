@@ -26,25 +26,38 @@ function ExpectNotEqual(actual, not_expected, test, description) {
   }
 }
 
-function RunUnitTests() {
-  let all_passed = true;
+async function RunUnitTests() {
+  StartLoading();
+
+  let passed_count = 0;
+  let failed_count = 0;
 
   for (let i in test_functions) {
     let test = { result: PASS };
-    test_functions[i](test)
-    if (test.result == PASS) Pass(test_functions[i].name)
-    else all_passed = false;
+    await test_functions[i](test);
+    if (test.result == PASS) {
+      Pass(test_functions[i].name)
+      ++passed_count;
+    }
+    else {
+      ++failed_count;
+    }
   }
 
-  if (all_passed) {
+  if (failed_count === 0) {
     $('#test-tick').css('display', 'inline');
     $('#test-button').css('background-color', 'lawngreen');
     $('#test-cross').css('display', 'none');
+    $('#test-button span').text(`ALL TESTS PASS (${passed_count})`);
+    $('#test-button span').css('color', 'black');
   } else {
     $('#test-cross').css('display', 'inline');
     $('#test-button').css('background-color', 'red');
     $('#test-tick').css('display', 'none');
+    $('#test-button span').text(`${failed_count}/${passed_count + failed_count} TESTS FAILED`);
   }
+
+  EndLoading();
 }
 
 function TestGetScoreTotal(test) {
@@ -56,13 +69,15 @@ function TestGetScoreTotal(test) {
 }
 
 function ValuesAreUnique(list) {
-  for (i in list) {
-    if (list[i] == 'def by' || list[i] == 'drew against' || list[i] == '') return false;
+  for (let item of list) {
+    if (item == 'def by' || item == 'drew against' || item == '') return false;
 
-    for (j in list) {
-      if (i == j) continue;
-      if (list[i] == list[j]) {
-        console.log(`Repeat: ${list[i]} ${list[j]}`)
+    let repeats = 0;
+    for (let other_item of list) {
+      if (item === other_item) {
+        ++repeats;
+        if (repeats < 2) continue;
+        console.log(`Repeat: ${item} ${other_item}`)
         return false;
       }
     }
@@ -169,12 +184,92 @@ function TestExpandDate(test) {
     'Monday Tuesday Wednesday Thursday Friday Saturday Sunday January February March April May June July August September October November December', test, 'Expand date: all examples');
 }
 
+function TestOrderingFridayNightGame(test) {
+  return new Promise((resolve) => {
+    var future_teams_with_friday_night_game = JSON.parse('[{"nickname":"Benny and His Jets","round":5,"date":"Saturday 1 August","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547208-0&a=FIXTURE&round=X&pool=1","opposition":"Port District","opposition_nickname":"","location":"Largs Reserve","location_nickname":"","division":"1","gender":"Mens","time":"2:15 PM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564615_1_T.jpg","error":""},{"nickname":"Pup and His Young Dawgz","round":5,"date":"Saturday 1 August","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547219-0&a=FIXTURE&round=X&pool=1","opposition":"Port District","opposition_nickname":"","location":"Largs Reserve","location_nickname":"","division":"1 Res","gender":"Mens","time":"12:15 PM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564615_1_T.jpg","error":""},{"nickname":"The Chardonnay Socialists","round":5,"date":"Saturday 1 August","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547209-0&a=FIXTURE&round=X&pool=1","opposition":"Port District","opposition_nickname":"","location":"Largs Reserve","location_nickname":"","division":"C1","gender":"Mens","time":"10:15 AM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564615_1_T.jpg","error":""},{"nickname":"The B@stards","round":5,"date":"Saturday 1 August","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547212-0&a=FIXTURE&round=X&pool=1","opposition":"Mitcham","opposition_nickname":"","location":"Fred Bloch Oval","location_nickname":"","division":"C4","gender":"Mens","time":"12:15 PM","image_url":"//websites.sportstg.com/pics/00/01/78/22/1782218_1_T.jpg","error":""},{"nickname":"The Brady Bunch","round":5,"date":"Saturday 1 August","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547401-0&a=FIXTURE&round=X&pool=1","opposition":"Port District","opposition_nickname":"","location":"Fred Bloch Oval","location_nickname":"","division":"C7","gender":"Mens","time":"2:15 PM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564615_1_T.jpg","error":""},{"nickname":"THE SCUM","round":5,"date":"Friday 31 July","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-557892-0&a=FIXTURE&round=X&pool=1","opposition":"Blackfriars OS","opposition_nickname":"","location":"University Oval","location_nickname":"","division":"C6","gender":"Mens","time":"7:00 PM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564622_1_T.jpg","error":""},{"nickname":"Moodog and His A Grade Vintage","round":5,"date":"Saturday 1 August","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-548065-0&a=FIXTURE&round=X&pool=1","opposition":"Payneham NU","opposition_nickname":"","location":"Payneham Oval","location_nickname":"","division":"1","gender":"Womens","time":"3:30 PM","image_url":"//websites.sportstg.com/pics/00/02/56/47/2564729_1_T.jpg","error":""},{"nickname":"The Big Lez Show","round":5,"date":"Saturday 1 August","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-555668-0&a=FIXTURE&round=X&pool=1","opposition":"Payneham NU","opposition_nickname":"","location":"Payneham Oval","location_nickname":"","division":"1 Res","gender":"Womens","time":"1:45 PM","image_url":"//websites.sportstg.com/pics/00/02/56/47/2564729_1_T.jpg","error":""}]');
+    SetFutureTeams(future_teams_with_friday_night_game);
+    UpdateTables(() => {
+      FormatFutureGames(() => {
+        let expected_text = [
+          'Friday 31 July, 2020',
+          'Saturday 1 August, 2020',
+          'Bob Neil #1',
+          '7:00 PM',
+          'Div C6',
+          'Burnt Fries',
+          'Round 5',
+
+          'Benny and His Jets',
+          'Port Red Light District',
+          'Largs Loony Bin',
+          'Largs Reserve',
+          '2:15 PM'
+        ];
+
+        for (let text of expected_text) {
+          ExpectEqual($('#future-games-container').html().includes(text), true, test, 'Future games including text: ' + text);
+        }
+
+        resolve();
+      });
+    });
+  });
+}
+
+function TestGetPastGames(test) {
+  return new Promise((resolve) => {
+    SetPastTeams(JSON.parse('[{"nickname":"Benny and His Jets","round":"4","date":"","year":2020,"landing_page":"","opposition":"","opposition_nickname":"","gender":"Mens","division":"1","result":"","score_for":"","score_against":"","goal_kickers":"","best_players":"","image_url":"","option":"SUBSTANDARD","location":"","location_nickname":"","error":""},{"nickname":"Pup and His Young Dawgz","round":"4","date":"","year":2020,"landing_page":"","opposition":"","opposition_nickname":"","gender":"Mens","division":"1 Res","result":"","score_for":"","score_against":"","goal_kickers":"","best_players":"","image_url":"","option":"SUBSTANDARD","location":"","location_nickname":"","error":""}]'));
+    GetPastGames().then(() => {
+      ExpectEqual(past_teams[0].opposition, 'Goodwood Saints', test, 'Opposition');
+      ExpectEqual(past_teams[0].result, 'LOSS', test, 'Result');
+      ExpectEqual(past_teams[0].score_for, '10.6-66', test, 'Score for');
+      ExpectEqual(past_teams[0].score_against, '16.6-102', test, 'Score Against');
+      ExpectEqual(past_teams[0].image_url, '//websites.sportstg.com/pics/00/02/20/16/2201604_1_T.jpg', test, 'Image url');
+      ExpectEqual(past_teams[0].goal_kickers, 'B. Edwards 5, W. McGowan 2, M. Marini 2, N. Cottrell', test, 'Goal Kickers');
+      ExpectEqual(past_teams[0].best_players, 'B. Adams, W. McGowan, D. Cunningham, N. Cottrell, B. Edwards, H. Wallace', test, 'Best Players');
+      ExpectEqual(past_teams[0].date, 'Saturday 25 July', test, 'Date');
+
+      ExpectEqual(past_teams[1].nickname, 'Pup and His Young Dawgz', test, 'Pup and his dawgz are present');
+
+      ExpectEqual(past_teams.length, 2, test, 'Length of past teams');
+      resolve();
+    });
+  });
+}
+
+function TestGetFutureGames(test) {
+  return new Promise((resolve) => {
+    SetFutureTeams(JSON.parse('[{"nickname":"THE SCUM","round":"5","date":"","year":2020,"landing_page":"","opposition":"","opposition_nickname":"","location":"","location_nickname":"","division":"C6","gender":"Mens","time":"","image_url":"","error":""}]'));
+    GetFutureGames().then(() => {
+      ExpectEqual(future_teams[0].opposition, 'Blackfriars OS', test, 'Opposition');
+      ExpectEqual(future_teams[0].image_url, '//websites.sportstg.com/pics/00/02/56/46/2564622_1_T.jpg', test, 'Image url');
+      ExpectEqual(future_teams[0].date, 'Friday 31 July', test, 'Date');
+      ExpectEqual(future_teams[0].round, 5, test, 'Round');
+      ExpectEqual(future_teams[0].nickname, 'THE SCUM', test, 'Nickname');
+      ExpectEqual(future_teams[0].location, 'University Oval', test, 'Location');
+      ExpectEqual(future_teams[0].time, '7:00 PM', test, 'Time');
+      ExpectEqual(future_teams.length, 1, test, 'Length of past teams');
+      resolve();
+    });
+  });
+}
+
+function Reset() {
+  $('#past-games-container').html('');
+  $('#future-games-container').html('');
+  $('#bowlies-container').html('');
+}
+
 var test_functions = [
   TestGetScoreTotal,
   TestPopulateWinOrLossVerb,
   TestPopulateNicknames,
   TestFindNickname,
   TestProcessLocation,
-  TestExpandDate
-];
+  TestExpandDate,
+  TestOrderingFridayNightGame,
+  TestGetPastGames,
+  TestGetFutureGames,
 
+  Reset
+];

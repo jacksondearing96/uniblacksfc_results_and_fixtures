@@ -8,7 +8,16 @@ future_table = null;
 
 future_games_HTML = [];
 past_games_HTML = [];
-winning_verbs = []
+winning_verbs = [];
+
+// Setters so these variables can be set from a different JS file.
+function SetFutureTeams(teams) {
+  future_teams = teams;
+}
+
+function SetPastTeams(teams) {
+  past_teams = teams;
+}
 
 function PastContent() {
   return {
@@ -582,7 +591,6 @@ function Swap(list, i, j) {
 // Also prints the HTML content to the relevant container.
 function ReOrderAndPrintTeams(selector) {
 
-
   let list = []
   list = selector.includes('past') ? list = past_games_HTML : list = future_games_HTML;
 
@@ -604,9 +612,34 @@ function ReOrderAndPrintTeams(selector) {
     Swap(order, 2, 3);
   }
 
-  for (let i in order) {
-    let nickname = order[i];
-    $(selector).append(map[nickname]);
+  // Get the relevant teams.
+  let teams = selector.includes('past') ? list = past_teams : list = future_teams;
+  let ordered_teams = [];
+  for (let nickname of order) {
+    for (let team of teams) {
+      if (team.nickname === nickname) {
+        ordered_teams.push({
+          team: team,
+          HTML: map[nickname],
+        });
+      }
+    }
+
+  }
+
+  getDay = x => new Date(Date.parse(x.team.date + ' ' + x.team.year)).getDay();
+
+  ordered_teams.sort((a, b) => {
+    return getDay(a) - getDay(b);
+  });
+
+  let prev_date = null;
+  for (let team of ordered_teams) {
+    if (prev_date === null || prev_date != getDay(team)) {
+      IncludeDate(selector, team.team.date);
+    }
+    prev_date = getDay(team);
+    $(selector).append(team.HTML);
   }
 }
 
@@ -625,11 +658,6 @@ function FormatPastGames(callback) {
   // Clear current content, populate with only the title.
   $('#past-games-container').html('<p id="past-games-title"><b><i>"If winning is all there is, we want no part of it"</i></b></p>');
 
-  // TODO: This should be checked before every game. For 2020, every  game is played on a Saturday so this is not a high priority
-  // for the 2020 season.
-  let date = past_teams[0].date;
-  IncludeDate('#past-games-container', date);
-
   past_games_HTML = [];
 
   for (let i in past_teams) {
@@ -645,11 +673,6 @@ function FormatFutureGames(callback) {
 
   // Clear current content, populate with only the title.
   $('#future-games-container').html("<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>");
-
-  // TODO: This should be checked before every game. For 2020, every  game is played on a Saturday so this is not a high priority
-  // for the 2020 season.
-  let date = future_teams[0].date;
-  IncludeDate('#future-games-container', date);
 
   future_games_HTML = []
 
