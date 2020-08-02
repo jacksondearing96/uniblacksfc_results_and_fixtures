@@ -343,6 +343,8 @@ def GetGameLocation(game_json, game):
     if game.location == 'Forfeit':
         game.result = 'FORFEIT'
     game.location_url = game_json['VenueURL']
+    game.location = game.location.strip()
+
 
 def GetDateAndTime(game_json, game):
     # Extracts and populates the match date and time.
@@ -384,6 +386,7 @@ def PopulateGameFromSportsTg(game, past_game=True, option='SUBSTANDARD'):
 
         if game_json['isBye'] == 1:
             game.result = 'BYE'
+            return
 
         # Get the location and the associated location url.
         GetGameLocation(game_json, game)

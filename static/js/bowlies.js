@@ -114,6 +114,14 @@ function SaveBowliesResults() {
     });
 }
 
+function ButtonSuccess(button) {
+
+}
+
+function ButtonFail(button) {
+
+}
+
 function RestoreBowliesResults() {
   StartLoading();
 
@@ -124,7 +132,7 @@ function RestoreBowliesResults() {
 
       let restore_button = $('#restore-button');
 
-      if (data !== 'ERROR') {
+      if (data === 'SUCCESS') {
         restore_button.removeClass('btn-primary');
         restore_button.addClass('btn-success');
         restore_button.html('Restored');

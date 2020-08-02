@@ -60,6 +60,7 @@ def get_css():
     return ReadFileToString('static/css/subAuto.css')
 
 
+rounds = '' # This is a hack work around for when save rounds to disk doesn't work.
 @app.route('/get_rounds')
 def get_rounds():
     return ReadFileToString('database/rounds.csv')
@@ -68,6 +69,7 @@ def get_rounds():
 @app.route('/save_rounds', methods=['POST'])
 def save_rounds():
     try:
+        rounds = requests.get_data()
         with open('database/rounds.csv', 'w') as file:
             print(request.get_data())
             file.write(request.get_data())

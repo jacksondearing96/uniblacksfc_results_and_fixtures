@@ -18,6 +18,14 @@
       {% endif %}
     </td>
 
+    {% if teams.result == 'BYE' %}
+
+    <td class='bye' colspan='2'>
+      BYE
+    </td>
+
+    {% else %}
+
     <td class='centre future-expand'>
       <img src="{{ teams.image_url }}">
       </br>
@@ -51,7 +59,11 @@
         </tr>
       </table>
       {% endif %}
+      <!-- End if forfeit -->
 
     </td>
+    {% endif %}
+    <!-- End if BYE -->
+
   </tr>
 </table>

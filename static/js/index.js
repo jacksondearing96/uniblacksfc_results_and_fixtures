@@ -77,6 +77,7 @@ function InitialiseWinningVerbs() {
   ];
 }
 
+// TODO: Surely there is a built in Date() method that can handle these conversions.
 const day_abbreviations = {
   'Mon': 'Monday',
   'Tue': 'Tuesday',
@@ -376,6 +377,7 @@ function UpdateFutureTeamsWithInfoFromServer(server_teams) {
     future_teams[i].location = server_teams[i]['location']
     future_teams[i].time = server_teams[i]['time']
     future_teams[i].landing_page = server_teams[i]['url']
+    future_teams[i].result = server_teams[i]['result']
     future_teams[i].error = server_teams[i]['error']
 
     if (future_teams[i]['opposition'] in override_image_urls) {
@@ -411,6 +413,8 @@ function PopulateWinOrLossVerb(game) {
   if (winning_verbs.length === 0) {
     console.error('Winning verbs array is empty!');
   }
+
+  if (game.result === 'BYE') return;
 
   if (game.result === 'FORFEIT' || game.result === 'OPPOSITION_FORFEIT') {
     game.result = 'forfeit';
@@ -457,7 +461,7 @@ nicknames = { "Edwardstown": "Edwards Clowns", "Broadview": "Abroadsview", "Athe
 ground_names = { "University Oval": "Bob Neil #1", "Fred Bloch Oval": "Chocka Bloch Oval", "Park 10": "Bob Neil #2", "Broadview Oval": "Prostitute Park", "Henley Oval": "The Opium Den", "Largs Reserve": "Largs Loony Bin", "Blair Athol Reserve": "Kill Burn Maim & Destroy Oval", "Edwardstown Oval": "Clown Town", "Torrens Valley Oval": "Rat Reserve", "Goodwood Oval": "Sin Stadium", "Pertaringa Oval": "The Comedy Colosseum", "Camden Oval": "Fos's Farm", "Prospect Oval": "Wembley of the North", "West Lakes Reserve": "Fake Field", "Rostrevor College": "Abode of the Angelic Umpire", "Payneham Oval": "Arse Park", "Port Reserve": "Port Wildlife Reserve", "St Marys Oval": "The Dog Pound", "Foxfield Oval": "Rat Reserve", "Eric Sutton Oval": "Perfume Park", "LJ. Lewis Reserve": "Yatala Jail", "Klemzig Reserve": "Mardi Gras Park", "Salisbury North Oval": "Unemployment Park", "Campbelltown Oval": "Campbell's Cow Paddock", "Pedlar Reserve": "The Tram Terminus", "Daly Oval": "Arfur Daly Oval", "Mortlock Park": "The Rubbish Bin", "Cnr Sth Tce and Goodwood Rd": "South Terrace Lavatories", "Cnr Greenhill and Glen Osmond Rd": "Big Als' Toilet", "Plympton Oval": "Pimp Park", "Newlands Reserve": "Imperial Park", "Webb Oval": "Starvation Stadium", "Renown Park Oval": "Unrenown Park", "Kingswood Oval": "Home For Horribles", "Dwight Reserve": "Elton John Reserve", "Flinders University Oval": "The Gulag", "Cane Reserve": "Dog Poo/Postage Stamp Park", "Brahma Lodge Oval": "Fudge Field", "Houghton Oval": "Faraway Field", "Duncan Fraser Reserve": "Animal Farm", "Edward Smith Reserve": "Paint Pot Park", "Modbury Oval": "The Mud Heap", "Paralowie Oval": "The Flea Pit", "Lindholm Park": "Poo Park", "Salisbury Downs Oval": "Salisbury Downs Syndrome", "Windsor Gardens High School": "The Citadel", "Flinders Park Oval": "Paedophile Playground", "Park 9": "Bob Neil Four", "Wilson Oval, St Peters College": "Hackney High", "Unley Oval": "Jack Oatey Stables", "Walkerville Oval": "Tangle Park", "Thomas More College": "Bob Neil Three", "Hawthorn Oval": "Hawthorn Odeon", "Ledger Oval": "General Ledger", "Adelaide Oval": "The Light Towers", "Eastern Parade Reserve": "Rubbish Reserve", "Morgan Oval, South Tce": "Sock City", "Rowe Park": "Giggle Ground", "Sacred Heart Middle School": "Stink Stadium", "Sacred Heart Junior School": "Stink Stadium", "Salisbury Oval": "Tiny Town", "Mofflin Reserve": "The Welfare Office", "Andrew Smith Reserve": "Paint Pot Park", "Largs North Reserve": "Largs North Toilets", "Fawk Reserve": "Guy Fawkes Reserve", "Alberton Oval": "Al and Bert's Unit", "Brighton Oval": "Brighton-On-Sludge", "Railways Oval": "The Acropolis", "EP. Nazer Reserve": "Nazi Reserve", "McNally Oval": "The Reformatory", "PA.C. Park Oval": "Bob Neil Five", "Carnegie Reserve": "Carnegie Hall", "Brookway Park Oval": "Layabout Lounge", "Saint Pauls College": "The Cathedral", "Parafield Gardens High School": "", "Daws Road High School": "", "The Levels": "", "Sturt CAE Oval": "", "Scotch College Oval": "Rock Reserve", "Bartels Road Oval": "Bob Neil Six", "Bill Cooper Oval": "", "Lockleys Oval": "Padlock Park", "Bourke Oval, St Ignatius College": "Old Folks Home", "Hope Valley Oval": "Home for Incurables", "Adelaide High School Oval": "The Acropolis", "Salisbury CA.E. Oval": "", "Haslam Oval": "Don Haslam Oval", "STA Employees Club Oval": "", "Almond Tree Flat": "", "Memorial Oval, Rostrevor College": "Abode of the Angelic Oval", "Caterer Oval, St Peters College": "Hackney High", "Sacred Heart Senior School": "Stink Stadium", "Ferryden Park Reserve": "Fairies' Den", "St Peters College Front Oval": "Hackney High", "Northfield High School": "", "Saint Clair Oval": "", "Atkinson Oval, St Ignatius College": "Old Folks Home", "Magill CA.E. Oval": "", "Unley High School": "", "Myer Sports Ground": "", "Pennington Oval": "", "Paddocks Oval": "The Dopey Dugout", "Post Tel Oval, West Tce": "", "West Lakes High School": "", "Glandore Oval": "The Brothel", "Norwood Oval": "", "Park 25": "", "Graduates Oval": "", "Barratt Reserve": "Stink Stadium", "Plympton High School": "", "Immanuel College": "", "Parks Community Centre": "", "Colonel Waite Oval": "", "Fitzroy Terrace": "", "Thebarton Oval": "", "Mawson High School": "", "Glengowrie High School": "", "Brighton High School": "", "PA.C.": "", "Weigall Oval": "", "Tubemakers Oval": "", "Devitt Oval": "", "Baulderstone Oval, St Ignatius College": "Old Folks Home", "Cnr Pulteney St & Sth Tce": "Sock City", "Banksia Park High School": "", "Enfield High School": "", "Park 17, Greenhill Road": "", "Park 19": "", "Meyer Oval": "", "Findon High School": "", "Challa Gardens Primary School": "", "Marion High School": "", "Thorndon High School": "", "Hillcrest Hospital Oval": "", "Saint Michaels College": "", "Urrbrae College": "", "Australian National University": "", "Melbourne University": "", "Allard Park, Brunswick": "", "Prince Park No 2": "", "Sydney University": "", "Surfers Paradise": "", "Albert Park Oval": "", "Monash University": "", "Cazaly Park": "", "Jack Dyer Oval": "", "Labrador Oval": "", "Westminster College": "Heaven Number Two", "Greenwith Community Centre": "Grovel Park", "Underdale High School": "Worry Park", "Yalumba Drive Reserve": "The Flea Pit", "Croydon High School": "Surrender Stadium", "Bye": "", "Kensington Oval": "Bradman Park", "Smithfield Oval": "", "Woodville Oval": "", "Richmond Oval": "", "Newcastle University": "", "Argana Park": "", "Kilburn Oval": "Kill Burn Maim & Destroy Oval", "Harpers Field": "", "Salisbury West Oval": "", "Mitchell Park Oval": "", "Mawson Lakes Oval": "South Pole Mawson Lakes", "West Lakes Shore Oval": "", "Vaughton Oval": "", "St Dominics Oval": "Sherwood Forest", "Roseworthy Oval": "", "Elliott Goodger Memorial Park": "Beyond the Black Stump", "Fitzroy Sports Club": "", "Ottoway Reserve": "", "Lyrup": "Lyrup", "Reynella": "Reynella", "The Paddocks": "The Cow Paddock", "Thomas Farms Oval (Price Memorial Oval)": "The Meat Works", "Max Amber Sportsfield (Torrens Valley Oval)": "Rat Reserve", "John Bice Memorial Oval": "Bicep Oval", "Kellett Reserve": "The Pastie", "Happy Valley Sports Park": "Unhappy Land" };
 
 override_nicknames = { "Angle Vale": "Angle Fail", "St Paul's OS": "Saint Paul", "Payneham Norwood Union": "Payneham in the @rse", "Blackfriars OS": "Burnt Fries" };
-override_ground_names = { 'Forfeit': 'FORFEIT', 'Payneham Oval': '@rse Park', 'West Lakes Shore Oval': 'Fake Field', 'St Pauls College': 'The Cathedral', 'Hunter Park': 'The Nursing Home', 'Harpers Field': 'Gravel Park' };
+override_ground_names = { 'Forfeit': 'FORFEIT', 'Payneham Oval': '@rse Park', 'West Lakes Shore Oval': 'Fake Field', 'St Pauls College': 'The Cathedral', 'Hunter Park': 'The Nursing Home', 'Harpers Field': 'Grovel Park', 'Harpers Field No 2': 'Grovel Park' };
 
 function PopulateNicknames(game) {
 
@@ -546,20 +550,23 @@ function FindNickname(options, name) {
 }
 
 // Loads a HTML template with the given data and appends it to the list given by destination.
-function LoadHTMLTemplateToList(template_selector, destination, teams, final_destination, callback) {
-  fetch(template_selector, { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(teams) })
-    .then(response => response.text())
-    .then(data => {
-      destination.push(data);
-      ReOrderAndPrintTeams(final_destination);
-      if (callback) callback();
-    });
+function LoadHTMLTemplate(template_selector, team) {
+  return new Promise(resolve => {
+    fetch(template_selector, { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(team) })
+      .then(response => response.text())
+      .then(HTML => {
+        //ReOrderAndPrintTeams(final_destination);
+        resolve(HTML);
+      });
+  });
 }
 
 // Appends the given date to the past-games-container.
-function IncludeDate(selector, date) {
+function IncludeDate(selector, team) {
+  if (team.result === 'BYE') return;
+
   let date_HTML = "<div class='row'><div class='col-md-12'><p class='date'>\
-                     " + date + ", 2020\
+                     " + team.date + ", 2020\
                   </p></div></div>";
   $(selector).append(date_HTML);
 }
@@ -587,59 +594,55 @@ function Swap(list, i, j) {
   list[j] = temp;
 }
 
+function getDateObject(team) {
+  return new Date(Date.parse(team.date + ' ' + team.year));
+}
+
 // Reorders the teams such that the mens/womens teams alternate between the top position.
-// Also prints the HTML content to the relevant container.
-function ReOrderAndPrintTeams(selector) {
+// TODO: Could probably make this more efficient. Although I like how explicit each step is. Probably
+// keep like this as robustness and readability is more important than performance.
+function ReOrderTeams(teams) {
 
-  let list = []
-  list = selector.includes('past') ? list = past_games_HTML : list = future_games_HTML;
-
-  // This should only be done when all the teams have been completed.
-  if (list.length !== NUMBER_OF_TEAMS) return;
-
-  map = {}
-  for (let i in list) {
-    let nickname = GetTeamNicknameFromHTMLString(list[i]);
-    map[nickname] = list[i];
-  }
-
-  let order = [
+  // Default ordering.
+  const order = [
     'Benny and His Jets', 'Moodog and His A Grade Vintage', 'Pup and His Young Dawgz',
-    'The Big Lez Show', 'The Chardonnay Socialists', 'The B@stards', 'The Brady Bunch', 'THE SCUM']
-  // Alternate mens/womens being first every week.
-  if ((new Date().getWeekNumber()) % 2 == 0) {
+    'The Big Lez Show', 'The Chardonnay Socialists', 'The B@stards', 'The Brady Bunch', 'THE SCUM'];
+
+  // Sort teams according to hard-coded order.
+  teams.sort((a, b) => {
+    return order.indexOf(a.nickname) - order.indexOf(b.nickname);
+  });
+
+  // Alternate mens/womens being first every week (according to the week of div1 mens game).
+  if (getDateObject(teams[0]).getWeekNumber() % 2 == 0) {
     Swap(order, 0, 1);
     Swap(order, 2, 3);
   }
 
-  // Get the relevant teams.
-  let teams = selector.includes('past') ? list = past_teams : list = future_teams;
-  let ordered_teams = [];
-  for (let nickname of order) {
-    for (let team of teams) {
-      if (team.nickname === nickname) {
-        ordered_teams.push({
-          team: team,
-          HTML: map[nickname],
-        });
-      }
-    }
-
-  }
-
-  getDay = x => new Date(Date.parse(x.team.date + ' ' + x.team.year)).getDay();
-
-  ordered_teams.sort((a, b) => {
-    return getDay(a) - getDay(b);
+  // Perform a stable sort according to the day of the week.
+  teams.sort((a, b) => {
+    return getDateObject(a).getDay() - getDateObject(b).getDay();
   });
 
+  // Place BYEs at the bottom.
+  teams.sort((a, b) => {
+    return Number(a.result === 'BYE') - Number(b.result === 'BYE');
+  });
+}
+
+function PrintTeamsToDOM(selector, teams) {
   let prev_date = null;
-  for (let team of ordered_teams) {
-    if (prev_date === null || prev_date != getDay(team)) {
-      IncludeDate(selector, team.team.date);
+
+  for (let team of teams) {
+
+    // Include the date if this is the first game of the day.
+    if (prev_date === null || prev_date != getDateObject(team).getDay()) {
+      IncludeDate(selector, team);
     }
-    prev_date = getDay(team);
+
     $(selector).append(team.HTML);
+
+    prev_date = getDateObject(team).getDay();
   }
 }
 
@@ -651,37 +654,41 @@ function ProcessLocation(game) {
   game.location = '(' + game.location + ')';
 }
 
-function FormatPastGames(callback) {
+function FormatGames(container_selector, teams, title_HTML, server_path, callback) {
 
-  $('#past-games-container').css('display', 'block');
+  $(container_selector).css('display', 'block');
 
   // Clear current content, populate with only the title.
-  $('#past-games-container').html('<p id="past-games-title"><b><i>"If winning is all there is, we want no part of it"</i></b></p>');
+  $('#future-games-container').html(title_HTML);
 
-  past_games_HTML = [];
-
-  for (let i in past_teams) {
-    let callback_to_send = callback;
-    if (i != past_teams.length - 1) callback_to_send = null;
-    LoadHTMLTemplateToList('/past-game.html', past_games_HTML, past_teams[i], '#past-games-container', callback_to_send);
+  let teams_HTML_promise = [];
+  for (let team of teams) {
+    ProcessLocation(team);
+    teams_HTML_promise.push(LoadHTMLTemplate(server_path, team));
   }
+
+  Promise.all(teams_HTML_promise,).then(HTML_list => {
+    for (let i = 0; i < HTML_list.length; ++i) {
+      teams[i].HTML = HTML_list[i];
+    }
+
+    ReOrderTeams(teams);
+    PrintTeamsToDOM(container_selector, teams);
+
+    if (callback) callback();
+  });
+}
+
+function FormatPastGames(callback) {
+  const past_games_title = '<p id="past-games-title"><b><i>"If winning is all there is, we want no part of it"</i></b></p>';
+  const past_server_path = '/past-game.html';
+  FormatGames('#past-games-container', past_teams, past_games_title, past_server_path, callback);
 }
 
 function FormatFutureGames(callback) {
-
-  $('#future-games-container').css('display', 'block');
-
-  // Clear current content, populate with only the title.
-  $('#future-games-container').html("<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>");
-
-  future_games_HTML = []
-
-  for (let i in future_teams) {
-    let callback_to_send = callback;
-    if (i != future_teams.length - 1) callback_to_send = null;
-    ProcessLocation(future_teams[i])
-    LoadHTMLTemplateToList('/future-game.html', future_games_HTML, future_teams[i], '#future-games-container', callback_to_send);
-  }
+  const future_games_title = "<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>";
+  const future_server_path = '/future-game.html';
+  FormatGames('#future-games-container', future_teams, future_games_title, future_server_path, callback);
 }
 
 function UpdateTables(callback) {
@@ -707,16 +714,11 @@ function AutomateSubstandard() {
 
   StartLoading();
 
-  const get_past_games = GetPastGames();
-  const get_future_games = GetFutureGames();
-
-  Promise.all([
-    get_past_games,
-    get_future_games
-  ]).then(() => {
-    UpdateTables(function () {
+  Promise.all([GetPastGames(), GetFutureGames()]).then(() => {
+    UpdateTables(() => {
       FormatPastGames(() => {
-        FormatFutureGames(() => EndLoading());
+        FormatFutureGames(() =>
+          EndLoading());
       });
     });
   });
