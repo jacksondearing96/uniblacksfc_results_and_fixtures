@@ -9,9 +9,9 @@ except:
 
 import uwsgi
 
-if uwsgi.masterpid() == 0:
+if uwsgi.mainpid() == 0:
     raise Exception(
-        "you have to enable the uWSGI master process to use this module")
+        "you have to enable the uWSGI main process to use this module")
 
 spooler_functions = {}
 mule_functions = {}

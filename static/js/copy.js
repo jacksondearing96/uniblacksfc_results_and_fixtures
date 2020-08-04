@@ -6,7 +6,7 @@ function CopyHTML(selector, all = false) {
     .then(response => response.text())
     .then(data => {
 
-      // Embed CSS.
+      // Embed CSS in style tags.
       HTML.value = '<style>' + data + '</style>';
 
       // Add content to copy.
