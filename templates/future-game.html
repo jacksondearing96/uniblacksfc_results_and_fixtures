@@ -1,23 +1,31 @@
+{% for team in teams %}
+
 <table class='future-game'>
+
+  <div class='row'>
+    <div class='col-md-12'>
+      <p class='date'>{{ team.date_HTML }}</p>
+    </div>
+  </div>
 
   <tr class='top-divider bottom-divider'>
     <td class='centre future-expand'>
       <img src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png">
       </br>
-      <span class='nickname'>{{ teams.nickname }}</span>
+      <span class='nickname'>{{ team.nickname }}</span>
     </td>
 
     <td id='round-number' class='centre'>
-      Round {{ teams.round }}
+      Round {{ team.round }}
       </br>
-      {% if teams.location == '(Forfeit)' %}
+      {% if team.location == '(Forfeit)' %}
       Forfeit
       {% else %}
       vs
       {% endif %}
     </td>
 
-    {% if teams.result == 'BYE' %}
+    {% if team.result == 'BYE' %}
 
     <td class='bye' colspan='2'>
       <i>The Bye</i>
@@ -26,20 +34,20 @@
     {% else %}
 
     <td class='centre future-expand'>
-      <img src="{{ teams.image_url }}">
+      <img src="{{ team.image_url }}">
       </br>
-      {{ teams.opposition_nickname }}</br>
+      {{ team.opposition_nickname }}</br>
     </td>
 
     <td class='icons'>
-      {% if teams.location != '(Forfeit)' %}
+      {% if team.location != '(Forfeit)' %}
       <table>
         <tr>
           <td>
             <img src='https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'>
           </td>
           <td>
-            {{ teams.location_nickname }} {{ teams.location }}
+            {{ team.location_nickname }} {{ team.location }}
           </td>
         </tr>
 
@@ -47,14 +55,14 @@
           <td>
             <img src='https://cdn2.iconfinder.com/data/icons/pittogrammi/142/10-512.png'>
           </td>
-          <td>{{ teams.time }}</td>
+          <td>{{ team.time }}</td>
         </tr>
 
         <tr>
           <td>
             <img src='https://cdns.iconmonstr.com/wp-content/assets/preview/2013/240/iconmonstr-trophy-6.png'>
           </td>
-          <td>{{ teams.gender }} Div {{ teams.division }}</td>
+          <td>{{ team.gender }} Div {{ team.division }}</td>
         </tr>
       </table>
       {% endif %}
@@ -66,3 +74,5 @@
 
   </tr>
 </table>
+
+{% endfor %}
