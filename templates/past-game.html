@@ -1,3 +1,11 @@
+{% for team in teams %}
+
+<div class='row'>
+  <div class='col-md-12'>
+    <p class='date'>{{ team.date_HTML }}</p>
+  </div>
+</div>
+
 <!-- Past game -->
 <table class='past-game'>
   <tr class='top-divider'>
@@ -5,34 +13,36 @@
         src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png">
 
     <td class='expand'>
-      <span class='nickname'>{{ teams.nickname }}</span>
+      <span class='nickname'>{{ team.nickname }}</span>
       </br>
-      {{ teams.score_for }}
+      {{ team.score_for }}
     </td>
 
-    <td class='result' class='centre'>{{ teams.result }}</td>
+    <td class='result' class='centre'>{{ team.result }}</td>
 
     <td class='right expand'>
-      {{ teams.opposition_nickname }}
+      {{ team.opposition_nickname }}
       </br>
-      {{ teams.score_against }}
+      {{ team.score_against }}
     </td>
 
-    <td class='logo'> <img src="{{ teams.image_url }}"></td>
+    <td class='logo'> <img src="{{ team.image_url }}"></td>
 
   </tr>
 
-  {% if teams.result != 'forfeit' %}
+  {% if team.result != 'forfeit' %}
   <tr class='indent'>
     <td colspan="5">
-      <span class='label'>Goal Kickers:</span> {{ teams.goal_kickers }}
+      <span class='label'>Goal Kickers:</span> {{ team.goal_kickers }}
     </td>
   </tr>
 
   <tr class='bottom-divider indent'>
     <td colspan="5">
-      <span class='label'>Best Players:</span> {{ teams.best_players }}
+      <span class='label'>Best Players:</span> {{ team.best_players }}
     </td>
   </tr>
   {% endif %}
 </table>
+
+{% endfor %}

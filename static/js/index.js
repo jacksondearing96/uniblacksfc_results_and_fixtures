@@ -39,8 +39,9 @@ function PastContent() {
     'option': 'SUBSTANDARD',
     'location': '',
     'location_nickname': '',
+    'date_HTML': '',
     'error': ''
-  }
+  };
 }
 
 function FutureContent() {
@@ -58,8 +59,9 @@ function FutureContent() {
     'gender': "",
     'time': "",
     'image_url': "",
+    'date_HTML': '',
     'error': ''
-  }
+  };
 }
 
 function InitialiseWinningVerbs() {
@@ -85,7 +87,7 @@ const day_abbreviations = {
   'Fri': 'Friday',
   'Sat': 'Saturday',
   'Sun': 'Sunday'
-}
+};
 
 const month_abbreviations = {
   'Jan': 'January',
@@ -172,18 +174,18 @@ function InitialisePastGamesTable() {
 
   const createdCell = function (cell) {
     let original;
-    cell.setAttribute('contenteditable', true)
-    cell.setAttribute('spellcheck', false)
+    cell.setAttribute('contenteditable', true);
+    cell.setAttribute('spellcheck', false);
     cell.addEventListener("focus", function (e) {
-      original = e.target.textContent
-    })
+      original = e.target.textContent;
+    });
     cell.addEventListener("blur", function (e) {
       if (original !== e.target.textContent) {
-        const row = past_table.row(e.target.parentElement)
+        const row = past_table.row(e.target.parentElement);
         UpdatePastTeamsFromDOM(row.index());
       }
-    })
-  }
+    });
+  };
 
   past_table = $('#past-games-table').DataTable({
     'paging': false,
@@ -219,18 +221,18 @@ function InitialiseFutureGamesTable() {
 
   const createdCell = function (cell) {
     let original;
-    cell.setAttribute('contenteditable', true)
-    cell.setAttribute('spellcheck', false)
+    cell.setAttribute('contenteditable', true);
+    cell.setAttribute('spellcheck', false);
     cell.addEventListener("focus", function (e) {
-      original = e.target.textContent
-    })
+      original = e.target.textContent;
+    });
     cell.addEventListener("blur", function (e) {
       if (original !== e.target.textContent) {
-        const row = future_table.row(e.target.parentElement)
+        const row = future_table.row(e.target.parentElement);
         UpdateFutureTeamsFromDOM(row.index());
       }
-    })
-  }
+    });
+  };
 
   future_table = $('#future-games-table').DataTable({
     'paging': false,
@@ -267,7 +269,7 @@ function GetTeamsFromServer() {
       .then(data => {
         let teams = JSON.parse(data);
 
-        for (i in teams) {
+        for (let i in teams) {
           let past_team = PastContent();
           let future_team = FutureContent();
 
@@ -300,27 +302,27 @@ function CondenseIfRequired(list) {
 }
 
 function UpdatePastTeamsWithInfoFromServer(server_teams) {
-  for (i in server_teams) {
-    if (server_teams[i]['error'] == 'SERVER ERROR') {
+  for (let i in server_teams) {
+    if (server_teams[i].error == 'SERVER ERROR') {
       continue;
     }
-    past_teams[i]['date'] = ExpandDate(server_teams[i]['date'])
-    past_teams[i]['round'] = server_teams[i]['round']
-    past_teams[i]['opposition'] = server_teams[i]['opposition']
-    past_teams[i]['score_for'] = server_teams[i]['score_for']
-    past_teams[i]['score_against'] = server_teams[i]['score_against']
-    past_teams[i]['result'] = server_teams[i]['result']
-    past_teams[i]['goal_kickers'] = server_teams[i]['goal_kickers']
-    past_teams[i]['best_players'] = server_teams[i]['best_players']
-    past_teams[i]['image_url'] = server_teams[i]['image_url']
-    past_teams[i]['landing_page'] = server_teams[i]['url']
-    past_teams[i]['location'] = server_teams[i]['location']
-    past_teams[i]['error'] = server_teams[i]['error']
+    past_teams[i].date = ExpandDate(server_teams[i].date);
+    past_teams[i].round = server_teams[i].round;
+    past_teams[i].opposition = server_teams[i].opposition;
+    past_teams[i].score_for = server_teams[i].score_for;
+    past_teams[i].score_against = server_teams[i].score_against;
+    past_teams[i].result = server_teams[i].result;
+    past_teams[i].goal_kickers = server_teams[i].goal_kickers;
+    past_teams[i].best_players = server_teams[i].best_players;
+    past_teams[i].image_url = server_teams[i].image_url;
+    past_teams[i].landing_page = server_teams[i].url;
+    past_teams[i].location = server_teams[i].location;
+    past_teams[i].error = server_teams[i].error;
 
-    if (past_teams[i]['opposition'] in override_image_urls) {
-      past_teams[i]['image_url'] = override_image_urls[past_teams[i]['opposition']]
+    if (past_teams[i].opposition in override_image_urls) {
+      past_teams[i].image_url = override_image_urls[past_teams[i].opposition];
     } else {
-      past_teams[i]['image_url'] = server_teams[i]['image_url']
+      past_teams[i].image_url = server_teams[i].image_url;
     }
   }
   past_table.rows().invalidate().draw();
@@ -350,16 +352,16 @@ function GetFutureGamesFromTable(callback) {
 function ExpandDate(date) {
 
   if (date == null || date == '') {
-    return ''
+    return '';
   }
 
   Object.keys(day_abbreviations).forEach((key) => {
     date = date.replace(key, day_abbreviations[key]);
-  })
+  });
 
   Object.keys(month_abbreviations).forEach((key) => {
     date = date.replace(key, month_abbreviations[key]);
-  })
+  });
 
   return date;
 }
@@ -367,20 +369,20 @@ function ExpandDate(date) {
 override_image_urls = { "Morphettville Park": "https://mpwfc.files.wordpress.com/2014/05/mpwfc_logo.png?w=676", };
 
 function UpdateFutureTeamsWithInfoFromServer(server_teams) {
-  for (i in server_teams) {
-    future_teams[i].date = ExpandDate(server_teams[i]['date']);
-    future_teams[i].round = server_teams[i]['round']
-    future_teams[i].opposition = server_teams[i]['opposition']
-    future_teams[i].location = server_teams[i]['location']
-    future_teams[i].time = server_teams[i]['time']
-    future_teams[i].landing_page = server_teams[i]['url']
-    future_teams[i].result = server_teams[i]['result']
-    future_teams[i].error = server_teams[i]['error']
+  for (let i in server_teams) {
+    future_teams[i].date = ExpandDate(server_teams[i].date);
+    future_teams[i].round = server_teams[i].round;
+    future_teams[i].opposition = server_teams[i].opposition;
+    future_teams[i].location = server_teams[i].location;
+    future_teams[i].time = server_teams[i].time;
+    future_teams[i].landing_page = server_teams[i].url;
+    future_teams[i].result = server_teams[i].result;
+    future_teams[i].error = server_teams[i].error;
 
-    if (future_teams[i]['opposition'] in override_image_urls) {
-      future_teams[i]['image_url'] = override_image_urls[future_teams[i]['opposition']]
+    if (future_teams[i].opposition in override_image_urls) {
+      future_teams[i].image_url = override_image_urls[future_teams[i].opposition];
     } else {
-      future_teams[i]['image_url'] = server_teams[i]['image_url']
+      future_teams[i].image_url = server_teams[i].image_url;
     }
   }
   future_table.rows().invalidate().draw();
@@ -496,7 +498,7 @@ function FindNickname(options, name) {
 
   if (name === null || name.length <= 3) return null;
 
-  for (i in inconclusives) {
+  for (let i in inconclusives) {
     if (name == inconclusives[i]) return null;
   }
 
@@ -556,13 +558,9 @@ function LoadHTMLTemplate(template_selector, team) {
 }
 
 // Appends the given date to the past-games-container.
-function IncludeDate(selector, team) {
-  if (team.result === 'BYE') return;
-
-  let date_HTML = "<div class='row'><div class='col-md-12'><p class='date'>\
-                     " + team.date + ", 2020\
-                  </p></div></div>";
-  $(selector).append(date_HTML);
+function DateHTML(team) {
+  if (team.result === 'BYE') return '';
+  return team.date + " " + team.year;
 }
 
 // Returns the week number, used to determine which team (mens/womens) should be listed first.
@@ -571,7 +569,7 @@ Date.prototype.getWeekNumber = function () {
   var dayNum = d.getUTCDay() || 7;
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
   var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 };
 
 function GetTeamNicknameFromHTMLString(html) {
@@ -604,10 +602,7 @@ function ReOrderTeams(teams) {
   if (getDateObject(teams[0]).getWeekNumber() % 2 == 1) {
     Swap(order, 0, 1);
     Swap(order, 2, 3);
-    console.log('swapped')
   }
-
-  console.log(order);
 
   // Sort teams according to hard-coded order.
   teams.sort((a, b) => {
@@ -619,26 +614,19 @@ function ReOrderTeams(teams) {
     return getDateObject(a).getDay() - getDateObject(b).getDay();
   });
 
+  // Include the date in the HTML for the first of each day.
+  let prev_date = null;
+  for (let team of teams) {
+    if (prev_date === null || prev_date != getDateObject(team).getDay()) {
+      team.date_HTML = DateHTML(team);
+    }
+    prev_date = getDateObject(team).getDay();
+  }
+
   // Place BYEs at the bottom.
   teams.sort((a, b) => {
     return Number(a.result === 'BYE') - Number(b.result === 'BYE');
   });
-}
-
-function PrintTeamsToDOM(selector, teams) {
-  let prev_date = null;
-
-  for (let team of teams) {
-
-    // Include the date if this is the first game of the day.
-    if (prev_date === null || prev_date != getDateObject(team).getDay()) {
-      IncludeDate(selector, team);
-    }
-
-    $(selector).append(team.HTML);
-
-    prev_date = getDateObject(team).getDay();
-  }
 }
 
 function ProcessLocation(game) {
@@ -649,72 +637,71 @@ function ProcessLocation(game) {
   game.location = '(' + game.location + ')';
 }
 
-function FormatGames(container_selector, teams, title_HTML, server_path, callback) {
+function FormatGames(container_selector, teams, title_HTML, server_path) {
+  return new Promise(resolve => {
+    $(container_selector).css('display', 'block');
 
-  $(container_selector).css('display', 'block');
-
-  // Clear current content, populate with only the title.
-  $('#future-games-container').html(title_HTML);
-
-  let teams_HTML_promise = [];
-  for (let team of teams) {
-    ProcessLocation(team);
-    teams_HTML_promise.push(LoadHTMLTemplate(server_path, team));
-  }
-
-  Promise.all(teams_HTML_promise,).then(HTML_list => {
-    for (let i = 0; i < HTML_list.length; ++i) {
-      teams[i].HTML = HTML_list[i];
-    }
+    // Clear current content, populate with only the title.
+    $(container_selector).html(title_HTML);
 
     ReOrderTeams(teams);
-    PrintTeamsToDOM(container_selector, teams);
 
-    if (callback) callback();
+    for (let team of teams) ProcessLocation(team);
+
+    LoadHTMLTemplate(server_path, teams).then(html => {
+      $(container_selector).append(html);
+      resolve();
+    });
   });
 }
 
-function FormatPastGames(callback) {
+function FormatPastGames() {
   const past_games_title = '<p id="past-games-title"><b><i>"If winning is all there is, we want no part of it"</i></b></p>';
   const past_server_path = '/past-game.html';
-  FormatGames('#past-games-container', past_teams, past_games_title, past_server_path, callback);
+
+  return new Promise(resolve => {
+    FormatGames('#past-games-container', past_teams, past_games_title, past_server_path)
+      .then(() => resolve());
+  });
 }
 
-function FormatFutureGames(callback) {
+function FormatFutureGames() {
   const future_games_title = "<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>";
   const future_server_path = '/future-game.html';
-  FormatGames('#future-games-container', future_teams, future_games_title, future_server_path, callback);
+
+  return new Promise(resolve => {
+    FormatGames('#future-games-container', future_teams, future_games_title, future_server_path)
+      .then(() => resolve());
+  });
 }
 
-function UpdateTables(callback) {
+function UpdateTables() {
+  return new Promise(resolve => {
+    InitialiseWinningVerbs();
 
-  InitialiseWinningVerbs();
+    for (let i in past_teams) {
+      PopulateWinOrLossVerb(past_teams[i]);
+      PopulateNicknames(past_teams[i]);
+    }
 
-  for (let i in past_teams) {
-    PopulateWinOrLossVerb(past_teams[i]);
-    PopulateNicknames(past_teams[i]);
-  }
+    for (let i in future_teams) {
+      PopulateNicknames(future_teams[i]);
+    }
 
-  for (let i in future_teams) {
-    PopulateNicknames(future_teams[i]);
-  }
+    past_table.rows().invalidate().draw();
+    future_table.rows().invalidate().draw();
 
-  past_table.rows().invalidate().draw();
-  future_table.rows().invalidate().draw();
-
-  if (callback) callback();
+    resolve();
+  });
 }
 
 function AutomateSubstandard() {
-
   StartLoading();
 
   Promise.all([GetPastGames(), GetFutureGames()]).then(() => {
-    UpdateTables(() => {
-      FormatPastGames(() => {
-        FormatFutureGames(() =>
-          EndLoading());
-      });
+    UpdateTables().then(() => {
+      Promise.all([FormatPastGames(), FormatFutureGames()]).then(() =>
+        EndLoading());
     });
   });
 }
@@ -746,8 +733,7 @@ function ShowTables() {
 
 $(document).ready(function () {
   StartLoading();
-
-  UpdatePlayerNamesFromDatabase(() => {
+  UpdatePlayerNamesFromDatabase().then(() => {
     GetTeamsFromServer().then(() => {
       InitialisePastGamesTable();
       InitialiseFutureGamesTable();

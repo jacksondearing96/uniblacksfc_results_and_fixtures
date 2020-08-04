@@ -50,6 +50,11 @@
   padding-top: 20px;
 }
 
+#past-games-container .date:empty {
+  padding: 0px;
+  margin: 0px;
+}
+
 #past-games-container .result {
   min-width: 80px;
 }
@@ -154,7 +159,12 @@
   text-align: center;
   color: grey;
   font-size: 17px;
-  margin-top:20px;
+  padding-top: 20px;
+}
+
+#future-games-container .date:empty {
+  padding: 0px;
+  margin: 0px;
 }
 
 #future-games-container #result {

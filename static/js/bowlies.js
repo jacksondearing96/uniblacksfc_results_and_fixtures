@@ -82,13 +82,15 @@ function SetBowliesFlag() {
 }
 
 // TODO: Make this a generic update from database function.
-function UpdatePlayerNamesFromDatabase(callback) {
-  fetch('/update_player_names_from_database', { method: 'GET' })
-    .then(response => response.text())
-    .then(data => {
-      if (data == 'SUCCESS') console.log('Updated player names from database');
-      if (callback) callback();
-    });
+function UpdatePlayerNamesFromDatabase() {
+  return new Promise(resolve => {
+    fetch('/update_player_names_from_database', { method: 'GET' })
+      .then(response => response.text())
+      .then(data => {
+        if (data == 'SUCCESS') console.log('Updated player names from database');
+        resolve();
+      });
+  });
 }
 
 function SaveBowliesResults() {
