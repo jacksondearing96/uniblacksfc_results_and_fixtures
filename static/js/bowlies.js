@@ -81,13 +81,12 @@ function SetBowliesFlag() {
   }
 }
 
-// TODO: Make this a generic update from database function.
-function UpdatePlayerNamesFromDatabase() {
-  return new Promise(resolve => {
-    fetch('/update_player_names_from_database', { method: 'GET' })
+function UpdateCacheFromDatabase() {
+  return new Promise((resolve) => {
+    fetch('/update_cache_from_database', { method: 'GET' })
       .then(response => response.text())
       .then(data => {
-        if (data == 'SUCCESS') console.log('Updated player names from database');
+        if (data == 'SUCCESS') console.log('Updated cache from database');
         resolve();
       });
   });
