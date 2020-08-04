@@ -11,7 +11,6 @@
       Round {{ teams.round }}
       </br>
       {% if teams.location == '(Forfeit)' %}
-      <!-- TODO: convey which team forfeited -->
       Forfeit
       {% else %}
       vs
@@ -21,7 +20,7 @@
     {% if teams.result == 'BYE' %}
 
     <td class='bye' colspan='2'>
-      BYE
+      <i>The Bye</i>
     </td>
 
     {% else %}
