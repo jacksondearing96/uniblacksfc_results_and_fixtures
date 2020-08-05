@@ -214,7 +214,7 @@ function AutomateBowlies() {
 
   GetSavedRounds().then(() => {
     GetPastGames().then(() => {
-      UpdateTables().then(() => {
+      PopulateTablesWithNicknamesAndVerbs().then(() => {
         OrderTeamsBasedOnMargins();
         FormatBowlies().then(() => EndLoading());
       });

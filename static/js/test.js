@@ -157,12 +157,14 @@ function TestPopulateNicknames(test) {
 }
 
 function TestFindNickname(test) {
-  // ExpectEqual(FindNickname(nicknames, ''), null, test, "Find nicknames: empty");
-  // ExpectEqual(FindNickname(nicknames, "Broadview"), "Abroadsview", test, "Find nicknames: basic");
-  // ExpectEqual(FindNickname(nicknames, 'Rostrevor O.C'), "Ross and Trevor", test, "Find nickname: eliminate O.C");
-  // ExpectEqual(FindNickname(nicknames, 'The'), null, test, "Find nicknames: invalid");
-  // ExpectEqual(FindNickname(nicknames, 'North SomethingSomething', null, test, "Find nicknames: inconclusive"))
-  // ExpectEqual(FindNickname(nicknames, "St Peter's OC"), 'The Silver Spooners', test, "Find nicknames: apostrophe")
+  ExpectEqual(FindNickname(nicknames, ''), null, test, "Find nicknames: empty");
+  ExpectEqual(FindNickname(nicknames, "Broadview"), "Abroadsview", test, "Find nicknames: basic");
+  ExpectEqual(FindNickname(nicknames, 'Rostrevor O.C'), "Ross and Trevor", test, "Find nickname: eliminate O.C");
+  ExpectEqual(FindNickname(nicknames, 'The'), null, test, "Find nicknames: invalid");
+  ExpectEqual(FindNickname(nicknames, 'North SomethingSomething'), null, test, "Find nicknames: inconclusive");
+  ExpectEqual(FindNickname(nicknames, "St Peter's OC"), 'The Silver Spooners', test, "Find nicknames: apostrophe")
+  ExpectEqual(FindNickname(nicknames, 'Gaza'), 'Nice Gazza', test, 'Find nicknames: override club');
+  ExpectEqual(FindNickname(ground_names, 'Torrens Valley Oval'), 'Rat Reserve', test, 'Find ground name');
 }
 
 function TestProcessLocation(test) {
@@ -188,8 +190,8 @@ function TestExpandDate(test) {
 function TestOrderingFridayNightGame(test) {
   return new Promise((resolve) => {
     var future_teams_with_friday_night_game = JSON.parse('[{"nickname":"Benny and His Jets","round":5,"date":"Saturday 1 August, 2020","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547208-0&a=FIXTURE&round=X&pool=1","opposition":"Port District","opposition_nickname":"","location":"Largs Reserve","location_nickname":"","division":"1","gender":"Mens","time":"2:15 PM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564615_1_T.jpg","error":"","is_past_game":false, "option":"SUBSTANDARD"},{"nickname":"Pup and His Young Dawgz","round":5,"date":"Saturday 1 August, 2020","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547219-0&a=FIXTURE&round=X&pool=1","opposition":"Port District","opposition_nickname":"","location":"Largs Reserve","location_nickname":"","division":"1 Res","gender":"Mens","time":"12:15 PM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564615_1_T.jpg","error":"","is_past_game":false,"option":"SUBSTANDARD"},{"nickname":"The Chardonnay Socialists","round":5,"date":"Saturday 1 August, 2020","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547209-0&a=FIXTURE&round=X&pool=1","opposition":"Port District","opposition_nickname":"","location":"Largs Reserve","location_nickname":"","division":"C1","gender":"Mens","time":"10:15 AM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564615_1_T.jpg","error":"","is_past_game":false,"option":"SUBSTANDARD"},{"nickname":"The B@stards","round":5,"date":"Saturday 1 August, 2020","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547212-0&a=FIXTURE&round=X&pool=1","opposition":"Mitcham","opposition_nickname":"","location":"Fred Bloch Oval","location_nickname":"","division":"C4","gender":"Mens","time":"12:15 PM","image_url":"//websites.sportstg.com/pics/00/01/78/22/1782218_1_T.jpg","error":"","is_past_game":false,"option":"SUBSTANDARD"},{"nickname":"The Brady Bunch","round":5,"date":"Saturday 1 August, 2020","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547401-0&a=FIXTURE&round=X&pool=1","opposition":"Port District","opposition_nickname":"","location":"Fred Bloch Oval","location_nickname":"","division":"C7","gender":"Mens","time":"2:15 PM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564615_1_T.jpg","error":"","is_past_game":false,"option":"SUBSTANDARD"},{"nickname":"THE SCUM","round":5,"date":"Friday 31 July, 2020","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-557892-0&a=FIXTURE&round=X&pool=1","opposition":"Blackfriars OS","opposition_nickname":"","location":"University Oval","location_nickname":"","division":"C6","gender":"Mens","time":"7:00 PM","image_url":"//websites.sportstg.com/pics/00/02/56/46/2564622_1_T.jpg","error":"","is_past_game":false,"option":"SUBSTANDARD"},{"nickname":"Moodog and His A Grade Vintage","round":5,"date":"Saturday 1 August, 2020","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-548065-0&a=FIXTURE&round=X&pool=1","opposition":"Payneham NU","opposition_nickname":"","location":"Payneham Oval","location_nickname":"","division":"1","gender":"Womens","time":"3:30 PM","image_url":"//websites.sportstg.com/pics/00/02/56/47/2564729_1_T.jpg","error":"","is_past_game":false,"option":"SUBSTANDARD"},{"nickname":"The Big Lez Show","round":5,"date":"Saturday 1 August, 2020","year":2020,"landing_page":"https://websites.sportstg.com/comp_info.cgi?c=1-114-0-555668-0&a=FIXTURE&round=X&pool=1","opposition":"Payneham NU","opposition_nickname":"","location":"Payneham Oval","location_nickname":"","division":"1 Res","gender":"Womens","time":"1:45 PM","image_url":"//websites.sportstg.com/pics/00/02/56/47/2564729_1_T.jpg","error":"","is_past_game":false,"option":"SUBSTANDARD"}]');
-    SetFutureTeams(future_teams_with_friday_night_game);
-    UpdateTables().then(() => {
+    future_teams = future_teams_with_friday_night_game;
+    PopulateTablesWithNicknamesAndVerbs().then(() => {
       FormatFutureGames().then(() => {
         let expected_text = [
           'Friday 31 July, 2020',
@@ -219,7 +221,7 @@ function TestOrderingFridayNightGame(test) {
 
 function TestGetPastGames(test) {
   return new Promise((resolve) => {
-    SetPastTeams(JSON.parse('[{"nickname":"Benny and His Jets","round":"4","date":"","year":2020,"landing_page":"","opposition":"","opposition_nickname":"","gender":"Mens","division":"1","result":"","score_for":"","score_against":"","goal_kickers":"","best_players":"","image_url":"","option":"SUBSTANDARD","location":"","location_nickname":"","error":"","is_past_game":true,"option":"SUBSTANDARD"},{"nickname":"Pup and His Young Dawgz","round":"4","date":"","year":2020,"landing_page":"","opposition":"","opposition_nickname":"","gender":"Mens","division":"1 Res","result":"","score_for":"","score_against":"","goal_kickers":"","best_players":"","image_url":"","option":"SUBSTANDARD","location":"","location_nickname":"","error":"","is_past_game":true,"option":"SUBSTANDARD"}]'));
+    past_teams = JSON.parse('[{"nickname":"Benny and His Jets","round":"4","date":"","year":2020,"landing_page":"","opposition":"","opposition_nickname":"","gender":"Mens","division":"1","result":"","score_for":"","score_against":"","goal_kickers":"","best_players":"","image_url":"","option":"SUBSTANDARD","location":"","location_nickname":"","error":"","is_past_game":true,"option":"SUBSTANDARD"},{"nickname":"Pup and His Young Dawgz","round":"4","date":"","year":2020,"landing_page":"","opposition":"","opposition_nickname":"","gender":"Mens","division":"1 Res","result":"","score_for":"","score_against":"","goal_kickers":"","best_players":"","image_url":"","option":"SUBSTANDARD","location":"","location_nickname":"","error":"","is_past_game":true,"option":"SUBSTANDARD"}]');
     GetPastGames().then(() => {
       ExpectEqual(past_teams[0].opposition, 'Goodwood Saints', test, 'Opposition');
       ExpectEqual(past_teams[0].result, 'LOSS', test, 'Result');
@@ -240,7 +242,7 @@ function TestGetPastGames(test) {
 
 function TestGetFutureGames(test) {
   return new Promise((resolve) => {
-    SetFutureTeams(JSON.parse('[{"nickname":"THE SCUM","round":"5","date":"","year":2020,"landing_page":"","opposition":"","opposition_nickname":"","location":"","location_nickname":"","division":"C6","gender":"Mens","time":"","image_url":"","error":"","is_past_game":false,"option":"SUBSTANDARD"}]'));
+    future_teams = JSON.parse('[{"nickname":"THE SCUM","round":"5","date":"","year":2020,"landing_page":"","opposition":"","opposition_nickname":"","location":"","location_nickname":"","division":"C6","gender":"Mens","time":"","image_url":"","error":"","is_past_game":false,"option":"SUBSTANDARD"}]');
     GetFutureGames().then(() => {
       ExpectEqual(future_teams[0].opposition, 'Blackfriars OS', test, 'Opposition');
       ExpectEqual(future_teams[0].image_url, '//websites.sportstg.com/pics/00/02/56/46/2564622_1_T.jpg', test, 'Image url');
