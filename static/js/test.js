@@ -145,7 +145,7 @@ function TestPopulateNicknames(test) {
 
   game.location = 'Fred Bloch Oval';
   PopulateNicknames(game);
-  ExpectEqual(game.location_nickname, 'Chocka Bloch Oval', test, "Populate nicknames: Chocka");
+  ExpectEqual(game.location_nickname, 'Chocka Bloch', test, "Populate nicknames: Chocka");
 
   game.location = 'Payneham Oval';
   PopulateNicknames(game);

@@ -40,6 +40,7 @@ function NewGame(is_past_game) {
     'goal_kickers': "",
     'best_players': "",
     'image_url': "",
+    'AUFC_logo': "https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png",
     'option': 'SUBSTANDARD',
     'date_HTML': '',
     'error': '',

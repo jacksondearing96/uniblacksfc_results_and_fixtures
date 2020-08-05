@@ -92,6 +92,9 @@ def csv_string_to_map(csv_string):
         while len(item) < 2:
             item.append('')
 
+        item[0] = item[0].replace('\n','')
+        item[1] = item[1].replace('\n','')
+
         output_map[item[0]] = item[1]
 
     return output_map
@@ -141,15 +144,37 @@ def get_future_games():
         return web_scraper.ServerFailure()
 
 
-@app.route('/update_cache_from_database')
-def update_cache_from_databse():
-    if not update_is_required(): return 'UPDATE NOT REQUIRED'
+@app.route('/update_player_names_from_database')
+def update_player_names_from_databse():
+    if not update_is_required(): return 'UPDATE OF PLAYER NAMES NOT REQUIRED'
 
-    if web_scraper.UpdatePlayerNamesFromDatabase('database/registered_players.csv'):
-        last_update_time = datetime.now()
-        return 'SUCCESS'
-    else:
+    if not web_scraper.UpdatePlayerNamesFromDatabase():
         return 'FAIL'
+
+    last_update_time = datetime.now()
+    return 'SUCCESS'
+
+
+@app.route('/update_nicknames_from_database')
+def update_nicknames_from_database():
+    if not update_is_required(): return 'UPDATE OF NICKNAMES NOT REQUIRED'
+
+    if not web_scraper.UpdateNicknamesFromDatabase():
+        return 'FAIL'
+
+    last_update_time = datetime.now()
+    return 'SUCCESS'
+        
+
+@app.route('/update_ground_names_from_database')
+def update_ground_names_from_database():
+    if not update_is_required(): return 'UPDATE OF GROUND NAMES NOT REQUIRED'
+
+    if not web_scraper.UpdateGroundNamesFromDatabase():
+        return 'FAIL'
+
+    last_update_time = datetime.now()
+    return 'SUCCESS'
 
 
 @app.route('/save_bowlies_results', methods=['POST'])
