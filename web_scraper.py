@@ -28,7 +28,7 @@ class Game(object):
     # This should maintain variable names that are compatible with the JSON objects
     # that are expected when this class is converted into a dict and sent to the 
     # front end application. See index.js for the appropriate naming conventions.
-    def __init__(self, round, year, url):
+    def __init__(self, round, year, url, is_past_game=True, option='SUBSTANDARD'):
         self.round = round
         self.year = year
         self.date = None
@@ -50,7 +50,9 @@ class Game(object):
         self.goal_kickers = None
         self.best_players = None
 
-        self.option = 'SUBSTANDARD'
+        self.is_past_game = is_past_game
+
+        self.option = option
         self.error = ''
 
 def ServerFailure():
@@ -355,8 +357,9 @@ def GetDateAndTime(game_json, game):
     game.date = time_and_date[1]
     game.date = game.date.replace('&nbsp;', ' ')
 
-def PopulateGameFromSportsTg(game, past_game=True, option='SUBSTANDARD'):
+def PopulateGameFromSportsTg(game):
     try:
+
 
         if 'sportstg.com' not in game.url:
             Error('URL error: incorrect url with no sportstg present')
@@ -375,14 +378,14 @@ def PopulateGameFromSportsTg(game, past_game=True, option='SUBSTANDARD'):
 
         game.round = GetActualRound(game_json)
 
-        if past_game and game_json['PastGame'] != 1:
+        if game.is_past_game and game_json['PastGame'] != 1:
             # This means we want the results from this match but it's results have not been 
             # completed in sportstg yet.
             # If we detect this error, simply proceed as if it is a future game and
             # flag inside the content that the results had not been finalised.
             Error('This is not a past game.')
             game.error = 'MATCH HAS NOT BEEN PLAYED YET'
-            past_game = False
+            game.is_past_game = False
 
         if game_json['isBye'] == 1:
             game.result = 'BYE'
@@ -398,7 +401,7 @@ def PopulateGameFromSportsTg(game, past_game=True, option='SUBSTANDARD'):
         game.goal_kickers = ''
         game.best_players = ''
 
-        if past_game and game.result != 'FORFEIT':
+        if game.is_past_game and game.result != 'FORFEIT':
             try:
                 goal_kickers_and_best_players_list = game_json['MatchResults']
             except:
@@ -407,7 +410,7 @@ def PopulateGameFromSportsTg(game, past_game=True, option='SUBSTANDARD'):
         if game.is_home_game:
             game.opposition = urllib.unquote(game_json['AwayClubName'])
             game.image_url = game_json['AwayClubLogo']
-            if past_game:
+            if game.is_past_game:
                 game.score_against = game_json['AwayScore']
                 game.score_for = game_json['HomeScore']
                 if game.result != 'FORFEIT':
@@ -418,7 +421,7 @@ def PopulateGameFromSportsTg(game, past_game=True, option='SUBSTANDARD'):
         else:
             game.opposition = urllib.unquote(game_json['HomeClubName'])
             game.image_url = game_json['HomeClubLogo']
-            if past_game:
+            if game.is_past_game:
                 game.score_against = game_json['HomeScore']
                 game.score_for = game_json['AwayScore']
                 if game.result != 'FORFEIT':
@@ -428,11 +431,11 @@ def PopulateGameFromSportsTg(game, past_game=True, option='SUBSTANDARD'):
                         goal_kickers_and_best_players = goal_kickers_and_best_players_list[1]
 
         if game.score_for == '&nbsp;':
-            past_game = False
+            game.is_past_game = False
             game.error = 'RESULTS NOT ENTERED YET'
             return
 
-        if past_game and game.result != 'FORFEIT':
+        if game.is_past_game and game.result != 'FORFEIT':
             game.result = GetMatchResult(game.score_for, game.score_against)
             game.goal_kickers, game.best_players = ExtractGoalKickersAndBestPlayers(
                 goal_kickers_and_best_players)
@@ -440,8 +443,7 @@ def PopulateGameFromSportsTg(game, past_game=True, option='SUBSTANDARD'):
             if game.score_for == u'10.0-60':
                 game.result = 'OPPOSITION_FORFEIT'
 
-        # TODO: nicknames for subby too.
-        if option == 'BOWLIES':
+        if game.option == 'BOWLIES':
             names_and_nicknames = GetPlayerNamesFromCache()
             game.goal_kickers = InsertNicknames(
                 game.goal_kickers, names_and_nicknames)
@@ -460,8 +462,8 @@ def GetPastGames(games):
         url = url_generator.GetUrl(
             int(game['year']), game['gender'], game['division'], game['round'])
 
-        game_to_fill = Game(game['round'], game['year'], url)
-        PopulateGameFromSportsTg(game_to_fill, PAST_GAME, game['option'])
+        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'])
+        PopulateGameFromSportsTg(game_to_fill)
         past_games.append(game_to_fill.__dict__)
 
     return json.dumps(past_games)
@@ -474,8 +476,8 @@ def GetFutureGames(games):
         url = url_generator.GetUrl(
             int(game["year"]), game["gender"], game["division"], game["round"], False)
 
-        game_to_fill = Game(game['round'], game['year'], url)
-        PopulateGameFromSportsTg(game_to_fill, FUTURE_GAME, 'SUBSTANDARD')
+        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'])
+        PopulateGameFromSportsTg(game_to_fill)
         future_games.append(game_to_fill.__dict__)
 
     return json.dumps(future_games)
