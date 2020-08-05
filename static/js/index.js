@@ -1,13 +1,14 @@
 const NUMBER_OF_TEAMS = 8;
 
+const PAST_GAME = true;
+const FUTURE_GAME = false;
+
 past_teams = [];
 past_table = null;
 
 future_teams = [];
 future_table = null;
 
-future_games_HTML = [];
-past_games_HTML = [];
 winning_verbs = [];
 
 // Setters so these variables can be set from a different JS file.
@@ -19,7 +20,7 @@ function SetPastTeams(teams) {
   past_teams = teams;
 }
 
-function PastContent() {
+function NewGame(is_past_game) {
   return {
     'nickname': "",
     'round': "X",
@@ -30,6 +31,9 @@ function PastContent() {
     'opposition_nickname': '',
     'gender': '',
     'division': '',
+    'time': "",
+    'location': '',
+    'location_nickname': '',
     'result': '',
     'score_for': "",
     'score_against': "",
@@ -37,30 +41,9 @@ function PastContent() {
     'best_players': "",
     'image_url': "",
     'option': 'SUBSTANDARD',
-    'location': '',
-    'location_nickname': '',
     'date_HTML': '',
-    'error': ''
-  };
-}
-
-function FutureContent() {
-  return {
-    'nickname': "",
-    'round': "X",
-    'date': "",
-    'year': GetCurrentYear(),
-    'landing_page': '',
-    'opposition': "",
-    'opposition_nickname': '',
-    'location': "",
-    'location_nickname': "",
-    'division': "",
-    'gender': "",
-    'time': "",
-    'image_url': "",
-    'date_HTML': '',
-    'error': ''
+    'error': '',
+    'is_past_game': is_past_game
   };
 }
 
@@ -269,18 +252,18 @@ function GetTeamsFromServer() {
       .then(data => {
         let teams = JSON.parse(data);
 
-        for (let i in teams) {
-          let past_team = PastContent();
-          let future_team = FutureContent();
+        for (let team of teams) {
+          let past_team = NewGame(PAST_GAME);
+          let future_team = NewGame(FUTURE_GAME);
 
-          past_team.nickname = teams[i].nickname;
-          past_team.division = teams[i].division;
-          past_team.gender = teams[i].gender;
+          past_team.nickname = team.nickname;
+          past_team.division = team.division;
+          past_team.gender = team.gender;
           past_team.option = 'SUBSTANDARD';
 
-          future_team.nickname = teams[i].nickname;
-          future_team.division = teams[i].division;
-          future_team.gender = teams[i].gender;
+          future_team.nickname = team.nickname;
+          future_team.division = team.division;
+          future_team.gender = team.gender;
 
           past_teams.push(past_team);
           future_teams.push(future_team);
