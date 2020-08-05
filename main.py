@@ -86,7 +86,7 @@ def csv_string_to_map(csv_string):
     output_map = {}
 
     for item in csv_list:
-        item = item.split(':')
+        item = item.split('::')
 
         # Ensure that their is a pair of values.
         while len(item) < 2:
@@ -119,6 +119,11 @@ def get_ground_names():
     override_ground_names = csv_string_to_map(ReadFileToString('database/override_ground_nicknames.csv'))
     apply_overrides(ground_names, override_ground_names)
     return json.dumps(ground_names)
+
+
+@app.route('/get_override_image_urls')
+def get_override_image_urls():
+    return json.dumps(csv_string_to_map(ReadFileToString('database/override_image_urls.csv')))
 
 
 @app.route('/get_teams')

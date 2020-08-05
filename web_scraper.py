@@ -272,7 +272,7 @@ def UpdateNicknamesFromDatabase():
             for name, nickname in zip(names, nicknames):
                 name = name.replace('amp;','')
                 nickname = nickname.replace('amp;','')
-                file.write(name + ':' + nickname + ',\n')
+                file.write(name + '::' + nickname + ',\n')
 
         driver.close()
         return True
@@ -312,7 +312,7 @@ def UpdateGroundNamesFromDatabase():
             for name, nickname in zip(names, nicknames):
                 name = name.replace('amp;','')
                 nickname = nickname.replace('amp;','')
-                file.write(name + ':' + nickname + ',\n')
+                file.write(name + '::' + nickname + ',\n')
 
         driver.close()
         return True
@@ -351,7 +351,7 @@ def UpdatePlayerNamesFromDatabase():
                 initial = name_parts[1][0] + '.'
                 full_name = name_parts[1] + ' ' + name_parts[0]
                 file.write(
-                    initial + ' ' + name_parts[0] + ':' + str(nickname) + ' (' + full_name + ')' + '\n')
+                    initial + ' ' + name_parts[0] + '::' + str(nickname) + ' (' + full_name + ')' + '\n')
 
         driver.close()
         return True
@@ -364,7 +364,7 @@ def GetPlayerNamesFromCache():
     with open('database/registered_players.csv', 'r') as file:
         lines = file.readlines()
         for line in lines:
-            parts = line.split(':')
+            parts = line.split('::')
             names_and_nicknames[parts[0]] = parts[1]
     return names_and_nicknames
 

@@ -9,17 +9,7 @@ past_table = null;
 future_teams = [];
 future_table = null;
 
-winning_verbs = [];
-
-// Setters so these variables can be set from a different JS file.
-function SetFutureTeams(teams) {
-  future_teams = teams;
-}
-
-function SetPastTeams(teams) {
-  past_teams = teams;
-}
-
+// Initialises a new default game which can be used for either a past or future game.
 function NewGame(is_past_game) {
   return {
     'nickname': "",
@@ -48,7 +38,10 @@ function NewGame(is_past_game) {
   };
 }
 
+// Initialises a list of winning verbs.
+// These will be used to describe uni beating another team.
 function InitialiseWinningVerbs() {
+
   // Ensure there is at least one of these per team so that it can never run out.
   winning_verbs = [
     "smashed",
@@ -63,6 +56,9 @@ function InitialiseWinningVerbs() {
   ];
 }
 
+// Takes an array that is extacted from the data tables and applies the array values to
+// the relevant past game. This enforces the explicit ordering of the data tables columns.
+// TODO: Improve this somehow - surely some way to use destructuring to improve this.
 function UpdatePastGameWithArray(game, row_content) {
   game.nickname = row_content[0];
   game.round = row_content[1];
@@ -97,13 +93,14 @@ function UpdateFutureGameWithArray(game, row_content) {
   game.image_url = row_content[12];
 }
 
+// Returns the current year.
 function GetCurrentYear() {
   var date = new Date();
   return date.getFullYear();
 }
 
+// Updates the past_teams list based on the row in the table indexed by row_index.
 function UpdatePastTeamsFromDOM(row_index) {
-
   // TODO: Only update the relevant cell. This naively updates the entire row.
   let row = document.getElementById('past-games-table').rows[row_index + 1];
   let row_content = [];
@@ -222,7 +219,7 @@ function InitialiseFutureGamesTable() {
 }
 
 function GetTeamsFromServer() {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     fetch('/get_teams', { method: 'GET' })
       .then(response => response.text())
       .then(data => {
@@ -232,67 +229,14 @@ function GetTeamsFromServer() {
           let past_team = NewGame(PAST_GAME);
           let future_team = NewGame(FUTURE_GAME);
 
-          past_team.nickname = team.nickname;
-          past_team.division = team.division;
-          past_team.gender = team.gender;
-          past_team.option = 'SUBSTANDARD';
-
-          future_team.nickname = team.nickname;
-          future_team.division = team.division;
-          future_team.gender = team.gender;
+          Object.keys(team).forEach(key => {
+            past_team[key] = team[key];
+            future_team[key] = team[key];
+          });
 
           past_teams.push(past_team);
           future_teams.push(future_team);
         }
-        resolve();
-      });
-  });
-}
-
-function CondenseIfRequired(list) {
-  if (Array.isArray(list) === false) return list;
-  var condensed = '';
-  for (let i in list) {
-    element = list[i];
-    if (i !== 0) condensed += ', ';
-    condensed += element.name + element.goals;
-  }
-  return condensed;
-}
-
-function UpdatePastTeamsWithInfoFromServer(server_teams) {
-  for (let i in server_teams) {
-    if (server_teams[i].error == 'SERVER ERROR') {
-      continue;
-    }
-    past_teams[i].date = ExpandDate(server_teams[i].date, past_teams[i].year);
-    past_teams[i].round = server_teams[i].round;
-    past_teams[i].opposition = server_teams[i].opposition;
-    past_teams[i].score_for = server_teams[i].score_for;
-    past_teams[i].score_against = server_teams[i].score_against;
-    past_teams[i].result = server_teams[i].result;
-    past_teams[i].goal_kickers = server_teams[i].goal_kickers;
-    past_teams[i].best_players = server_teams[i].best_players;
-    past_teams[i].image_url = server_teams[i].image_url;
-    past_teams[i].landing_page = server_teams[i].url;
-    past_teams[i].location = server_teams[i].location;
-    past_teams[i].error = server_teams[i].error;
-
-    if (past_teams[i].opposition in override_image_urls) {
-      past_teams[i].image_url = override_image_urls[past_teams[i].opposition];
-    } else {
-      past_teams[i].image_url = server_teams[i].image_url;
-    }
-  }
-  past_table.rows().invalidate().draw();
-}
-
-function GetPastGames() {
-  return new Promise((resolve) => {
-    fetch('/get_past_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(past_teams) })
-      .then(response => response.text())
-      .then(data => {
-        UpdatePastTeamsWithInfoFromServer(JSON.parse(data));
         resolve();
       });
   });
@@ -308,8 +252,9 @@ function GetFutureGamesFromTable(callback) {
   });
 }
 
+// Takes a date string of the form 'Sat 12 Sep' and a year and converts them into
+// a longer format eg. 'Saturday 12 September, 2020'.
 function ExpandDate(date, year) {
-
   if (date == null || date == '') return '';
 
   d = new Date(date + ' ' + year);
@@ -319,52 +264,66 @@ function ExpandDate(date, year) {
   return `${day_name} ${d.getDate()} ${month}, ${year}`;
 }
 
-override_image_urls = { "Morphettville Park": "https://mpwfc.files.wordpress.com/2014/05/mpwfc_logo.png?w=676", };
+// Takes the teams retrieved from the server that have been populated with sportstg info 
+// and inserts the fields of the server team into the given teams data structure.
+function UpdateTeamsWithTeamsFromServer(teams, server_teams, table) {
+  if (teams.length != server_teams.length) {
+    console.error('Updating teams with server teams error - different sizes.');
+  }
 
-function UpdateFutureTeamsWithInfoFromServer(server_teams) {
   for (let i in server_teams) {
-    future_teams[i].date = ExpandDate(server_teams[i].date, future_teams[i].year);
-    future_teams[i].round = server_teams[i].round;
-    future_teams[i].opposition = server_teams[i].opposition;
-    future_teams[i].location = server_teams[i].location;
-    future_teams[i].time = server_teams[i].time;
-    future_teams[i].landing_page = server_teams[i].url;
-    future_teams[i].result = server_teams[i].result;
-    future_teams[i].error = server_teams[i].error;
+    // Apply the updates from the server team.
+    Object.keys(server_teams[i]).forEach(key => {
+      teams[i][key] = server_teams[i][key];
+    });
 
-    if (future_teams[i].opposition in override_image_urls) {
-      future_teams[i].image_url = override_image_urls[future_teams[i].opposition];
-    } else {
-      future_teams[i].image_url = server_teams[i].image_url;
+    // Additional processing.
+    teams[i].date = ExpandDate(teams[i].date, teams[i].year);
+
+    if (teams[i].opposition in override_image_urls) {
+      teams[i].image_url = override_image_urls[teams[i].opposition];
     }
   }
-  future_table.rows().invalidate().draw();
+  table.rows().invalidate().draw();
 }
 
-function GetFutureGames() {
-  return new Promise((resolve) => {
-    fetch('/get_future_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(future_teams) })
+function GetPastGames() {
+  return new Promise(resolve => {
+    fetch('/get_past_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(past_teams) })
       .then(response => response.text())
       .then(data => {
-        UpdateFutureTeamsWithInfoFromServer(JSON.parse(data));
+        UpdateTeamsWithTeamsFromServer(past_teams, JSON.parse(data), past_table);
         resolve();
       });
   });
 }
 
+function GetFutureGames() {
+  return new Promise(resolve => {
+    fetch('/get_future_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(future_teams) })
+      .then(response => response.text())
+      .then(data => {
+        UpdateTeamsWithTeamsFromServer(future_teams, JSON.parse(data), future_table);
+        resolve();
+      });
+  });
+}
+
+// Takes a score string of the form '10.6-66' and returns the total score Eg. 66.
+// Returns -1 upon failure.
 function GetScoreTotal(score_str) {
-  if (score_str === null) return -1;
+  if (score_str === undefined || score_str === null) return -1;
   var dash_index = score_str.indexOf('-');
   if (dash_index == -1) return -1;
   var score_for = score_str.substring(dash_index + 1, score_str.length);
   return Number(score_for);
 }
 
+// Takes a game and populates the verb describing whether uni won, lost or drew. If uni won,
+// an unique arrogant verb eg. 'smashed' or 'destroyed' is applied.
 function PopulateWinOrLossVerb(game) {
 
-  if (winning_verbs.length === 0) {
-    console.error('Winning verbs array is empty!');
-  }
+  if (winning_verbs.length === 0) console.error('Winning verbs array is empty!');
 
   if (game.result === 'BYE') return;
 
@@ -381,10 +340,9 @@ function PopulateWinOrLossVerb(game) {
   }
 
   // If there is already a result present, skip.
-  if (game.result !== '') {
-    return;
-  }
+  if (game.result !== '') return;
 
+  // Get the scores.
   const score_for = GetScoreTotal(game.score_for);
   const score_against = GetScoreTotal(game.score_against);
 
@@ -396,7 +354,7 @@ function PopulateWinOrLossVerb(game) {
     // Remove this verb so that it doesn't get repeated.
     winning_verbs.splice(random_index, 1);
   }
-  else if (score_for == score_against) {
+  else if (score_for === score_against) {
     // Draw
     game.result = "drew against";
   }
@@ -406,23 +364,22 @@ function PopulateWinOrLossVerb(game) {
   }
 }
 
+// Takes a game and populates it with nicknames for its opposition and location.
 function PopulateNicknames(game) {
 
   // Incase this has already been flagged an error, remove it so that they do not accumulate.
   if (game.opposition_nickname.includes('ERROR')) game.opposition_nickname = '';
-
   let opposition_nickname = FindNickname(nicknames, game.opposition);
-
   game.opposition_nickname = (opposition_nickname === null) ? 'ERROR' : opposition_nickname;
 
   if (game.location_nickname.includes('ERROR')) game.location_nickname = game.location_nickname.replace('ERROR', '');
   let location_nickname = FindNickname(ground_names, game.location);
-
   game.location_nickname = (location_nickname === null) ? game.location_nickname + 'ERROR' : location_nickname;
 }
 
+// Takes a map of options (contains name:nickname pairs) and trys to find the best match.
+// Capable of finding partial matches but returns null if no match could be found.
 function FindNickname(options, name) {
-
   inconclusives = [
     '',
     'Saint',
@@ -433,7 +390,7 @@ function FindNickname(options, name) {
     'The'
   ];
 
-  if (name === null || name.length <= 3) return null;
+  if (name === undefined || name === null) return null;
 
   for (let i in inconclusives) {
     if (name == inconclusives[i]) return null;
@@ -442,12 +399,7 @@ function FindNickname(options, name) {
   // Exact match.
   for (let option in options) {
     if (option === name) {
-      if (options[option] === '') {
-        return "NO NICKNAME IN DATABASE";
-      }
-      else {
-        return options[option];
-      }
+      return (options[option] == '') ? 'NO NICKNAME IN DATABASE' : options[option];
     }
 
     // Check to see if it is already a nickname.
@@ -457,12 +409,7 @@ function FindNickname(options, name) {
   // Match that contains the given name.
   for (let option in options) {
     if (option.includes(name)) {
-      if (options[option] == '') {
-        return "NO NICKNAME IN DATABASE";
-      }
-      else {
-        return options[option];
-      }
+      return (options[option] == '') ? 'NO NICKNAME IN DATABASE' : options[option];
     }
   }
 
@@ -476,6 +423,7 @@ function FindNickname(options, name) {
   if (name.includes(' ')) {
     var lastIndex = name.lastIndexOf(" ");
     name = name.substring(0, lastIndex);
+    if (name.length <= 3) return null;
     return FindNickname(options, name);
   }
 
@@ -509,20 +457,13 @@ Date.prototype.getWeekNumber = function () {
   return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 };
 
-function GetTeamNicknameFromHTMLString(html) {
-  let start_pattern = "<span class='nickname'>";
-  let end_pattern = "</span>";
-  let nickname = html.substring(html.indexOf(start_pattern) + start_pattern.length);
-  nickname = nickname.substring(0, nickname.indexOf(end_pattern));
-  return nickname;
-}
-
 function Swap(list, i, j) {
   let temp = list[i];
   list[i] = list[j];
   list[j] = temp;
 }
 
+// Returns the Javascript date object that represents the date contained within the given team.
 function getDateObject(team) {
   return new Date(Date.parse(team.date + ' ' + team.year));
 }
@@ -566,6 +507,8 @@ function ReOrderTeams(teams) {
   });
 }
 
+// Ignores the actual names of uni home grounds becuase everyone knows these already. Surrounds all
+// other ground names with parenthases so that if can be distinguished from the ground nickname in the HTML.
 function ProcessLocation(game) {
   if (game.location === 'University Oval' || game.location === 'Fred Bloch Oval' || game.location === '') {
     game.location = '';
@@ -575,7 +518,9 @@ function ProcessLocation(game) {
 }
 
 function FormatGames(container_selector, teams, title_HTML, server_path) {
-  return new Promise(resolve => {
+  return new Promise(async (resolve) => {
+
+    // Reveal the container.
     $(container_selector).css('display', 'block');
 
     // Clear current content, populate with only the title.
@@ -585,10 +530,9 @@ function FormatGames(container_selector, teams, title_HTML, server_path) {
 
     for (let team of teams) ProcessLocation(team);
 
-    LoadHTMLTemplate(server_path, teams).then(html => {
-      $(container_selector).append(html);
-      resolve();
-    });
+    $(container_selector).append(await LoadHTMLTemplate(server_path, teams));
+
+    resolve();
   });
 }
 
@@ -612,7 +556,7 @@ function FormatFutureGames() {
   });
 }
 
-function UpdateTables() {
+function PopulateTablesWithNicknamesAndVerbs() {
   return new Promise(resolve => {
     InitialiseWinningVerbs();
 
@@ -621,9 +565,7 @@ function UpdateTables() {
       PopulateNicknames(past_teams[i]);
     }
 
-    for (let i in future_teams) {
-      PopulateNicknames(future_teams[i]);
-    }
+    for (let i in future_teams) PopulateNicknames(future_teams[i]);
 
     past_table.rows().invalidate().draw();
     future_table.rows().invalidate().draw();
@@ -632,74 +574,37 @@ function UpdateTables() {
   });
 }
 
+// Retrieves the past and future games from the server and formats the substandard sections.
 function AutomateSubstandard() {
   StartLoading();
 
-  Promise.all([GetPastGames(), GetFutureGames()]).then(() => {
-    UpdateTables().then(() => {
-      Promise.all([FormatPastGames(), FormatFutureGames()]).then(() =>
-        EndLoading());
+  Promise.all([GetPastGames(), GetFutureGames()])
+    .then(async () => {
+      await PopulateTablesWithNicknamesAndVerbs();
+      Promise.all([FormatPastGames(), FormatFutureGames()])
+        .then(() => EndLoading());
     });
-  });
 }
 
-function MoreOptions() {
-  var more_options_section = $('#more-options');
-
-  if (more_options_section.css('display') === 'none') {
-    more_options_section.css('display', 'block');
-    $('#more-options-button').html('Less');
-  } else {
-    more_options_section.css('display', 'none');
-    $('#more-options-button').html('More');
-  }
-}
-
-function StartLoading() {
-  $('#loading-container').css('display', 'block');
-}
-
-function EndLoading() {
-  $('#loading-container').css('display', 'none');
-}
-
-function ShowTables() {
-  $('#past-games-table').css('display', 'block');
-  $('#future-games-table').css('display', 'block');
-}
-
-function GetNicknamesFromCache() {
-  return new Promise((resolve) => {
-    fetch('/get_nicknames', { method: 'GET' })
-      .then(response => response.text())
-      .then(nicknames_from_server => {
-        nicknames = JSON.parse(nicknames_from_server);
-        resolve();
-      });
-  });
-}
-
-function GetGroundNamesFromCache() {
-  return new Promise((resolve) => {
-    fetch('/get_ground_names', { method: 'GET' })
-      .then(response => response.text())
-      .then(ground_names_from_server => {
-        ground_names = JSON.parse(ground_names_from_server);
-        resolve();
-      })
-  })
-}
-
-$(document).ready(function () {
+async function InitialisePage() {
   StartLoading();
 
-  UpdateCacheFromDatabase().then(() => {
-    const promises = [GetTeamsFromServer(), GetNicknamesFromCache(), GetGroundNamesFromCache()];
+  await UpdateCacheFromDatabase();
 
-    Promise.all(promises).then(() => {
-      InitialisePastGamesTable();
-      InitialiseFutureGamesTable();
-      EndLoading();
-    });
-  })
-});
+  // Get all the resources we need from the cache asynchronously.
+  const resources_from_cache = [
+    GetTeamsFromServer(),
+    GetNicknamesFromCache(),
+    GetGroundNamesFromCache(),
+    GetOverrideImageUrlsFromCache()
+  ];
+
+  // Once all the resources have been aquired, initialise the tables.
+  Promise.all(resources_from_cache).then(() => {
+    InitialisePastGamesTable();
+    InitialiseFutureGamesTable();
+    EndLoading();
+  });
+}
+
+$(document).ready(() => InitialisePage());
