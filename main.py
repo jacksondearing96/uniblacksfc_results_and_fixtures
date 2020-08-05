@@ -1,7 +1,7 @@
 # Initialise gcloud
 # ./~/google-cloud-sdk/bin/gcloud init
 #
-# Run a test server (this will be similar to what is deployed on app engine)
+# Run a test server (this will be similar to what is deployed on app engine) (port 8080)
 #  dev_appserver.py --application=sub-auto app.yaml
 #
 # Create a virtual environment
@@ -61,23 +61,22 @@ def get_css():
     return ReadFileToString('static/css/subAuto.css')
 
 
-rounds = '' # This is a hack work around for when save rounds to disk doesn't work.
+rounds = ["I","I","I","I","I","I","I","I"]
 @app.route('/get_rounds')
 def get_rounds():
-    return ReadFileToString('database/rounds.csv')
+    global rounds
+    return json.dumps(rounds)
 
 
 @app.route('/save_rounds', methods=['POST'])
 def save_rounds():
+    global rounds
     try:
-        rounds = requests.get_data()
-        with open('database/rounds.csv', 'w') as file:
-            print(request.get_data())
-            file.write(request.get_data())
-            return 'SUCCESS'
+        rounds = request.get_json(force=True)
+        return 'SUCCESS'
     except:
-        pass
-    return 'FAIL'
+        return 'FAIL'
+    
 
 
 def csv_string_to_map(csv_string):
@@ -182,22 +181,36 @@ def update_ground_names_from_database():
     return 'SUCCESS'
 
 
+bowlies_results = ''
 @app.route('/save_bowlies_results', methods=['POST'])
 def save_bowlies_results():
+    # Temporarily just use a global variable to write to. Using a file makes it difficult
+    # to write to (need to set up a storage box in GCP and get a GFS library)
+    #
+    # try:
+    #     with open('database/bowlies_saved_results.txt', 'w') as file:
+    #         file.write(request.get_data())
+    #         return 'SUCCESS'
+    # except:
+    #     pass
+    # return 'FAIL'
+
+    global bowlies_results
     try:
-        with open('database/bowlies_saved_results.txt', 'w') as file:
-            file.write(request.get_data())
-            return 'SUCCESS'
+        bowlies_results = request.get_data()
+        return 'SUCCESS'
     except:
-        pass
-    return 'FAIL'
+        return 'FAIL'
 
 
 @app.route('/restore_bowlies_results', methods=['GET'])
 def restore_bowlies_results():
-    with open('database/bowlies_saved_results.txt', 'r') as file:
-        return file.read()
-    return 'FAIL'
+    # with open('database/bowlies_saved_results.txt', 'r') as file:
+    #     return file.read()
+    # return 'FAIL'
+
+    global bowlies_results
+    return bowlies_results
     
 
 @app.route('/<path:path>', methods=['GET', 'POST'])

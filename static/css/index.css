@@ -64,5 +64,10 @@ button {
   }
 }
 
+#automate-substandard-button {
+  float:right;
+}
 
-
+#more-options-button {
+  float: right;
+}
