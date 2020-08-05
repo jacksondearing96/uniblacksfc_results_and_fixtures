@@ -218,28 +218,116 @@ def ExtractGoalKickersAndBestPlayers(goal_kickers_and_best_players):
         return '', ''
 
 
-def UpdatePlayerNamesFromDatabase(filename):
+def OpenAUFCDatabase():
+    # Opens the AUFC database, logs in and returns a driver for the page.
+    # Open headless chrome.
+    options = webdriver.ChromeOptions()
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--incognito')
+    options.add_argument('--headless')
+    driver = webdriver.Chrome(
+        "/Users/jacksondearing/Desktop/football_results_automation/chromedriver", chrome_options=options)
+
+    # AUFC database.
+    driver.get("http://uniblacksfc.com.au/members/index.php")
+
+    # Fill in username and password.
+    driver.find_element_by_id('username').send_keys('bobneil')
+    driver.find_element_by_id('password').send_keys('bobneil134!')
+    login_button_selector = 'body > div > div.row > div:nth-child(2) > form > button'
+    driver.find_element_by_css_selector(login_button_selector).click()
+
+    return driver
+
+
+def UpdateNicknamesFromDatabase():
+    # This logs into the AUFC database front end and searches for all the opposition nicknames.
+    # Updates the .csv cached file 'nicknames.csv' with each opposition nickname and 
+    # there nickname in the format <name>:<nickname>
+    # Storing this information in a cache greatly improves the real-time performance of the system.
+    try:
+        driver = OpenAUFCDatabase()
+
+        driver.find_element_by_id("db-menu-opposition").click()
+        time.sleep(1)
+        
+        # Perform an empty search to get all registered players.
+        driver.find_element_by_css_selector(
+            '#form-opposition-search > button').click()
+        time.sleep(3)
+
+        # Get opposition names.
+        names = driver.find_elements_by_css_selector('#opposition-search-div > div > table > tbody > tr > td:nth-child(1)')
+        names = map(lambda x: x.get_attribute('innerHTML'), names)
+
+        # Get opposition nicknames.
+        nicknames = driver.find_elements_by_css_selector('#opposition-search-div > div > table > tbody > tr > td:nth-child(2)')
+        nicknames = map(lambda x: x.get_attribute('innerHTML'), nicknames)
+
+        # Verify lengths are consistent.
+        if (len(names) != len(nicknames)):
+            Error('Scraped a different number of names and nicknames')
+
+        with open('database/nicknames.csv', 'w') as file:
+            for name, nickname in zip(names, nicknames):
+                name = name.replace('amp;','')
+                nickname = nickname.replace('amp;','')
+                file.write(name + ':' + nickname + ',\n')
+
+        driver.close()
+        return True
+    except:
+        return False
+
+
+def UpdateGroundNamesFromDatabase():
+    # This logs into the AUFC database front end and searches for all the opposition ground names.
+    # Updates the .csv cached file 'ground_nicknames.csv' with each opposition ground name and 
+    # their ground nickname in the format <name>:<nickname>
+    # Storing this information in a cache greatly improves the real-time performance of the system.
+    try:
+        driver = OpenAUFCDatabase()
+
+        driver.find_element_by_id("db-menu-grounds").click()
+        time.sleep(1)
+        
+        # Perform an empty search to get all registered players.
+        driver.find_element_by_css_selector(
+            '#form-ground-search > button').click()
+        time.sleep(3)
+
+        # Get opposition ground names.
+        names = driver.find_elements_by_css_selector('#ground-search-div > div > table > tbody > tr > td:nth-child(1)')
+        names = map(lambda x: x.get_attribute('innerHTML'), names)
+
+        # Get opposition ground nicknames.
+        nicknames = driver.find_elements_by_css_selector('#ground-search-div > div > table > tbody > tr > td:nth-child(2)')
+        nicknames = map(lambda x: x.get_attribute('innerHTML'), nicknames)
+
+        # Verify lengths are consistent.
+        if (len(names) != len(nicknames)):
+            Error('Scraped a different number of names and nicknames')
+
+        with open('database/ground_nicknames.csv', 'w') as file:
+            for name, nickname in zip(names, nicknames):
+                name = name.replace('amp;','')
+                nickname = nickname.replace('amp;','')
+                file.write(name + ':' + nickname + ',\n')
+
+        driver.close()
+        return True
+    except:
+        return False
+
+
+def UpdatePlayerNamesFromDatabase():
     # This logs into the AUFC database front end and searches for all the registered players.
     # It updates the .csv cached file 'registered_players.csv' with each registered player and 
     # there nickname in the format <name>:<nickname>
     # Storing this information in a cache greatly improves the real-time performance of the system.
     try:
-        # Open headless chrome.
-        options = webdriver.ChromeOptions()
-        options.add_argument('--ignore-certificate-errors')
-        options.add_argument('--incognito')
-        options.add_argument('--headless')
-        driver = webdriver.Chrome(
-            "/Users/jacksondearing/Desktop/football_results_automation/chromedriver", chrome_options=options)
+        driver = OpenAUFCDatabase()
 
-        # AUFC database.
-        driver.get("http://uniblacksfc.com.au/members/index.php")
-
-        # Fill in username and password.
-        driver.find_element_by_id('username').send_keys('bobneil')
-        driver.find_element_by_id('password').send_keys('bobneil134!')
-        login_button_selector = 'body > div > div.row > div:nth-child(2) > form > button'
-        driver.find_element_by_css_selector(login_button_selector).click()
         driver.find_element_by_id("db-menu-registration").click()
         time.sleep(1)
 
@@ -257,7 +345,7 @@ def UpdatePlayerNamesFromDatabase(filename):
         if (len(names) != len(nicknames)):
             Error('Scraped a different number of names and nicknames')
 
-        with open(filename, 'w') as file:
+        with open('database/registered_players.csv', 'w') as file:
             for name, nickname in zip(names, nicknames):
                 name_parts = name.split(', ')
                 initial = name_parts[1][0] + '.'

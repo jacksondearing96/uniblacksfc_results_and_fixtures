@@ -1,10 +1,3 @@
-function PrintBowliesHTML(bowlies_html) {
-  for (let i in bowlies_html) {
-    let html = bowlies_html[i];
-    $('#bowlies-container').append(html);
-  }
-}
-
 function CalculateGrade(percentage) {
   if (percentage >= 85) return 'High Distinction';
   if (percentage >= 75) return 'Distinction';
@@ -35,17 +28,12 @@ function FormatBowlies() {
   IncludeWinLossSummary();
 
   // TODO: Date checks --> should be doing some sort of check here.
-
-  let bowlies_HTML = [];
-  let completed_count = 0;
-
-  past_teams.forEach((team, index) => {
-    fetch('/bowlies.html', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(team) })
+  return new Promise(resolve => {
+    fetch('/bowlies.html', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(past_teams) })
       .then(response => response.text())
-      .then(data => {
-        bowlies_HTML[index] = data;
-        ++completed_count;
-        if (completed_count === past_teams.length) PrintBowliesHTML(bowlies_HTML);
+      .then(html => {
+        $('#bowlies-container').append(html);
+        resolve();
       });
   });
 }
@@ -81,15 +69,50 @@ function SetBowliesFlag() {
   }
 }
 
-// TODO: Make this a generic update from database function.
 function UpdatePlayerNamesFromDatabase() {
   return new Promise(resolve => {
     fetch('/update_player_names_from_database', { method: 'GET' })
       .then(response => response.text())
       .then(data => {
-        if (data == 'SUCCESS') console.log('Updated player names from database');
+        if (data == 'SUCCESS') { console.log('Updated player names from database'); } else { console.log(data); }
         resolve();
       });
+  });
+}
+
+function UpdateNicknamesFromDatabase() {
+  return new Promise(resolve => {
+    fetch('/update_nicknames_from_database', { method: 'GET' })
+      .then(response => response.text())
+      .then(data => {
+        if (data == 'SUCCESS') { console.log('Updated nicknames from database'); } else { console.log(data); }
+        resolve();
+      });
+  });
+}
+
+function UpdateGroundNamesFromDatabase() {
+  return new Promise(resolve => {
+    fetch('/update_ground_names_from_database', { method: 'GET' })
+      .then(response => response.text())
+      .then(data => {
+        if (data == 'SUCCESS') { console.log('Updated ground names from database'); } else { console.log(data); }
+        resolve();
+      });
+  });
+}
+
+function UpdateCacheFromDatabase() {
+  return new Promise(resolve => {
+    StartLoading();
+    Promise.all([
+      UpdatePlayerNamesFromDatabase(),
+      UpdateNicknamesFromDatabase(),
+      UpdateGroundNamesFromDatabase()
+    ]).then(() => {
+      EndLoading();
+      resolve();
+    })
   });
 }
 
@@ -105,23 +128,25 @@ function SaveBowliesResults() {
 
       console.log(response)
       if (response.status == 200) {
-        save_button.removeClass('btn-primary');
-        save_button.addClass('btn-success');
-        save_button.html('saved')
+        ButtonSuccess(save_button, 'Saved');
       } else {
-        save_button.removeClass('btn-primary');
-        save_button.addClass('btn-danger');
-        save_button.html('Save Failed')
+        ButtonFail(save_button, 'Save Failed');
       }
     });
 }
 
-function ButtonSuccess(button) {
-
+function ButtonSuccess(button, new_text) {
+  button.removeClass('btn-primary');
+  button.removeClass('btn-danger');
+  button.addClass('btn-success');
+  button.html(new_text);
 }
 
-function ButtonFail(button) {
-
+function ButtonFail(button, new_text) {
+  button.removeClass('btn-primary');
+  button.removeClass('btn-success');
+  button.addClass('btn-danger');
+  button.html(new_text);
 }
 
 function RestoreBowliesResults() {
@@ -135,15 +160,11 @@ function RestoreBowliesResults() {
       let restore_button = $('#restore-button');
 
       if (data === 'SUCCESS') {
-        restore_button.removeClass('btn-primary');
-        restore_button.addClass('btn-success');
-        restore_button.html('Restored');
+        ButtonSuccess(restore_button, 'Restored');
         $('#bowlies-container').html(data);
         $('#bowlies-container').css('display', 'block');
       } else {
-        restore_button.removeClass('btn-primary');
-        restore_button.addClass('btn-danger');
-        restore_button.html('Restore failed')
+        ButtonFail(restore_button, 'Restore Failed');
       }
     });
 }
@@ -193,10 +214,9 @@ function AutomateBowlies() {
 
   GetSavedRounds().then(() => {
     GetPastGames().then(() => {
-      UpdateTables(() => {
+      UpdateTables().then(() => {
         OrderTeamsBasedOnMargins();
-        FormatBowlies();
-        EndLoading();
+        FormatBowlies().then(() => EndLoading());
       });
     });
   });

@@ -159,6 +159,10 @@ b {
   height: 50px;
 }
 
+#bowlies-container .uni-logo {
+  height: 60px;
+}
+
 #bowlies-container .results-table {
   text-align: center;
   width: 100%;

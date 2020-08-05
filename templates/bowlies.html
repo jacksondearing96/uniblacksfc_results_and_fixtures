@@ -1,13 +1,15 @@
+{% for team in teams %}
+
 <!-- Bowlies game -->
 <div contenteditable='true' class='bowlies-game row'>
 
   <div class='col-sm-4 bigger'>
-    <span class='sandy-coburn-cup-points'>{{ teams.sandy_points }} Sandy Coburn Cup Points</span>
+    <span class='sandy-coburn-cup-points'>{{ team.sandy_points }} Sandy Coburn Cup Points</span>
     <br>
-    {{ teams.gender }} Div {{ teams.division }}
+    {{ team.gender }} Div {{ team.division }}
     <i class='dull'>known as</i>
     <br>
-    <span class='nickname'>{{ teams.nickname }}</span>
+    <span class='nickname'>{{ team.nickname }}</span>
 
     <br>
     <span class='spacer'></span>
@@ -15,49 +17,47 @@
     <img class='location-pin'
       src="https://www.freepnglogos.com/uploads/pin-png/file-map-pin-icon-svg-wikimedia-commons-8.png">
 
-    {% if teams.location_nickname == 'FORFEIT' %}
+    {% if team.location_nickname == 'FORFEIT' %}
     <span class='error-message'>
       {% endif %}
 
-      {{ teams.location_nickname }}
+      {{ team.location_nickname }}
 
-      {% if teams.location_nickname == 'FORFEIT' %}
+      {% if team.location_nickname == 'FORFEIT' %}
     </span>
     {% endif %}
 
     <br>
 
-
     <span class='dull'>vs</span>
     <br>
     <span class='spacer'></span>
-    <span class='nickname'>{{ teams.opposition_nickname }}</span>
+    <span class='nickname'>{{ team.opposition_nickname }}</span>
     <br>
-    <span class='dull'>({{ teams.opposition }})</span>
+    <span class='dull'>({{ team.opposition }})</span>
 
     <br>
 
-    {% if teams.error != '' %}
-    <span class='error-message'>Round {{ teams.round }}: {{ teams.error }}</span>
+    {% if team.error != '' %}
+    <span class='error-message'>Round {{ team.round }}: {{ team.error }}</span>
     {% else %}
 
     <table class='results-table'>
       <tr>
-        <td><img class='uni-logo'
-            src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png"></td>
-        <td><img class='opposition-logo' src="{{ teams.image_url }}"></td>
+        <td><img class='uni-logo' src="{{ team.AUFC_logo }}"></td>
+        <td><img class='opposition-logo' src="{{ team.image_url }}"></td>
         <td></td>
       </tr>
 
       <tr>
-        <td><span class='score'>{{ teams.score_for }}</span></td>
-        <td><span class='score'>{{ teams.score_against }}</span></td>
+        <td><span class='score'>{{ team.score_for }}</span></td>
+        <td><span class='score'>{{ team.score_against }}</span></td>
       </tr>
     </table>
 
 
 
-    {% if teams.margin < 0 %}
+    {% if team.margin < 0 %}
     <span style='color:red'>
       Losing margin of:
       {% else %}
@@ -66,7 +66,7 @@
         <br>
         {% endif %}
 
-        {{ teams.margin }} points
+        {{ team.margin }} points
       </span>
 
 
@@ -76,7 +76,7 @@
   <div class='col-sm-4 goal-kickers'>
     <span class='label dull'>Goal Kickers:</span>
     <br>
-    {% for name in teams.goal_kickers %}
+    {% for name in team.goal_kickers %}
     <span class='goals'>{{ name['goals'] }}</span> {{ name['name'] }}
     <br>
     <span class='spacer'></span>
@@ -87,41 +87,41 @@
     <span class='label dull'>Best Players:</span>
     <br>
 
-    {% if teams.best_players|length > 5 %}
-    <span class='bp-position'>6th:</span> {{ teams.best_players[5]['name'] }}
+    {% if team.best_players|length > 5 %}
+    <span class='bp-position'>6th:</span> {{ team.best_players[5]['name'] }}
     <br>
     {% endif %}
 
-    {% if teams.best_players|length > 4 %}
-    <span class='bp-position'>5th:</span> {{ teams.best_players[4]['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endif %}
-
-    {% if teams.best_players|length > 3 %}
-    <span class='bp-position'>4th:</span> {{ teams.best_players[3]['name'] }}
+    {% if team.best_players|length > 4 %}
+    <span class='bp-position'>5th:</span> {{ team.best_players[4]['name'] }}
     <br>
     <span class='spacer'></span>
     {% endif %}
 
-    {% if teams.best_players|length > 2 %}
-    <span class='bp-position'>3rd:</span> {{ teams.best_players[2]['name'] }}
+    {% if team.best_players|length > 3 %}
+    <span class='bp-position'>4th:</span> {{ team.best_players[3]['name'] }}
     <br>
     <span class='spacer'></span>
     {% endif %}
 
-    {% if teams.best_players|length > 1 %}
-    <span class='bp-position'>2nd:</span> {{ teams.best_players[1]['name'] }}
+    {% if team.best_players|length > 2 %}
+    <span class='bp-position'>3rd:</span> {{ team.best_players[2]['name'] }}
     <br>
     <span class='spacer'></span>
     {% endif %}
 
-    {% if teams.best_players|length > 0 %}
-    <span class='bp-position'>1st:</span> {{ teams.best_players[0]['name'] }}
+    {% if team.best_players|length > 1 %}
+    <span class='bp-position'>2nd:</span> {{ team.best_players[1]['name'] }}
+    <br>
+    <span class='spacer'></span>
+    {% endif %}
+
+    {% if team.best_players|length > 0 %}
+    <span class='bp-position'>1st:</span> {{ team.best_players[0]['name'] }}
     <br>
     {% endif %}
 
-    {% if teams.best_players|length == 0 %}
+    {% if team.best_players|length == 0 %}
     <span class='error-message'>No best players entered yet</span>
     {% endif %}
 
@@ -133,3 +133,5 @@
   </div>
 
 </div>
+
+{% endfor %}

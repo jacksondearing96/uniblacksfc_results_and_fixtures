@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>AUFC Results</title>
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/blacks-guernsey.png') }}">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/west-end-can.jpeg') }}">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
@@ -35,8 +35,7 @@
   <div class='container-fluid'>
 
     <div id=loading-container>
-      <img id='loading-img' class='rotate'
-        src='https://www.firstchoiceliquor.com.au/-/media/images/products/generic_bundle.ashx?h=520&productId=6719637'>
+      <img id='loading-img' class='rotate' src="{{ url_for('static', filename='img/west-end-can.jpeg') }}">
     </div>
 
     <div class='row'>
@@ -73,8 +72,7 @@
             <img id='test-cross' src="{{ url_for('static', filename='img/cross.svg') }}">
           </button>
 
-          <button type='button' class='btn btn-secondary' onclick="UpdatePlayerNamesFromDatabase()">Update Players
-            from
+          <button type='button' class='btn btn-secondary' onclick="UpdateCacheFromDatabase()">Update Cache
             Database</button>
           <button type='button' class='btn btn-secondary' onclick="UpdateTables()">Update Nicknames</button>
           <br><br>
