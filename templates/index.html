@@ -46,25 +46,17 @@
         <button type='button' class='btn btn-primary' onclick="AutomateBowlies()" id="automate-bowlies-button">Bowlies
           Results</button>
 
-        <button type='button' class='btn btn-secondary' id='restore-button'
-          onclick="RestoreBowliesResults()">Restore</button>
+        <button type='button' class='btn btn-secondary' id='restore-button' onclick="RestoreBowliesResults()">Restore
+          Backup</button>
+
+        <button type='button' class='btn btn-primary' onclick="AutomateSubstandard()"
+          id='automate-substandard-button'>Substandard Results</button>
       </div>
 
       <div class='col-md-6'>
         <button id='more-options-button' type='button' class='btn btn-secondary' onclick='MoreOptions()'>More</button>
 
         <div id='more-options'>
-
-          <button type='button' class='btn btn-secondary' id='save-bowlies-button' onclick="SaveBowliesResults()">Save
-            Bowlies Results</button>
-
-          <button type='button' class='btn btn-secondary' id='save-rounds-button' onclick="SaveRounds()">Save
-            Rounds</button>
-
-          <button type='button' class='btn btn-primary' onclick="AutomateSubstandard()"
-            id='automate-substandard-button'>Substandard Results</button>
-          <button type='button' class='btn btn-secondary' onclick="CopySubstandardResults()"
-            id='copy-all-button'>Copy</button>
           <button id='show-tables-button' onclick="ShowTables()" type='button' class='btn btn-secondary'>Show
             Tables</button>
 
@@ -73,6 +65,21 @@
             <img id='test-tick' src="{{ url_for('static', filename='img/tick.svg') }}">
             <img id='test-cross' src="{{ url_for('static', filename='img/cross.svg') }}">
           </button>
+
+          <br>
+
+          <button type='button' class='btn btn-secondary' id='save-bowlies-button' onclick="SaveBowliesResults()">Save
+            Bowlies Results</button>
+
+          <button type='button' class='btn btn-secondary' id='save-rounds-button' onclick="SaveRoundsToCache()">Save
+            Rounds</button>
+
+          <br>
+
+          <button type='button' class='btn btn-secondary' onclick="CopySubstandardResults()" id='copy-all-button'>Copy
+            Substandard HTML</button>
+
+          <br>
 
           <button type='button' class='btn btn-secondary' onclick="UpdateCacheFromDatabase()">Update Cache
             Database</button>

@@ -399,7 +399,7 @@ function FindNickname(options, name) {
   // Exact match.
   for (let option in options) {
     if (option === name) {
-      return (options[option] == '') ? 'NO NICKNAME IN DATABASE' : options[option];
+      return (options[option] == '') ? option : options[option];
     }
 
     // Check to see if it is already a nickname.
@@ -409,7 +409,7 @@ function FindNickname(options, name) {
   // Match that contains the given name.
   for (let option in options) {
     if (option.includes(name)) {
-      return (options[option] == '') ? 'NO NICKNAME IN DATABASE' : options[option];
+      return (options[option] == '') ? option : options[option];
     }
   }
 

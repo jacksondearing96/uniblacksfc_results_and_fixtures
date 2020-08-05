@@ -69,53 +69,6 @@ function SetBowliesFlag() {
   }
 }
 
-function UpdatePlayerNamesFromDatabase() {
-  return new Promise(resolve => {
-    fetch('/update_player_names_from_database', { method: 'GET' })
-      .then(response => response.text())
-      .then(data => {
-        if (data == 'SUCCESS') { console.log('Updated player names from database'); } else { console.log(data); }
-        resolve();
-      });
-  });
-}
-
-function UpdateNicknamesFromDatabase() {
-  return new Promise(resolve => {
-    fetch('/update_nicknames_from_database', { method: 'GET' })
-      .then(response => response.text())
-      .then(data => {
-        if (data == 'SUCCESS') { console.log('Updated nicknames from database'); } else { console.log(data); }
-        resolve();
-      });
-  });
-}
-
-function UpdateGroundNamesFromDatabase() {
-  return new Promise(resolve => {
-    fetch('/update_ground_names_from_database', { method: 'GET' })
-      .then(response => response.text())
-      .then(data => {
-        if (data == 'SUCCESS') { console.log('Updated ground names from database'); } else { console.log(data); }
-        resolve();
-      });
-  });
-}
-
-function UpdateCacheFromDatabase() {
-  return new Promise(resolve => {
-    StartLoading();
-    Promise.all([
-      UpdatePlayerNamesFromDatabase(),
-      UpdateNicknamesFromDatabase(),
-      UpdateGroundNamesFromDatabase()
-    ]).then(() => {
-      EndLoading();
-      resolve();
-    })
-  });
-}
-
 function SaveBowliesResults() {
 
   var bowlies_results = $('#bowlies-container').html();
@@ -159,7 +112,7 @@ function RestoreBowliesResults() {
 
       let restore_button = $('#restore-button');
 
-      if (data === 'SUCCESS') {
+      if (data !== 'FAIL') {
         ButtonSuccess(restore_button, 'Restored');
         $('#bowlies-container').html(data);
         $('#bowlies-container').css('display', 'block');
@@ -167,38 +120,6 @@ function RestoreBowliesResults() {
         ButtonFail(restore_button, 'Restore Failed');
       }
     });
-}
-
-
-function GetSavedRounds() {
-  return new Promise(resolve => {
-    fetch('/get_rounds', { method: 'GET' })
-      .then(response => response.text())
-      .then(data => {
-        data = JSON.parse(data);
-        let index = 0;
-        for (let team of past_teams) {
-          team.round = data[index];
-          ++index;
-        }
-        resolve();
-      });
-  });
-}
-
-function SaveRounds() {
-  return new Promise(resolve => {
-    let rounds = [];
-    for (let team of past_teams) {
-      rounds.push(team.round);
-    }
-
-    fetch('/save_rounds', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(rounds) })
-      .then(response => response.text())
-      .then(data => {
-        console.log('Saved rounds: ' + data);
-      });
-  });
 }
 
 function AutomateBowlies() {
@@ -212,7 +133,7 @@ function AutomateBowlies() {
 
   SetBowliesFlag();
 
-  GetSavedRounds().then(() => {
+  GetRoundsFromCache().then(() => {
     GetPastGames().then(() => {
       PopulateTablesWithNicknamesAndVerbs().then(() => {
         OrderTeamsBasedOnMargins();
