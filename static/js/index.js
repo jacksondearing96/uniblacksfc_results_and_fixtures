@@ -63,31 +63,6 @@ function InitialiseWinningVerbs() {
   ];
 }
 
-const day_abbreviations = {
-  'Mon': 'Monday',
-  'Tue': 'Tuesday',
-  'Wed': 'Wednesday',
-  'Thu': 'Thursday',
-  'Fri': 'Friday',
-  'Sat': 'Saturday',
-  'Sun': 'Sunday'
-};
-
-const month_abbreviations = {
-  'Jan': 'January',
-  'Feb': 'February',
-  'Mar': 'March',
-  'Apr': 'April',
-  'May': 'May',
-  'Jun': 'June',
-  'Jul': 'July',
-  'Aug': 'August',
-  'Sep': 'September',
-  'Oct': 'October',
-  'Nov': 'November',
-  'Dec': 'December'
-};
-
 function UpdatePastGameWithArray(game, row_content) {
   game.nickname = row_content[0];
   game.round = row_content[1];
@@ -290,7 +265,7 @@ function UpdatePastTeamsWithInfoFromServer(server_teams) {
     if (server_teams[i].error == 'SERVER ERROR') {
       continue;
     }
-    past_teams[i].date = ExpandDate(server_teams[i].date);
+    past_teams[i].date = ExpandDate(server_teams[i].date, past_teams[i].year);
     past_teams[i].round = server_teams[i].round;
     past_teams[i].opposition = server_teams[i].opposition;
     past_teams[i].score_for = server_teams[i].score_for;
@@ -333,28 +308,22 @@ function GetFutureGamesFromTable(callback) {
   });
 }
 
-function ExpandDate(date) {
+function ExpandDate(date, year) {
 
-  if (date == null || date == '') {
-    return '';
-  }
+  if (date == null || date == '') return '';
 
-  Object.keys(day_abbreviations).forEach((key) => {
-    date = date.replace(key, day_abbreviations[key]);
-  });
+  d = new Date(date + ' ' + year);
+  const month = new Intl.DateTimeFormat('en', { month: 'long' }).format(d);
+  const day_name = new Intl.DateTimeFormat('en', { weekday: 'long' }).format(d);
 
-  Object.keys(month_abbreviations).forEach((key) => {
-    date = date.replace(key, month_abbreviations[key]);
-  });
-
-  return date;
+  return `${day_name} ${d.getDate()} ${month}, ${year}`;
 }
 
 override_image_urls = { "Morphettville Park": "https://mpwfc.files.wordpress.com/2014/05/mpwfc_logo.png?w=676", };
 
 function UpdateFutureTeamsWithInfoFromServer(server_teams) {
   for (let i in server_teams) {
-    future_teams[i].date = ExpandDate(server_teams[i].date);
+    future_teams[i].date = ExpandDate(server_teams[i].date, future_teams[i].year);
     future_teams[i].round = server_teams[i].round;
     future_teams[i].opposition = server_teams[i].opposition;
     future_teams[i].location = server_teams[i].location;
@@ -528,7 +497,7 @@ function LoadHTMLTemplate(template_selector, team) {
 // Appends the given date to the past-games-container.
 function DateHTML(team) {
   if (team.result === 'BYE') return '';
-  return team.date + " " + team.year;
+  return team.date;
 }
 
 // Returns the week number, used to determine which team (mens/womens) should be listed first.
