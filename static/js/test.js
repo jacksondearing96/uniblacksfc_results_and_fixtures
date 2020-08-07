@@ -279,3 +279,4 @@ var test_functions = [
 
 
 // TODO: Test Payneham in the @rse
+// TODO: Test the winning margin override of 30 points for a win by forfeit.

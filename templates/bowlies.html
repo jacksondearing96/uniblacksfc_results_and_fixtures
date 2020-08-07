@@ -11,6 +11,11 @@
     <br>
     <span class='nickname'>{{ team.nickname }}</span>
 
+    {% if team.result == 'BYE' %}
+    <br>
+    BYE
+    {% else %}
+
     <br>
     <span class='spacer'></span>
 
@@ -127,8 +132,12 @@
 
     <span class='spacer'></span>
 
-    <!-- This is for displaying/hiding the section when there is an error -->
+
     {% endif %}
+    <!-- This is for displaying/hiding the section when there is an error -->
+
+    {% endif %}
+    <!-- If BYE -->
 
   </div>
 

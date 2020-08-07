@@ -1,31 +1,3 @@
-# Initialise gcloud
-# ./~/google-cloud-sdk/bin/gcloud init
-#
-# Run a test server (this will be similar to what is deployed on app engine) (port 8080)
-#  dev_appserver.py --application=sub-auto app.yaml
-#
-# Create a virtual environment
-# virtualenv venv
-#
-# Enter the venv
-# source venv/bin/activate
-#
-# Exit the venv
-# deactivate
-#
-# Update requirements based on what pip has in the virtual env
-# pip freeze > requirements.txt
-#
-# Install the requirements into the lib dir
-# pip install -t lib -r requirements.txt 
-#
-# Deploy application
-# ~/google-cloud-sdk/bin/gcloud app deploy
-#
-# View application
-# gcloud app browse
-#
-
 from flask import Flask, render_template, request
 from datetime import datetime
 import web_scraper
@@ -39,6 +11,7 @@ last_update_time = datetime.now()
 
 
 def update_is_required():
+    global last_update_time
     return last_update_time.date() < datetime.today().date()
 
 
@@ -155,6 +128,7 @@ def update_player_names_from_databse():
     if not web_scraper.UpdatePlayerNamesFromDatabase():
         return 'FAIL'
 
+    global last_update_time
     last_update_time = datetime.now()
     return 'SUCCESS'
 
@@ -166,6 +140,7 @@ def update_nicknames_from_database():
     if not web_scraper.UpdateNicknamesFromDatabase():
         return 'FAIL'
 
+    global last_update_time
     last_update_time = datetime.now()
     return 'SUCCESS'
         
@@ -177,6 +152,7 @@ def update_ground_names_from_database():
     if not web_scraper.UpdateGroundNamesFromDatabase():
         return 'FAIL'
 
+    global last_update_time
     last_update_time = datetime.now()
     return 'SUCCESS'
 
