@@ -1,13 +1,20 @@
 from flask import Flask, render_template, request
 from datetime import datetime
 import web_scraper
+import logging
 import os
 import json
+import cloudstorage as gcs
+import webapp2
+
+from google.appengine.api import app_identity
 
 app = Flask(__name__, template_folder='templates')
 
 
 last_update_time = datetime.now()
+
+bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
 
 
 def update_is_required():
@@ -19,9 +26,31 @@ def ReadFileToString(filename):
     try:
         with open(filename, 'r') as file:
             data = file.read()
+        file.close()
         return data
     except:
         return ''
+
+
+def GCSReadFileToString(filename):
+    try:
+        file = gcs.open('/sub-auto.appspot.com/' + filename)
+        data = file.read()
+        file.close()
+        return data
+    except:
+        return 'Couldn''t read GCS file.'
+
+
+def GCSWrite(filename, data):
+    try:
+        global bucket_name
+        gcs_file = gcs.open('/sub-auto.appspot.com/' + filename, 'w')
+        gcs_file.write(data)
+        gcs_file.close()
+        return 'SUCCESS'
+    except:
+        return 'FAIL'
 
 
 @app.route('/')
@@ -34,22 +63,14 @@ def get_css():
     return ReadFileToString('static/css/subAuto.css')
 
 
-rounds = ["I","I","I","I","I","I","I","I"]
 @app.route('/get_rounds')
 def get_rounds():
-    global rounds
-    return json.dumps(rounds)
+    return GCSReadFileToString('database/rounds.csv')
 
 
 @app.route('/save_rounds', methods=['POST'])
 def save_rounds():
-    global rounds
-    try:
-        rounds = request.get_json(force=True)
-        return 'SUCCESS'
-    except:
-        return 'FAIL'
-    
+    return GCSWrite('database/rounds.csv', request.get_data())
 
 
 def csv_string_to_map(csv_string):
@@ -157,36 +178,14 @@ def update_ground_names_from_database():
     return 'SUCCESS'
 
 
-bowlies_results = ''
 @app.route('/save_bowlies_results', methods=['POST'])
 def save_bowlies_results():
-    # Temporarily just use a global variable to write to. Using a file makes it difficult
-    # to write to (need to set up a storage box in GCP and get a GFS library)
-    #
-    # try:
-    #     with open('database/bowlies_saved_results.txt', 'w') as file:
-    #         file.write(request.get_data())
-    #         return 'SUCCESS'
-    # except:
-    #     pass
-    # return 'FAIL'
-
-    global bowlies_results
-    try:
-        bowlies_results = request.get_data()
-        return 'SUCCESS'
-    except:
-        return 'FAIL'
+    return GCSWrite('database/bowlies_saved_results.txt', request.get_data())
 
 
 @app.route('/restore_bowlies_results', methods=['GET'])
 def restore_bowlies_results():
-    # with open('database/bowlies_saved_results.txt', 'r') as file:
-    #     return file.read()
-    # return 'FAIL'
-
-    global bowlies_results
-    return bowlies_results
+    return GCSReadFileToString('database/bowlies_saved_results.txt')
     
 
 @app.route('/<path:path>', methods=['GET', 'POST'])
