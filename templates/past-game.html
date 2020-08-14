@@ -13,12 +13,15 @@
 
     <td class='expand'>
       <span class='nickname'>{{ team.nickname }}</span>
+      {% if team.result != 'BYE' %}
       </br>
       {{ team.score_for }}
+      {% endif %}
     </td>
 
     <td class='result' class='centre'>{{ team.result }}</td>
 
+    {% if team.result != 'BYE' %}
     <td class='right expand'>
       {{ team.opposition_nickname }}
       </br>
@@ -26,10 +29,16 @@
     </td>
 
     <td class='logo'> <img src="{{ team.image_url }}"></td>
+    {% else %}
+    <!-- to maintain the formatting if we will skip a td above -->
+
+    <td class='right expand'></td>
+    <td class='logo'></td>
+    {% endif %}
 
   </tr>
 
-  {% if team.result != 'forfeit' %}
+  {% if team.result != 'forfeit' and team.result != 'BYE' %}
   <tr class='indent'>
     <td colspan="5">
       <span class='label'>Goal Kickers:</span> {{ team.goal_kickers }}
@@ -42,6 +51,7 @@
     </td>
   </tr>
   {% endif %}
+  <!-- end if not forfeit or BYE -->
 </table>
 
 {% endfor %}
