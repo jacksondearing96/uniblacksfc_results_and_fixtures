@@ -35,7 +35,8 @@ function NewGame(is_past_game) {
     'date_HTML': '',
     'error': '',
     'is_past_game': is_past_game,
-    'include': true
+    'is_final': "false",
+    'include': "true"
   };
 }
 
@@ -62,38 +63,40 @@ function InitialiseWinningVerbs() {
 // TODO: Improve this somehow - surely some way to use destructuring to improve this.
 function UpdatePastGameWithArray(game, row_content) {
   game.include = row_content[0];
-  game.nickname = row_content[1];
-  game.round = row_content[2];
-  game.division = row_content[3];
-  game.gender = row_content[4];
-  game.year = row_content[5];
-  game.landing_page = row_content[6];
-  game.date = row_content[7];
-  game.opposition = row_content[8];
-  game.opposition_nickname = row_content[9];
-  game.result = row_content[10];
-  game.score_for = row_content[11];
-  game.score_against = row_content[12];
-  game.goal_kickers = row_content[13];
-  game.best_players = row_content[14];
-  game.image_url = row_content[15];
+  game.is_final = row_content[1];
+  game.nickname = row_content[2];
+  game.round = row_content[3];
+  game.division = row_content[4];
+  game.gender = row_content[5];
+  game.year = row_content[6];
+  game.landing_page = row_content[7];
+  game.date = row_content[8];
+  game.opposition = row_content[9];
+  game.opposition_nickname = row_content[10];
+  game.result = row_content[11];
+  game.score_for = row_content[12];
+  game.score_against = row_content[13];
+  game.goal_kickers = row_content[14];
+  game.best_players = row_content[15];
+  game.image_url = row_content[16];
 }
 
 function UpdateFutureGameWithArray(game, row_content) {
   game.include = row_content[0];
-  game.nickname = row_content[1];
-  game.round = row_content[2];
-  game.division = row_content[3];
-  game.gender = row_content[4];
-  game.year = row_content[5];
-  game.landing_page = row_content[6];
-  game.date = row_content[7];
-  game.opposition = row_content[8];
-  game.opposition_nickname = row_content[9];
-  game.location = row_content[10];
-  game.location_nickname = row_content[11];
-  game.time = row_content[12];
-  game.image_url = row_content[13];
+  game.is_final = row_content[1];
+  game.nickname = row_content[2];
+  game.round = row_content[3];
+  game.division = row_content[4];
+  game.gender = row_content[5];
+  game.year = row_content[6];
+  game.landing_page = row_content[7];
+  game.date = row_content[8];
+  game.opposition = row_content[9];
+  game.opposition_nickname = row_content[10];
+  game.location = row_content[11];
+  game.location_nickname = row_content[12];
+  game.time = row_content[13];
+  game.image_url = row_content[14];
 }
 
 // Returns the current year.
@@ -157,6 +160,7 @@ function InitialisePastGamesTable() {
     'data': past_teams,
     'columns': [
       { title: 'Include', data: 'include' },
+      { title: 'Final', data: 'is_final' },
       { title: 'Nickname', data: "nickname" },
       { title: 'Round', data: "round" },
       { title: 'Division', data: "division" },
@@ -205,6 +209,7 @@ function InitialiseFutureGamesTable() {
     'data': future_teams,
     'columns': [
       { title: 'Include', data: 'include' },
+      { title: 'Final', data: 'is_final' },
       { title: 'Nickname', data: "nickname" },
       { title: 'Round', data: "round" },
       { title: 'Division', data: "division" },
@@ -276,6 +281,8 @@ function ExpandDate(date, year) {
 // and inserts the fields of the server team into the given teams data structure.
 function UpdateTeamsWithTeamsFromServer(teams, server_teams, table) {
   if (teams.length != server_teams.length) {
+    console.log(teams)
+    console.log(server_teams)
     console.error('Updating teams with server teams error - different sizes.');
   }
 
@@ -601,7 +608,9 @@ function PopulateTablesWithNicknamesAndVerbs() {
 // Retrieves the past and future games from the server and formats the substandard sections.
 function AutomateSubstandard() {
   StartLoading();
-
+  for (let team of past_teams) {
+    console.log(team.include)
+  }
   Promise.all([GetPastGames(), GetFutureGames()])
     .then(async () => {
       await PopulateTablesWithNicknamesAndVerbs();

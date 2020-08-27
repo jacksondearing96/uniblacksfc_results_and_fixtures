@@ -67,16 +67,17 @@ def get_url_code(year, gender, division):
     return code
 
 
-def get_url(year, gender, division, round, past=True):
+def get_url(year, gender, division, round, past=True, is_final=False):
     code = get_url_code(year, gender, division)
     if not code:
         print('Error - could not find url code.')
         return None
-    normal_season = '&pool=1'
     round = '&round=' + str(round)
     fixture_or_round = 'ROUND'
     if not past: fixture_or_round = 'FIXTURE'
-    return 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-' + code + '-0&a=' + fixture_or_round + round + normal_season
+    normal_or_final = '&pool=1'
+    if is_final is not False: normal_or_final = ''
+    return 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-' + code + '-0&a=' + fixture_or_round + round + normal_or_final
 
 
 # TODO: Extend to account for finals matches
