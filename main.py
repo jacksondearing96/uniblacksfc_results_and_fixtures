@@ -39,7 +39,7 @@ def gcs_read_file_to_string(filename):
         file.close()
         return data
     except:
-        return "Couldn't read GCS file."
+        return "ERROR"
 
 
 def gcs_write(filename, data):
