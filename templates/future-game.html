@@ -1,5 +1,5 @@
 {% for team in teams %}
-
+{% if team.include == 'true' %}
 <table class='future-game'>
 
   <div class='row'>
@@ -16,7 +16,11 @@
     </td>
 
     <td id='round-number' class='centre'>
+      {% if team.is_final == 'true' %}
+      {{ team.match_name }}
+      {% else %}
       Round {{ team.round }}
+      {% endif %}
       </br>
       {% if team.location == '(Forfeit)' %}
       Forfeit
@@ -74,5 +78,7 @@
 
   </tr>
 </table>
-
+{% endif %}
+<!-- if team should be included -->
 {% endfor %}
+<!-- teams loop -->

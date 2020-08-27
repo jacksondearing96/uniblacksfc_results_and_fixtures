@@ -52,6 +52,7 @@ class Game(object):
 
         self.is_past_game = is_past_game
         self.is_final = is_final
+        self.match_name = None
 
         self.include = include
         self.option = option
@@ -464,7 +465,14 @@ def populate_game_from_sportstg(game):
             game.error = 'ERROR WITH YEAR REQUESTED'
             return
 
-        game_json = get_game_json_for_adelaide_uni(get_matches_json(html))
+        matches_json = get_matches_json(html)
+        if matches_json is None:
+            game.include = 'false'
+            return
+            
+        game_json = get_game_json_for_adelaide_uni(matches_json)
+        if game.is_final == 'true':
+            game.match_name = game_json['MatchName']
 
         game.round = get_actual_round(game_json)
 
