@@ -601,6 +601,8 @@ async function InitialisePage() {
 
   // Once all the resources have been aquired, initialise the tables.
   Promise.all(resources_from_cache).then(() => {
+    console.log("Override image urls");
+    console.log(override_image_urls);
     InitialisePastGamesTable();
     InitialiseFutureGamesTable();
     EndLoading();
