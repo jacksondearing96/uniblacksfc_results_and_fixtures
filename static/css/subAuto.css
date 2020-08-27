@@ -107,6 +107,13 @@
   font-weight: bold;
 }
 
+#past-games-container .match-name {
+  text-align: center;
+  color: grey;
+  font-size: 17px;
+  margin-bottom: 0px;
+}
+
 #future-games-container b {
   text-align: center !important;
 }
