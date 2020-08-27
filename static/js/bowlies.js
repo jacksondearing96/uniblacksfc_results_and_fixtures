@@ -154,7 +154,13 @@ function AutomateBowlies() {
 
   SetBowliesFlag();
 
-  GetRoundsFromCache().then(() => {
+  const get_info_from_cache = [
+    GetRoundsFromCache(),
+    GetIncludesFromCache(),
+    GetFinalsFromCache()
+  ];
+
+  Promise.all(get_info_from_cache).then(() => {
     GetPastGames().then(() => {
       DiscludeTeams();
       PopulateTablesWithNicknamesAndVerbs().then(() => {
