@@ -47,20 +47,20 @@
     </div>
 
     <div class='row'>
-
-      <div class='col-md-6'>
+      <div class='col-6'>
         <button type='button' class='btn btn-primary' onclick="AutomateBowlies()" id="automate-bowlies-button">Bowlies
           Results</button>
 
         <button type='button' class='btn btn-secondary' id='restore-button' onclick="RestoreBowliesResults()">Restore
           Backup</button>
-
-        <button type='button' class='btn btn-primary' onclick="AutomateSubstandard()"
-          id='automate-substandard-button'>Substandard Results</button>
       </div>
 
-      <div class='col-md-6'>
-        <button id='more-options-button' type='button' class='btn btn-secondary' onclick='MoreOptions()'>More</button>
+      <div class='col-6'>
+        <button type='button' class='btn btn-primary pull-right' onclick="AutomateSubstandard()"
+          id='automate-substandard-button'>Substandard Results</button>
+
+        <button id='more-options-button' type='button' class='btn btn-secondary pull-right'
+          onclick='MoreOptions()'>More</button>
 
         <div id='more-options'>
           <button id='show-tables-button' onclick="ShowTables()" type='button' class='btn btn-secondary'>Show
@@ -98,7 +98,6 @@
           <button type='button' class='btn btn-secondary' onclick="FormatPastGames()">Format Past Games</button>
           <button type='button' class='btn btn-secondary' onclick="FormatFutureGames()">Format Future Games</button>
         </div>
-
       </div>
     </div>
 

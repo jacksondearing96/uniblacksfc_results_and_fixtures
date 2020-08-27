@@ -137,7 +137,6 @@ function DiscludeTeams() {
   for (let i in past_teams) {
     const index = length - 1 - i;
     if (past_teams[index].include != 'true' || past_teams[index].intended_round === '-1') {
-      console.log('deleting', past_teams[index].nickname)
       delete past_teams[index];
     }
   }
