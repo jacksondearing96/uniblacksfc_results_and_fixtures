@@ -36,6 +36,7 @@ function NewGame(is_past_game) {
     'error': '',
     'is_past_game': is_past_game,
     'is_final': "false",
+    'match_name': '',
     'include': "true"
   };
 }
@@ -608,9 +609,6 @@ function PopulateTablesWithNicknamesAndVerbs() {
 // Retrieves the past and future games from the server and formats the substandard sections.
 function AutomateSubstandard() {
   StartLoading();
-  for (let team of past_teams) {
-    console.log(team.is_final)
-  }
   Promise.all([GetPastGames(), GetFutureGames()])
     .then(async () => {
       await PopulateTablesWithNicknamesAndVerbs();
