@@ -34,7 +34,8 @@ function NewGame(is_past_game) {
     'option': 'SUBSTANDARD',
     'date_HTML': '',
     'error': '',
-    'is_past_game': is_past_game
+    'is_past_game': is_past_game,
+    'include': true
   };
 }
 
@@ -60,37 +61,39 @@ function InitialiseWinningVerbs() {
 // the relevant past game. This enforces the explicit ordering of the data tables columns.
 // TODO: Improve this somehow - surely some way to use destructuring to improve this.
 function UpdatePastGameWithArray(game, row_content) {
-  game.nickname = row_content[0];
-  game.round = row_content[1];
-  game.division = row_content[2];
-  game.gender = row_content[3];
-  game.year = row_content[4];
-  game.landing_page = row_content[5];
-  game.date = row_content[6];
-  game.opposition = row_content[7];
-  game.opposition_nickname = row_content[8];
-  game.result = row_content[9];
-  game.score_for = row_content[10];
-  game.score_against = row_content[11];
-  game.goal_kickers = row_content[12];
-  game.best_players = row_content[13];
-  game.image_url = row_content[14];
+  game.include = row_content[0];
+  game.nickname = row_content[1];
+  game.round = row_content[2];
+  game.division = row_content[3];
+  game.gender = row_content[4];
+  game.year = row_content[5];
+  game.landing_page = row_content[6];
+  game.date = row_content[7];
+  game.opposition = row_content[8];
+  game.opposition_nickname = row_content[9];
+  game.result = row_content[10];
+  game.score_for = row_content[11];
+  game.score_against = row_content[12];
+  game.goal_kickers = row_content[13];
+  game.best_players = row_content[14];
+  game.image_url = row_content[15];
 }
 
 function UpdateFutureGameWithArray(game, row_content) {
-  game.nickname = row_content[0];
-  game.round = row_content[1];
-  game.division = row_content[2];
-  game.gender = row_content[3];
-  game.year = row_content[4];
-  game.landing_page = row_content[5];
-  game.date = row_content[6];
-  game.opposition = row_content[7];
-  game.opposition_nickname = row_content[8];
-  game.location = row_content[9];
-  game.location_nickname = row_content[10];
-  game.time = row_content[11];
-  game.image_url = row_content[12];
+  game.include = row_content[0];
+  game.nickname = row_content[1];
+  game.round = row_content[2];
+  game.division = row_content[3];
+  game.gender = row_content[4];
+  game.year = row_content[5];
+  game.landing_page = row_content[6];
+  game.date = row_content[7];
+  game.opposition = row_content[8];
+  game.opposition_nickname = row_content[9];
+  game.location = row_content[10];
+  game.location_nickname = row_content[11];
+  game.time = row_content[12];
+  game.image_url = row_content[13];
 }
 
 // Returns the current year.
@@ -108,6 +111,9 @@ function UpdatePastTeamsFromDOM(row_index) {
   for (let i = 0; i < row.cells.length; ++i) {
     row_content.push(row.cells[i].innerHTML);
   }
+
+  // Here do the conversion from checkbox to true/false
+
   UpdatePastGameWithArray(past_teams[row_index], row_content);
 
   past_table.rows().invalidate().draw();
@@ -150,6 +156,7 @@ function InitialisePastGamesTable() {
     'bFilter': false,
     'data': past_teams,
     'columns': [
+      { title: 'Include', data: 'include' },
       { title: 'Nickname', data: "nickname" },
       { title: 'Round', data: "round" },
       { title: 'Division', data: "division" },
@@ -197,6 +204,7 @@ function InitialiseFutureGamesTable() {
     'bFilter': false,
     'data': future_teams,
     'columns': [
+      { title: 'Include', data: 'include' },
       { title: 'Nickname', data: "nickname" },
       { title: 'Round', data: "round" },
       { title: 'Division', data: "division" },
@@ -602,9 +610,22 @@ function AutomateSubstandard() {
     });
 }
 
+// This can easily work to disclude teams outside of the desired range.
+// But this will require more work to actually find teams in the range.
+function InitialiseDateSelector() {
+  $('input[name="daterange"]').daterangepicker({
+    opens: 'left'
+  }, function (start, end, label) {
+    dateStart = start;
+    dateEnd = end;
+    console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+  });
+}
+
 async function InitialisePage() {
   StartLoading();
 
+  InitialiseDateSelector();
   await UpdateCacheFromDatabase();
 
   // Get all the resources we need from the cache asynchronously.
@@ -617,8 +638,6 @@ async function InitialisePage() {
 
   // Once all the resources have been aquired, initialise the tables.
   Promise.all(resources_from_cache).then(() => {
-    console.log("Override image urls");
-    console.log(override_image_urls);
     InitialisePastGamesTable();
     InitialiseFutureGamesTable();
     EndLoading();

@@ -1,5 +1,5 @@
 {% for team in teams %}
-
+{% if team.include == 'true' %}
 <div class='row'>
   <div class='col-md-12'>
     <p class='date'>{{ team.date_HTML }}</p>
@@ -53,5 +53,7 @@
   {% endif %}
   <!-- end if not forfeit or BYE -->
 </table>
-
+{% endif %}
+<!-- enf if for including a team -->
 {% endfor %}
+<!-- end for teams loop -->
