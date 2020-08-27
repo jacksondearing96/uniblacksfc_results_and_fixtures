@@ -22,7 +22,7 @@ def update_is_required():
     return last_update_time.date() < datetime.today().date()
 
 
-def ReadFileToString(filename):
+def read_file_to_string(filename):
     try:
         with open(filename, 'r') as file:
             data = file.read()
@@ -32,17 +32,17 @@ def ReadFileToString(filename):
         return ''
 
 
-def GCSReadFileToString(filename):
+def gcs_read_file_to_string(filename):
     try:
         file = gcs.open('/sub-auto.appspot.com/' + filename)
         data = file.read()
         file.close()
         return data
     except:
-        return 'Couldn''t read GCS file.'
+        return "Couldn't read GCS file."
 
 
-def GCSWrite(filename, data):
+def gcs_write(filename, data):
     try:
         global bucket_name
         gcs_file = gcs.open('/sub-auto.appspot.com/' + filename, 'w')
@@ -60,17 +60,17 @@ def index():
 
 @app.route('/get_css')
 def get_css():
-    return ReadFileToString('static/css/subAuto.css')
+    return read_file_to_string('static/css/subAuto.css')
 
 
 @app.route('/get_rounds')
 def get_rounds():
-    return GCSReadFileToString('database/rounds.csv')
+    return gcs_read_file_to_string('database/rounds.csv')
 
 
 @app.route('/save_rounds', methods=['POST'])
 def save_rounds():
-    return GCSWrite('database/rounds.csv', request.get_data())
+    return gcs_write('database/rounds.csv', request.get_data())
 
 
 def csv_string_to_map(csv_string):
@@ -100,53 +100,53 @@ def apply_overrides(nicknames, overrides):
 
 @app.route('/get_nicknames')
 def get_nicknames():
-    nicknames = csv_string_to_map(ReadFileToString('database/nicknames.csv'))
-    override_nicknames = csv_string_to_map(ReadFileToString('database/override_nicknames.csv'))
+    nicknames = csv_string_to_map(read_file_to_string('database/nicknames.csv'))
+    override_nicknames = csv_string_to_map(read_file_to_string('database/override_nicknames.csv'))
     apply_overrides(nicknames, override_nicknames)
     return json.dumps(nicknames)
 
 
 @app.route('/get_ground_names')
 def get_ground_names():
-    ground_names = csv_string_to_map(ReadFileToString('database/ground_nicknames.csv'))
-    override_ground_names = csv_string_to_map(ReadFileToString('database/override_ground_nicknames.csv'))
+    ground_names = csv_string_to_map(read_file_to_string('database/ground_nicknames.csv'))
+    override_ground_names = csv_string_to_map(read_file_to_string('database/override_ground_nicknames.csv'))
     apply_overrides(ground_names, override_ground_names)
     return json.dumps(ground_names)
 
 
 @app.route('/get_override_image_urls')
 def get_override_image_urls():
-    return json.dumps(csv_string_to_map(ReadFileToString('database/override_image_urls.csv')))
+    return json.dumps(csv_string_to_map(read_file_to_string('database/override_image_urls.csv')))
 
 
 @app.route('/get_teams')
 def get_teams():
-    return ReadFileToString('database/configurations.json')
+    return read_file_to_string('database/configurations.json')
 
 
 @app.route('/get_past_games', methods=['POST'])
 def get_past_games():
     try:
         games = request.get_json(force=True)
-        return web_scraper.GetPastGames(games)
+        return web_scraper.get_past_games(games)
     except:
-        return web_scraper.ServerFailure()
+        return web_scraper.server_failure()
 
 
 @app.route('/get_future_games', methods=['POST'])
 def get_future_games():
     try:
         games = request.get_json(force=True)
-        return web_scraper.GetFutureGames(games)
+        return web_scraper.get_future_games(games)
     except:
-        return web_scraper.ServerFailure()
+        return web_scraper.server_failure()
 
 
 @app.route('/update_player_names_from_database')
 def update_player_names_from_databse():
     if not update_is_required(): return 'UPDATE OF PLAYER NAMES NOT REQUIRED'
 
-    if not web_scraper.UpdatePlayerNamesFromDatabase():
+    if not web_scraper.update_player_names_from_database():
         return 'FAIL'
 
     global last_update_time
@@ -158,7 +158,7 @@ def update_player_names_from_databse():
 def update_nicknames_from_database():
     if not update_is_required(): return 'UPDATE OF NICKNAMES NOT REQUIRED'
 
-    if not web_scraper.UpdateNicknamesFromDatabase():
+    if not web_scraper.update_nicknames_from_database():
         return 'FAIL'
 
     global last_update_time
@@ -170,7 +170,7 @@ def update_nicknames_from_database():
 def update_ground_names_from_database():
     if not update_is_required(): return 'UPDATE OF GROUND NAMES NOT REQUIRED'
 
-    if not web_scraper.UpdateGroundNamesFromDatabase():
+    if not web_scraper.update_ground_names_from_database():
         return 'FAIL'
 
     global last_update_time
@@ -180,12 +180,12 @@ def update_ground_names_from_database():
 
 @app.route('/save_bowlies_results', methods=['POST'])
 def save_bowlies_results():
-    return GCSWrite('database/bowlies_saved_results.txt', request.get_data())
+    return gcs_write('database/bowlies_saved_results.txt', request.get_data())
 
 
 @app.route('/restore_bowlies_results', methods=['GET'])
 def restore_bowlies_results():
-    return GCSReadFileToString('database/bowlies_saved_results.txt')
+    return gcs_read_file_to_string('database/bowlies_saved_results.txt')
     
 
 @app.route('/<path:path>', methods=['GET', 'POST'])

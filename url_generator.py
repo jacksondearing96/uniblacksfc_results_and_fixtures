@@ -53,7 +53,7 @@ url_codes = {
 }
 
 
-def GetUrlCode(year, gender, division):
+def get_url_code(year, gender, division):
     year = str(year)
     if not url_codes.has_key(year):
         return None
@@ -67,8 +67,8 @@ def GetUrlCode(year, gender, division):
     return code
 
 
-def GetUrl(year, gender, division, round, past=True):
-    code = GetUrlCode(year, gender, division)
+def get_url(year, gender, division, round, past=True):
+    code = get_url_code(year, gender, division)
     if not code:
         print('Error - could not find url code.')
         return None

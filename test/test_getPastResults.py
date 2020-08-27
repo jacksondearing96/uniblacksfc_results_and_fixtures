@@ -15,9 +15,9 @@ class web_scraperTest(unittest.TestCase):
         self.url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-510206-0&pool=1&round=2&a=ROUND'
 
     # Testing basic case. Uni away.
-    def test_PopulateGameFromSportsTg(self):
+    def test_populate_game_from_sportstg(self):
         game = web_scraper.Game(2, 2019, self.url, PAST_GAME, 'SUBSTANDARD')
-        web_scraper.PopulateGameFromSportsTg(game)
+        web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.opposition, 'Brighton Bombers')
         self.assertEqual(game.image_url,
                          u'//websites.sportstg.com/pics/00/36/07/46/36074646_1_T.jpg')
@@ -38,19 +38,19 @@ class web_scraperTest(unittest.TestCase):
         self.assertEqual(game.best_players, best_players)
 
 
-    def test_GetMatchResult(self):
-        self.assertEqual(web_scraper.GetMatchResult(
+    def test_get_match_result(self):
+        self.assertEqual(web_scraper.get_match_result(
             '1.1-7', '1.2-8'), 'LOSS')
-        self.assertEqual(web_scraper.GetMatchResult(
+        self.assertEqual(web_scraper.get_match_result(
             '1.1-67', '1.2-8'),  'WIN')
-        self.assertEqual(web_scraper.GetMatchResult(
+        self.assertEqual(web_scraper.get_match_result(
             '1.1-74', '1.2-74'), 'DRAW')
 
     # Basic game, uni home.
-    def test_GetPastGameHomeGame(self):
+    def test_get_past_game_home_game(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-510206-0&pool=1&round=3&a=ROUND'
         game = web_scraper.Game(3, 2019, url, PAST_GAME, 'SUBSTANDARD')
-        web_scraper.PopulateGameFromSportsTg(game)
+        web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.opposition, u'Goodwood Saints')
         self.assertEqual(game.image_url,
                          u'//websites.sportstg.com/pics/00/02/20/16/2201604_1_T.jpg')
@@ -66,10 +66,10 @@ class web_scraperTest(unittest.TestCase):
         self.assertEqual(game.score_against, u'8.7-55')
 
     # Womens game.
-    def test_GetPastGameWomensGame(self):
+    def test_get_past_game_womens_game(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-6951-0-522600-0&pool=1&round=14&a=ROUND'
         game = web_scraper.Game(14, 2019, url, PAST_GAME, 'SUBSTANDARD')
-        web_scraper.PopulateGameFromSportsTg(game)
+        web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.opposition, u'SMOSH West Lakes')
         self.assertEqual(game.is_home_game, False)
         self.assertEqual(game.location, 'Semaphore Park Oval')
@@ -88,10 +88,10 @@ class web_scraperTest(unittest.TestCase):
                          goal_kickers)
         self.assertEqual(game.best_players, best_players)
 
-    def test_OppositionForfeit(self):
+    def test_opposition_forfeit(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-557892-0&a=ROUND&round=4&pool=1'
         game = web_scraper.Game(4, 2020, url, PAST_GAME, 'SUBSTANDARD')
-        web_scraper.PopulateGameFromSportsTg(game)
+        web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.opposition, u'Hectorville')
         self.assertEqual(game.is_home_game, True)
         self.assertEqual(game.location, u'Forfeit')
@@ -103,82 +103,82 @@ class web_scraperTest(unittest.TestCase):
         self.assertEqual(game.goal_kickers, '')
         self.assertEqual(game.best_players, '')
 
-    def test_GetPastGameForfeitAgainst(self):
+    def test_get_past_game_forfeit_against(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-6951-0-522600-0&pool=1&round=1&a=ROUND'
         game = web_scraper.Game(1, 2019, url, PAST_GAME, 'SUBSTANDARD')
-        web_scraper.PopulateGameFromSportsTg(game)
+        web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.result, 'OPPOSITION_FORFEIT')
 
-    def test_GetAndVerifyYear(self):
+    def test_get_and_verify_year(self):
         expected_year = 2019
         page = requests.get(self.url)
         html = BeautifulSoup(page.content, 'html.parser')
-        self.assertEqual(web_scraper.GetAndVerifyYear(html, expected_year), expected_year)
-        self.assertEqual(web_scraper.GetAndVerifyYear(html, expected_year + 1), 'X')
-        self.assertEqual(web_scraper.GetAndVerifyYear(html,  None), 'X')
-        self.assertEqual(web_scraper.GetAndVerifyYear(html,  ''), 'X')
-        self.assertEqual(web_scraper.GetAndVerifyYear(html,  'X'), 'X')
+        self.assertEqual(web_scraper.get_and_verify_year(html, expected_year), expected_year)
+        self.assertEqual(web_scraper.get_and_verify_year(html, expected_year + 1), 'X')
+        self.assertEqual(web_scraper.get_and_verify_year(html,  None), 'X')
+        self.assertEqual(web_scraper.get_and_verify_year(html,  ''), 'X')
+        self.assertEqual(web_scraper.get_and_verify_year(html,  'X'), 'X')
 
-    def test_GetGameJsonForAdelaideUni(self):
+    def test_get_game_json_for_adelaide_uni(self):
         page = requests.get(self.url)
         html = BeautifulSoup(page.content, 'html.parser')
-        matches_json = web_scraper.GetMatchesJson(html)
-        self.assertNotEqual(web_scraper.GetGameJsonForAdelaideUni(matches_json), None)
-        self.assertEqual(web_scraper.GetGameJsonForAdelaideUni(''), None)
-        self.assertEqual(web_scraper.GetGameJsonForAdelaideUni(None), None)
-        self.assertEqual(web_scraper.GetGameJsonForAdelaideUni([]), None)
-        self.assertEqual(web_scraper.GetGameJsonForAdelaideUni([1, 2, 3]), None)
+        matches_json = web_scraper.get_matches_json(html)
+        self.assertNotEqual(web_scraper.get_game_json_for_adelaide_uni(matches_json), None)
+        self.assertEqual(web_scraper.get_game_json_for_adelaide_uni(''), None)
+        self.assertEqual(web_scraper.get_game_json_for_adelaide_uni(None), None)
+        self.assertEqual(web_scraper.get_game_json_for_adelaide_uni([]), None)
+        self.assertEqual(web_scraper.get_game_json_for_adelaide_uni([1, 2, 3]), None)
 
-    def test_GetMatchesJson(self):
+    def test_get_matches_json(self):
         page = requests.get(self.url)
         html = BeautifulSoup(page.content, 'html.parser')
-        self.assertNotEqual(web_scraper.GetMatchesJson(html), None)
-        self.assertEqual(web_scraper.GetMatchesJson('invalid html'), None)
-        self.assertEqual(web_scraper.GetMatchesJson(None), None)
-        self.assertEqual(web_scraper.GetMatchesJson([]), None)
+        self.assertNotEqual(web_scraper.get_matches_json(html), None)
+        self.assertEqual(web_scraper.get_matches_json('invalid html'), None)
+        self.assertEqual(web_scraper.get_matches_json(None), None)
+        self.assertEqual(web_scraper.get_matches_json([]), None)
 
-    def test_GetMatchResult(self):
-        self.assertEqual(web_scraper.GetMatchResult('1.2-10', '1.2-11'), 'LOSS')
-        self.assertEqual(web_scraper.GetMatchResult('1.2-12', '1.2-11'), 'WIN')
-        self.assertEqual(web_scraper.GetMatchResult('1.2-11', '1.2-11'), 'DRAW')
-        self.assertEqual(web_scraper.GetMatchResult('1.210', '1.2-11'), None)
-        self.assertEqual(web_scraper.GetMatchResult([], '1.2-11'), None)
-        self.assertEqual(web_scraper.GetMatchResult('', ''), None)
-        self.assertEqual(web_scraper.GetMatchResult(None, None), None)
-        self.assertEqual(web_scraper.GetMatchResult('1.2-invalid', '1.2-11'), None)
+    def test_get_match_result(self):
+        self.assertEqual(web_scraper.get_match_result('1.2-10', '1.2-11'), 'LOSS')
+        self.assertEqual(web_scraper.get_match_result('1.2-12', '1.2-11'), 'WIN')
+        self.assertEqual(web_scraper.get_match_result('1.2-11', '1.2-11'), 'DRAW')
+        self.assertEqual(web_scraper.get_match_result('1.210', '1.2-11'), None)
+        self.assertEqual(web_scraper.get_match_result([], '1.2-11'), None)
+        self.assertEqual(web_scraper.get_match_result('', ''), None)
+        self.assertEqual(web_scraper.get_match_result(None, None), None)
+        self.assertEqual(web_scraper.get_match_result('1.2-invalid', '1.2-11'), None)
 
-    def test_ExtractGoalKickersAndBestPlayers(self):
+    def test_extract_goal_kickers_and_best_players(self):
         # Working case is already tested in the full system test above. Just test edge cases here.
-        gk, bp = web_scraper.ExtractGoalKickersAndBestPlayers('')
+        gk, bp = web_scraper.extract_goal_kickers_and_best_players('')
         self.assertEqual(gk, '')
         self.assertEqual(bp, '')
-        gk, bp = web_scraper.ExtractGoalKickersAndBestPlayers(None)
+        gk, bp = web_scraper.extract_goal_kickers_and_best_players(None)
         self.assertEqual(gk, '')
         self.assertEqual(bp, '')
-        gk, bp = web_scraper.ExtractGoalKickersAndBestPlayers([])
+        gk, bp = web_scraper.extract_goal_kickers_and_best_players([])
         self.assertEqual(gk, '')
         self.assertEqual(bp, '')
 
-    def test_InsertNicknames(self):
-        names_and_nicknames = web_scraper.GetPlayerNamesFromCache()
+    def test_insert_nicknames(self):
+        names_and_nicknames = web_scraper.get_player_names_from_cache()
 
         names = 'J. Dearing'
-        names = web_scraper.InsertNicknames(names, names_and_nicknames)
+        names = web_scraper.insert_nicknames(names, names_and_nicknames)
         self.assertEqual(names[0]['name'], 'Buck Hunter (Jackson Dearing)')
         self.assertEqual(names[0]['goals'], '')
 
         names = 'J. Dearing 7, E. Dadds'
-        names = web_scraper.InsertNicknames(names, names_and_nicknames)
+        names = web_scraper.insert_nicknames(names, names_and_nicknames)
         self.assertEqual(names[0]['name'], 'Buck Hunter (Jackson Dearing)')
         self.assertEqual(names[0]['goals'], ' 7')
         self.assertEqual(names[1]['name'], 'Ya Mumms ya Dadds (Edward Dadds)')
         self.assertEqual(names[1]['goals'], '')
 
         names = ''
-        names = web_scraper.InsertNicknames(names, names_and_nicknames)
+        names = web_scraper.insert_nicknames(names, names_and_nicknames)
         self.assertEqual(names, [])
 
         names = None
-        names = web_scraper.InsertNicknames(names, names_and_nicknames)
+        names = web_scraper.insert_nicknames(names, names_and_nicknames)
         self.assertEqual(names, [])
 
