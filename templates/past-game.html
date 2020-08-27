@@ -6,6 +6,14 @@
   </div>
 </div>
 
+{% if team.is_final == 'true' %}
+<div class='row'>
+  <div class='col-md-12'>
+    <p class='match-name'>({{ team.match_name }})</p>
+  </div>
+</div>
+{% endif %}
+
 <!-- Past game -->
 <table class='past-game'>
   <tr class='top-divider'>
