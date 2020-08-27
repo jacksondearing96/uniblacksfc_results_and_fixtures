@@ -41,6 +41,12 @@ function GetRoundsFromCache() {
     fetch('/get_rounds', { method: 'GET' })
       .then(response => response.text())
       .then(rounds => {
+        if (rounds === 'ERROR') {
+          console.log("Couldn't read rounds from GCS");
+          resolve();
+          return;
+        }
+
         rounds = JSON.parse(rounds);
         let index = 0;
         for (let team of past_teams) {

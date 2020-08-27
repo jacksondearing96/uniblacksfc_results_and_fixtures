@@ -469,9 +469,12 @@ def populate_game_from_sportstg(game):
         if matches_json is None:
             game.include = 'false'
             return
-            
+
         game_json = get_game_json_for_adelaide_uni(matches_json)
-        if game.is_final == 'true':
+        print(game_json)
+
+        if game_json['MatchName'] != u'':
+            game.is_final = 'true'
             game.match_name = game_json['MatchName']
             while game.match_name[-1] == ' ' or game.match_name[-1].isdigit():
                 game.match_name = game.match_name[:-1]

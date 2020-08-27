@@ -14,6 +14,7 @@ function NewGame(is_past_game) {
   return {
     'nickname': "",
     'round': "X",
+    'intended_round': '',
     'date': "",
     'year': GetCurrentYear(),
     'landing_page': '',
@@ -67,6 +68,7 @@ function UpdatePastGameWithArray(game, row_content) {
   game.is_final = row_content[1];
   game.nickname = row_content[2];
   game.round = row_content[3];
+  game.intended_round = game.round;
   game.division = row_content[4];
   game.gender = row_content[5];
   game.year = row_content[6];
@@ -87,6 +89,7 @@ function UpdateFutureGameWithArray(game, row_content) {
   game.is_final = row_content[1];
   game.nickname = row_content[2];
   game.round = row_content[3];
+  game.intended_round = game.round;
   game.division = row_content[4];
   game.gender = row_content[5];
   game.year = row_content[6];
