@@ -28,7 +28,7 @@ class Game(object):
     # This should maintain variable names that are compatible with the JSON objects
     # that are expected when this class is converted into a dict and sent to the 
     # front end application. See index.js for the appropriate naming conventions.
-    def __init__(self, round, year, url, is_past_game=True, option='SUBSTANDARD'):
+    def __init__(self, round, year, url, is_past_game=True, option='SUBSTANDARD', include=True, is_final=False):
         self.round = round
         self.year = year
         self.date = None
@@ -51,8 +51,9 @@ class Game(object):
         self.best_players = None
 
         self.is_past_game = is_past_game
+        self.is_final = is_final
 
-        self.include = 'true'
+        self.include = include
         self.option = option
         self.error = ''
 
@@ -448,7 +449,7 @@ def get_data_and_time(game_json, game):
 
 def populate_game_from_sportstg(game):
     try:
-
+        if game.include != 'true': return
 
         if 'sportstg.com' not in game.url:
             error('URL error: incorrect url with no sportstg present')
@@ -549,14 +550,11 @@ def get_past_games(games):
 
     for game in games:
         url = url_generator.get_url(
-            int(game['year']), game['gender'], game['division'], game['round'])
+            int(game['year']), game['gender'], game['division'], game['round'], True, game['is_final'])
 
-        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'])
-        if game['include'] is True: 
-            populate_game_from_sportstg(game_to_fill)
-        else:
-            game_to_fill.include = False
-            
+        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'], game['include'], game['is_final'])
+        print(game_to_fill.is_final)
+        populate_game_from_sportstg(game_to_fill)
         past_games.append(game_to_fill.__dict__)
 
     return json.dumps(past_games)
@@ -567,9 +565,9 @@ def get_future_games(games):
 
     for game in games:
         url = url_generator.get_url(
-            int(game["year"]), game["gender"], game["division"], game["round"], False)
+            int(game["year"]), game["gender"], game["division"], game["round"], False, game['is_final'])
 
-        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'])
+        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'], game['include'], game['is_final'])
         populate_game_from_sportstg(game_to_fill)
         future_games.append(game_to_fill.__dict__)
 
