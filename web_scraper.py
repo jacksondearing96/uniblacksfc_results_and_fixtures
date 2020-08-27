@@ -52,6 +52,7 @@ class Game(object):
 
         self.is_past_game = is_past_game
 
+        self.include = 'true'
         self.option = option
         self.error = ''
 
@@ -551,7 +552,11 @@ def get_past_games(games):
             int(game['year']), game['gender'], game['division'], game['round'])
 
         game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'])
-        populate_game_from_sportstg(game_to_fill)
+        if game['include'] is True: 
+            populate_game_from_sportstg(game_to_fill)
+        else:
+            game_to_fill.include = False
+            
         past_games.append(game_to_fill.__dict__)
 
     return json.dumps(past_games)
