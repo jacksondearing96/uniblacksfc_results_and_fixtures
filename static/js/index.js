@@ -9,6 +9,12 @@ past_table = null;
 future_teams = [];
 future_table = null;
 
+past_disclude_teams = [];
+past_finals_teams = [];
+
+future_disclude_teams = [];
+future_finals_teams = [];
+
 // Initialises a new default game which can be used for either a past or future game.
 function NewGame(is_past_game) {
   return {
@@ -36,9 +42,9 @@ function NewGame(is_past_game) {
     'date_HTML': '',
     'error': '',
     'is_past_game': is_past_game,
-    'is_final': "false",
+    'is_final': '<input type="checkbox"></input>',
     'match_name': '',
-    'include': "true"
+    'include': '<input type="checkbox" class="checked"></input>'
   };
 }
 
@@ -64,8 +70,6 @@ function InitialiseWinningVerbs() {
 // the relevant past game. This enforces the explicit ordering of the data tables columns.
 // TODO: Improve this somehow - surely some way to use destructuring to improve this.
 function UpdatePastGameWithArray(game, row_content) {
-  game.include = row_content[0];
-  game.is_final = row_content[1];
   game.nickname = row_content[2];
   game.round = row_content[3];
   game.intended_round = game.round;
@@ -85,8 +89,6 @@ function UpdatePastGameWithArray(game, row_content) {
 }
 
 function UpdateFutureGameWithArray(game, row_content) {
-  game.include = row_content[0];
-  game.is_final = row_content[1];
   game.nickname = row_content[2];
   game.round = row_content[3];
   game.intended_round = game.round;
@@ -143,16 +145,48 @@ function InitialisePastGamesTable() {
 
   const createdCell = function (cell) {
     let original;
-    cell.setAttribute('contenteditable', true);
-    cell.setAttribute('spellcheck', false);
-    cell.addEventListener("focus", function (e) {
-      original = e.target.textContent;
+
+    // First two columns are checkboxes.
+    if (cell.cellIndex > 1) {
+      cell.setAttribute('contenteditable', true);
+      cell.setAttribute('spellcheck', false);
+    }
+
+    cell.addEventListener("mousedown", function (e) {
+      original = e.target.innerHTML;
     });
     cell.addEventListener("blur", function (e) {
-      if (original !== e.target.textContent) {
+      if (original !== e.target.innerHTML) {
         const row = past_table.row(e.target.parentElement);
         UpdatePastTeamsFromDOM(row.index());
       }
+    });
+    cell.addEventListener("mouseup", function (e) {
+      if (e.target.tagName != 'INPUT') return;
+
+      // Set timeout to allow the state of the box to change.
+      setTimeout(() => {
+        let columnIndex = cell.cellIndex;
+        let rowIndex = past_table.row(e.target.parentElement).index();
+
+        if (columnIndex === 0) {
+
+          if (past_disclude_teams.includes(rowIndex)) {
+            past_disclude_teams = past_disclude_teams.filter(val => val != rowIndex);
+          } else {
+            past_disclude_teams.push(rowIndex);
+          }
+
+        } else if (columnIndex === 1) {
+
+          if (past_finals_teams.includes(rowIndex)) {
+            past_finals_teams = past_finals_teams.filter(val => rowIndex != val);
+          } else {
+            past_finals_teams.push(rowIndex);
+          }
+
+        }
+      }, 50);
     });
   };
 
@@ -194,7 +228,7 @@ function InitialiseFutureGamesTable() {
     let original;
     cell.setAttribute('contenteditable', true);
     cell.setAttribute('spellcheck', false);
-    cell.addEventListener("focus", function (e) {
+    cell.addEventListener("mousedown", function (e) {
       original = e.target.textContent;
     });
     cell.addEventListener("blur", function (e) {
@@ -202,6 +236,33 @@ function InitialiseFutureGamesTable() {
         const row = future_table.row(e.target.parentElement);
         UpdateFutureTeamsFromDOM(row.index());
       }
+    });
+    cell.addEventListener("mouseup", function (e) {
+      if (e.target.tagName != 'INPUT') return;
+
+      // Set timeout to allow the state of the box to change.
+      setTimeout(() => {
+        let columnIndex = cell.cellIndex;
+        let rowIndex = future_table.row(e.target.parentElement).index();
+
+        if (columnIndex === 0) {
+
+          if (future_disclude_teams.includes(rowIndex)) {
+            future_disclude_teams = future_disclude_teams.filter(val => val != rowIndex);
+          } else {
+            future_disclude_teams.push(rowIndex);
+          }
+
+        } else if (columnIndex === 1) {
+
+          if (future_finals_teams.includes(rowIndex)) {
+            future_finals_teams = future_finals_teams.filter(val => rowIndex != val);
+          } else {
+            future_finals_teams.push(rowIndex);
+          }
+
+        }
+      }, 50);
     });
   };
 
@@ -285,16 +346,18 @@ function ExpandDate(date, year) {
 // and inserts the fields of the server team into the given teams data structure.
 function UpdateTeamsWithTeamsFromServer(teams, server_teams, table) {
   if (teams.length != server_teams.length) {
-    console.log(teams)
-    console.log(server_teams)
     console.error('Updating teams with server teams error - different sizes.');
   }
 
   for (let i in server_teams) {
+
     // Apply the updates from the server team.
     Object.keys(server_teams[i]).forEach(key => {
       teams[i][key] = server_teams[i][key];
     });
+
+    teams[i].include = (teams[i].include === 'true') ? '<input type="checkbox" checked>' : '<input type="checkbox">';
+    teams[i].is_final = (teams[i].is_final === 'true') ? '<input type="checkbox" checked>' : '<input type="checkbox">';
 
     // Additional processing.
     teams[i].date = ExpandDate(teams[i].date, teams[i].year);
@@ -609,9 +672,25 @@ function PopulateTablesWithNicknamesAndVerbs() {
   });
 }
 
+function PopulateIncludesAndFinalsChoices() {
+  for (let i of past_disclude_teams) {
+    past_teams[i].include = 'false';
+  }
+  for (let i of past_finals_teams) {
+    past_teams[i].is_final = 'true';
+  }
+  for (let i of future_disclude_teams) {
+    future_teams[i].include = 'false';
+  }
+  for (let i of future_finals_teams) {
+    future_teams[i].is_final = 'true';
+  }
+}
+
 // Retrieves the past and future games from the server and formats the substandard sections.
 function AutomateSubstandard() {
   StartLoading();
+  PopulateIncludesAndFinalsChoices();
   Promise.all([GetPastGames(), GetFutureGames()])
     .then(async () => {
       await PopulateTablesWithNicknamesAndVerbs();
@@ -632,6 +711,13 @@ function InitialiseDateSelector() {
   });
 }
 
+function CheckRequiredBoxes() {
+  let checkboxes_to_be_checked = document.getElementsByClassName('checked');
+  for (let checkbox of checkboxes_to_be_checked) {
+    checkbox.checked = true;
+  }
+}
+
 async function InitialisePage() {
   StartLoading();
 
@@ -650,6 +736,7 @@ async function InitialisePage() {
   Promise.all(resources_from_cache).then(() => {
     InitialisePastGamesTable();
     InitialiseFutureGamesTable();
+    CheckRequiredBoxes();
     EndLoading();
   });
 }

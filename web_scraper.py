@@ -471,7 +471,6 @@ def populate_game_from_sportstg(game):
             return
 
         game_json = get_game_json_for_adelaide_uni(matches_json)
-        print(game_json)
 
         if game_json['MatchName'] != u'':
             game.is_final = 'true'
@@ -562,11 +561,14 @@ def get_past_games(games):
     past_games = []
 
     for game in games:
+        game['include'] = 'true' if ('checked' in game['include']) else 'false'
+        game['is_final'] = 'true' if ('checked' in game['is_final']) else 'false'
+        print(game['is_final'])
+
         url = url_generator.get_url(
             int(game['year']), game['gender'], game['division'], game['round'], True, game['is_final'])
 
         game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'], game['include'], game['is_final'])
-        print(game_to_fill.is_final)
         populate_game_from_sportstg(game_to_fill)
         past_games.append(game_to_fill.__dict__)
 
@@ -577,6 +579,9 @@ def get_future_games(games):
     future_games = []
 
     for game in games:
+        game['include'] = 'true' if ('checked' in game['include']) else 'false'
+        game['is_final'] = 'true' if ('checked' in game['is_final']) else 'false'
+
         url = url_generator.get_url(
             int(game["year"]), game["gender"], game["division"], game["round"], False, game['is_final'])
 
