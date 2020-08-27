@@ -44,6 +44,10 @@ def gcs_read_file_to_string(filename):
 
 def gcs_write(filename, data):
     try:
+        if type(data) is not str:
+            print('ERROR - trying to write data to GCS file that is not of type str')
+            return 'FAIL'
+
         global bucket_name
         gcs_file = gcs.open('/sub-auto.appspot.com/' + filename, 'w')
         gcs_file.write(data)
@@ -68,9 +72,27 @@ def get_rounds():
     return gcs_read_file_to_string('database/rounds.csv')
 
 
-@app.route('/save_rounds', methods=['POST'])
-def save_rounds():
-    return gcs_write('database/rounds.csv', request.get_data())
+@app.route('/get_includes')
+def get_includes():
+    return gcs_read_file_to_string('database/includes.csv')
+
+
+@app.route('/get_finals')
+def get_finals():
+    return gcs_read_file_to_string('database/finals.csv')
+
+
+@app.route('/save_rounds_includes_and_finals', methods=['POST'])
+def save_rounds_includes_and_finals():
+    rounds_includes_and_finals = request.get_json(force=True)
+    try:
+        print(gcs_write('database/rounds.csv', json.dumps(rounds_includes_and_finals['rounds'])))
+        print(gcs_write('database/includes.csv', json.dumps(rounds_includes_and_finals['includes'])))
+        print(gcs_write('database/finals.csv', json.dumps(rounds_includes_and_finals['finals'])))
+        print('Finished writing files')
+        return 'SUCCESS'
+    except:
+        return 'ERROR'
 
 
 def csv_string_to_map(csv_string):

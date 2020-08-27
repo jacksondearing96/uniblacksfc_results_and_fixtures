@@ -58,6 +58,38 @@ function GetRoundsFromCache() {
   });
 }
 
+function GetIncludesFromCache() {
+  return new Promise(resolve => {
+    fetch('/get_includes', { method: 'GET' })
+      .then(response => response.text())
+      .then(includes => {
+        includes = JSON.parse(includes);
+        let index = 0;
+        for (let team of past_teams) {
+          team.include = includes[index];
+          ++index;
+        }
+        resolve();
+      });
+  });
+}
+
+function GetFinalsFromCache() {
+  return new Promise(resolve => {
+    fetch('/get_finals', { method: 'GET' })
+      .then(response => response.text())
+      .then(finals => {
+        finals = JSON.parse(finals);
+        let index = 0;
+        for (let team of past_teams) {
+          team.is_final = finals[index];
+          ++index;
+        }
+        resolve();
+      });
+  });
+}
+
 function UpdatePlayerNamesFromDatabase() {
   return new Promise(resolve => {
     fetch('/update_player_names_from_database', { method: 'GET' })
@@ -105,15 +137,21 @@ function UpdateCacheFromDatabase() {
   });
 }
 
-function SaveRoundsToCache() {
+function SaveRoundsIncludesAndFinalsToCache() {
   return new Promise(resolve => {
 
     let rounds = [];
+    let includes = [];
+    let finals = [];
     for (let team of past_teams) {
       rounds.push(team.round);
+      includes.push(team.include);
+      finals.push(team.is_final);
     }
 
-    fetch('/save_rounds', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(rounds) })
+    const rounds_includes_and_finals = { "rounds": rounds, "includes": includes, "finals": finals };
+
+    fetch('/save_rounds_includes_and_finals', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(rounds_includes_and_finals) })
       .then(response => response.text())
       .then(response => {
 
