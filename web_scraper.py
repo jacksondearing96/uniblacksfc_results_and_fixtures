@@ -553,6 +553,7 @@ def get_past_games(games):
             int(game['year']), game['gender'], game['division'], game['round'], True, game['is_final'])
 
         game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'], game['include'], game['is_final'])
+        print(game_to_fill.is_final)
         populate_game_from_sportstg(game_to_fill)
         past_games.append(game_to_fill.__dict__)
 

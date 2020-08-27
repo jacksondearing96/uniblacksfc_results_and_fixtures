@@ -609,7 +609,7 @@ function PopulateTablesWithNicknamesAndVerbs() {
 function AutomateSubstandard() {
   StartLoading();
   for (let team of past_teams) {
-    console.log(team.include)
+    console.log(team.is_final)
   }
   Promise.all([GetPastGames(), GetFutureGames()])
     .then(async () => {
