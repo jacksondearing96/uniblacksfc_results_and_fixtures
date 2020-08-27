@@ -128,25 +128,25 @@ def get_teams():
 def get_past_games():
     try:
         games = request.get_json(force=True)
-        return web_scraper.GetPastGames(games)
+        return web_scraper.get_past_games(games)
     except:
-        return web_scraper.ServerFailure()
+        return web_scraper.server_failure()
 
 
 @app.route('/get_future_games', methods=['POST'])
 def get_future_games():
     try:
         games = request.get_json(force=True)
-        return web_scraper.GetFutureGames(games)
+        return web_scraper.get_future_games(games)
     except:
-        return web_scraper.ServerFailure()
+        return web_scraper.server_failure()
 
 
 @app.route('/update_player_names_from_database')
 def update_player_names_from_databse():
     if not update_is_required(): return 'UPDATE OF PLAYER NAMES NOT REQUIRED'
 
-    if not web_scraper.UpdatePlayerNamesFromDatabase():
+    if not web_scraper.update_player_names_from_database():
         return 'FAIL'
 
     global last_update_time
@@ -158,7 +158,7 @@ def update_player_names_from_databse():
 def update_nicknames_from_database():
     if not update_is_required(): return 'UPDATE OF NICKNAMES NOT REQUIRED'
 
-    if not web_scraper.UpdateNicknamesFromDatabase():
+    if not web_scraper.update_nicknames_from_database():
         return 'FAIL'
 
     global last_update_time
@@ -170,7 +170,7 @@ def update_nicknames_from_database():
 def update_ground_names_from_database():
     if not update_is_required(): return 'UPDATE OF GROUND NAMES NOT REQUIRED'
 
-    if not web_scraper.UpdateGroundNamesFromDatabase():
+    if not web_scraper.update_ground_names_from_database():
         return 'FAIL'
 
     global last_update_time

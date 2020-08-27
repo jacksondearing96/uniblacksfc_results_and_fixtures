@@ -487,18 +487,34 @@ function ReOrderTeams(teams) {
     return order.indexOf(a.nickname) - order.indexOf(b.nickname);
   });
 
-  // Perform a stable sort according to the day of the week.
+  // Perform a stable sort according to the year -> month -> date.
   teams.sort((a, b) => {
-    return getDateObject(a).getDay() - getDateObject(b).getDay();
+    const aDate = getDateObject(a);
+    const bDate = getDateObject(b);
+
+    const yearDifference = aDate.getFullYear() - bDate.getFullYear();
+    const monthDifference = aDate.getMonth() - bDate.getMonth();
+    const dayDifference = aDate.getDate() - bDate.getDate();
+
+    if (yearDifference != 0) return yearDifference;
+    if (monthDifference != 0) return monthDifference;
+    return dayDifference;
   });
+
+  // Function to determine if two dates are the same.
+  const sameDate = (a, b) => {
+    return a.getFullYear() == b.getFullYear()
+      && a.getMonth() == b.getMonth()
+      && a.getDate() == b.getDate();
+  };
 
   // Include the date in the HTML for the first of each day.
   let prev_date = null;
   for (let team of teams) {
-    if (prev_date === null || prev_date != getDateObject(team).getDay()) {
+    if (prev_date === null || !sameDate(prev_date, getDateObject(team))) {
       team.date_HTML = DateHTML(team);
     }
-    prev_date = getDateObject(team).getDay();
+    prev_date = getDateObject(team);
   }
 
   // Place BYEs at the bottom.
