@@ -55,13 +55,13 @@ class Game(object):
         self.option = option
         self.error = ''
 
-def ServerFailure():
+def server_failure():
     game = Game(0, 0, '')
     game.error = 'SERVER FAILURE'
     return json.dumps([ game.__dict__ ])
 
 
-def Error(message, expected=None, actual=None):
+def error(message, expected=None, actual=None):
     # Print an error message. Optional args for expected and actual results.
     if (debug):
         print('(!) ERROR - ' + message)
@@ -71,7 +71,7 @@ def Error(message, expected=None, actual=None):
             print('\tActual: ' + str(actual))
 
 
-def GetMatchResult(score_for, score_against):
+def get_match_result(score_for, score_against):
     # Returns the match result from two strings that represent the scores in the format:
     # <goals>.<points>-<total>
     try:
@@ -92,7 +92,7 @@ def GetMatchResult(score_for, score_against):
     return None
 
 
-def GetMatchesJson(html):
+def get_matches_json(html):
     # Returns a JSON object that contains all the matches of the round.
     # Extracts the JSON object from a string within a <script> tag.
     # If JSON could not be parsed correctly, returns None.
@@ -114,15 +114,15 @@ def GetMatchesJson(html):
     except:
         pass
 
-    Error('Could not find match JSON in HTML of page.')
+    error('Could not find match JSON in HTML of page.')
     return None
 
 
-def GetGameJsonForAdelaideUni(matches):
+def get_game_json_for_adelaide_uni(matches):
     # Takes the JSON list of all the matches and returns the specific
     # object that represents the game which involved Adelaide Uni.
     if not isinstance(matches, list):
-        Error('JSON array of all the matches from sportstg was invalid')
+        error('JSON array of all the matches from sportstg was invalid')
         return None
 
     adelaide_uni = u'Adelaide University'
@@ -136,11 +136,11 @@ def GetGameJsonForAdelaideUni(matches):
     except:
         pass
 
-    Error('Could not find Adelaide uni in the list of matches.')
+    error('Could not find Adelaide uni in the list of matches.')
     return None
 
 
-def GetAndVerifyYear(html, expected_year):
+def get_and_verify_year(html, expected_year):
     # Verify the year is correct. Year selection box is of this form:
     #
     # <select name="seasonID" id="id_seasonID" class="noprint">
@@ -163,7 +163,7 @@ def GetAndVerifyYear(html, expected_year):
         actualYear = yearSelectionBoxStr[yearIndex: yearIndex + yearLength]
 
         if actualYear != str(expected_year):
-            Error('Incorrect year, expected is different from actual', actualYear, str(expected_year))
+            error('Incorrect year, expected is different from actual', actualYear, str(expected_year))
             return 'X'
     except:
         return 'X'
@@ -171,7 +171,7 @@ def GetAndVerifyYear(html, expected_year):
     return int(actualYear)
 
 
-def ExtractGoalKickersAndBestPlayers(goal_kickers_and_best_players):
+def extract_goal_kickers_and_best_players(goal_kickers_and_best_players):
     try:
         # Check if goal kickers and best players are actuall present in the string.
         goal_kickers_present = False
@@ -183,7 +183,7 @@ def ExtractGoalKickersAndBestPlayers(goal_kickers_and_best_players):
             best_players_present  = True
 
         if not best_players_present and  not goal_kickers_present:
-            Error('Neither Goal Kickers nor Best Players were present in the string to extract them from')
+            error('Neither Goal Kickers nor Best Players were present in the string to extract them from')
             return '', ''
 
         # Remove the unwanted HTML.
@@ -218,7 +218,7 @@ def ExtractGoalKickersAndBestPlayers(goal_kickers_and_best_players):
         return '', ''
 
 
-def OpenAUFCDatabase():
+def open_aufc_database():
     # Opens the AUFC database, logs in and returns a driver for the page.
     # Open headless chrome.
     options = webdriver.ChromeOptions()
@@ -240,13 +240,13 @@ def OpenAUFCDatabase():
     return driver
 
 
-def UpdateNicknamesFromDatabase():
+def update_nicknames_from_database():
     # This logs into the AUFC database front end and searches for all the opposition nicknames.
     # Updates the .csv cached file 'nicknames.csv' with each opposition nickname and 
     # there nickname in the format <name>:<nickname>
     # Storing this information in a cache greatly improves the real-time performance of the system.
     try:
-        driver = OpenAUFCDatabase()
+        driver = open_aufc_database()
 
         driver.find_element_by_id("db-menu-opposition").click()
         time.sleep(1)
@@ -266,7 +266,7 @@ def UpdateNicknamesFromDatabase():
 
         # Verify lengths are consistent.
         if (len(names) != len(nicknames)):
-            Error('Scraped a different number of names and nicknames')
+            error('Scraped a different number of names and nicknames')
 
         with open('database/nicknames.csv', 'w') as file:
             for name, nickname in zip(names, nicknames):
@@ -280,13 +280,13 @@ def UpdateNicknamesFromDatabase():
         return False
 
 
-def UpdateGroundNamesFromDatabase():
+def update_ground_names_from_database():
     # This logs into the AUFC database front end and searches for all the opposition ground names.
     # Updates the .csv cached file 'ground_nicknames.csv' with each opposition ground name and 
     # their ground nickname in the format <name>:<nickname>
     # Storing this information in a cache greatly improves the real-time performance of the system.
     try:
-        driver = OpenAUFCDatabase()
+        driver = open_aufc_database()
 
         driver.find_element_by_id("db-menu-grounds").click()
         time.sleep(1)
@@ -306,7 +306,7 @@ def UpdateGroundNamesFromDatabase():
 
         # Verify lengths are consistent.
         if (len(names) != len(nicknames)):
-            Error('Scraped a different number of names and nicknames')
+            error('Scraped a different number of names and nicknames')
 
         with open('database/ground_nicknames.csv', 'w') as file:
             for name, nickname in zip(names, nicknames):
@@ -320,13 +320,13 @@ def UpdateGroundNamesFromDatabase():
         return False
 
 
-def UpdatePlayerNamesFromDatabase():
+def update_player_names_from_database():
     # This logs into the AUFC database front end and searches for all the registered players.
     # It updates the .csv cached file 'registered_players.csv' with each registered player and 
     # there nickname in the format <name>:<nickname>
     # Storing this information in a cache greatly improves the real-time performance of the system.
     try:
-        driver = OpenAUFCDatabase()
+        driver = open_aufc_database()
 
         driver.find_element_by_id("db-menu-registration").click()
         time.sleep(1)
@@ -343,7 +343,7 @@ def UpdatePlayerNamesFromDatabase():
         nicknames = map(lambda x: x.get_attribute('innerHTML'), nicknames)
 
         if (len(names) != len(nicknames)):
-            Error('Scraped a different number of names and nicknames')
+            error('Scraped a different number of names and nicknames')
 
         with open('database/registered_players.csv', 'w') as file:
             for name, nickname in zip(names, nicknames):
@@ -359,7 +359,7 @@ def UpdatePlayerNamesFromDatabase():
         return False
 
 
-def GetPlayerNamesFromCache():
+def get_player_names_from_cache():
     names_and_nicknames = {}
     with open('database/registered_players.csv', 'r') as file:
         lines = file.readlines()
@@ -369,7 +369,7 @@ def GetPlayerNamesFromCache():
     return names_and_nicknames
 
 
-def InsertNicknames(names, names_and_nicknames):
+def insert_nicknames(names, names_and_nicknames):
     # Takes a str of names and inserts the nickname for that particular player according to 
     # the cached nicknames.
     # Returns a list of objects that preserves the goals kicked by that player in the form:
@@ -414,7 +414,7 @@ def InsertNicknames(names, names_and_nicknames):
         return []
 
 
-def GetActualRound(game_json):
+def get_actual_round(game_json):
     # Extracts the actual round of the match according to the json from sportstg.
     # Important to get this so that it can be verified with the intended round 
     # or used in the case the round is invalid meaning the most recent is required.
@@ -436,7 +436,7 @@ def GetGameLocation(game_json, game):
     game.location = game.location.strip()
 
 
-def GetDateAndTime(game_json, game):
+def get_data_and_time(game_json, game):
     # Extracts and populates the match date and time.
     time_and_date = urllib.unquote(game_json['DateTime'])
     time_and_date = time_and_date.split('<br>')
@@ -445,33 +445,33 @@ def GetDateAndTime(game_json, game):
     game.date = time_and_date[1]
     game.date = game.date.replace('&nbsp;', ' ')
 
-def PopulateGameFromSportsTg(game):
+def populate_game_from_sportstg(game):
     try:
 
 
         if 'sportstg.com' not in game.url:
-            Error('URL error: incorrect url with no sportstg present')
+            error('URL error: incorrect url with no sportstg present')
             return
 
         page = requests.get(game.url)
         html = BeautifulSoup(page.content, 'html.parser')
 
-        game.year = GetAndVerifyYear(html, game.year)
+        game.year = get_and_verify_year(html, game.year)
         if game.year == None:
-            Error('Error occurred with the year requested')
+            error('Error occurred with the year requested')
             game.error = 'ERROR WITH YEAR REQUESTED'
             return
 
-        game_json = GetGameJsonForAdelaideUni(GetMatchesJson(html))
+        game_json = get_game_json_for_adelaide_uni(get_matches_json(html))
 
-        game.round = GetActualRound(game_json)
+        game.round = get_actual_round(game_json)
 
         if game.is_past_game and game_json['PastGame'] != 1:
             # This means we want the results from this match but it's results have not been 
             # completed in sportstg yet.
             # If we detect this error, simply proceed as if it is a future game and
             # flag inside the content that the results had not been finalised.
-            Error('This is not a past game.')
+            error('This is not a past game.')
             game.error = 'MATCH HAS NOT BEEN PLAYED YET'
             game.is_past_game = False
 
@@ -481,7 +481,7 @@ def PopulateGameFromSportsTg(game):
 
         # Get the location and the associated location url.
         GetGameLocation(game_json, game)
-        GetDateAndTime(game_json, game)
+        get_data_and_time(game_json, game)
 
         game.is_home_game = urllib.unquote(
             game_json['HomeClubName']) == u'Adelaide University'
@@ -524,18 +524,18 @@ def PopulateGameFromSportsTg(game):
             return
 
         if game.is_past_game and game.result != 'FORFEIT':
-            game.result = GetMatchResult(game.score_for, game.score_against)
-            game.goal_kickers, game.best_players = ExtractGoalKickersAndBestPlayers(
+            game.result = get_match_result(game.score_for, game.score_against)
+            game.goal_kickers, game.best_players = extract_goal_kickers_and_best_players(
                 goal_kickers_and_best_players)
         else:
             if game.score_for == u'10.0-60':
                 game.result = 'OPPOSITION_FORFEIT'
 
         if game.option == 'BOWLIES':
-            names_and_nicknames = GetPlayerNamesFromCache()
-            game.goal_kickers = InsertNicknames(
+            names_and_nicknames = get_player_names_from_cache()
+            game.goal_kickers = insert_nicknames(
                 game.goal_kickers, names_and_nicknames)
-            game.best_players = InsertNicknames(
+            game.best_players = insert_nicknames(
                 game.best_players, names_and_nicknames)
 
     except:
@@ -543,29 +543,29 @@ def PopulateGameFromSportsTg(game):
 
 
 
-def GetPastGames(games):
+def get_past_games(games):
     past_games = []
 
     for game in games:
-        url = url_generator.GetUrl(
+        url = url_generator.get_url(
             int(game['year']), game['gender'], game['division'], game['round'])
 
         game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'])
-        PopulateGameFromSportsTg(game_to_fill)
+        populate_game_from_sportstg(game_to_fill)
         past_games.append(game_to_fill.__dict__)
 
     return json.dumps(past_games)
 
 
-def GetFutureGames(games):
+def get_future_games(games):
     future_games = []
 
     for game in games:
-        url = url_generator.GetUrl(
+        url = url_generator.get_url(
             int(game["year"]), game["gender"], game["division"], game["round"], False)
 
         game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'])
-        PopulateGameFromSportsTg(game_to_fill)
+        populate_game_from_sportstg(game_to_fill)
         future_games.append(game_to_fill.__dict__)
 
     return json.dumps(future_games)
