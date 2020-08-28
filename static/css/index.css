@@ -71,3 +71,8 @@ button {
 #more-options-button {
   float: right;
 }
+
+input[type='checkbox'] { 
+  width: 30px;
+  height: 30px;
+}

@@ -162,7 +162,6 @@ function SaveRoundsIncludesAndFinalsToCache() {
         } else {
           ButtonFail(save_rounds_button, 'Save Failed')
         }
-
         resolve();
       });
   });

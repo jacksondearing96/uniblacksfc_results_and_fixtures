@@ -34,7 +34,7 @@
 
     <br>
 
-    {% if 'checked' in team.is_final %}
+    {% if team.is_final == 'true' %}
     <span class='dull final-name'>{{ team.match_name }}</span>
     {% endif %}
 

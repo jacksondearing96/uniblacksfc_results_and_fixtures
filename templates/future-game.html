@@ -1,5 +1,5 @@
 {% for team in teams %}
-{% if 'checked' in team.include %}
+{% if team.include == 'true' %}
 <table class='future-game'>
 
   <div class='row'>
@@ -16,7 +16,7 @@
     </td>
 
     <td id='round-number' class='centre'>
-      {% if 'checked' in team.is_final %}
+      {% if team.is_final == 'true' %}
       {{ team.match_name }}
       {% else %}
       Round {{ team.round }}
