@@ -32,7 +32,7 @@ function FormatBowlies() {
 
   // TODO: Date checks --> should be doing some sort of check here.
   return new Promise(resolve => {
-    fetch('/bowlies.html', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(past_teams) })
+    fetch('/bowlies.html', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(bowlies_teams) })
       .then(response => response.text())
       .then(html => {
         $('#bowlies-container').append(html);
@@ -46,16 +46,16 @@ function GetMargin(team) {
   return GetScoreTotal(team.score_for) - GetScoreTotal(team.score_against);
 }
 
-function OrderTeamsBasedOnMargins() {
+function OrderBowliesTeamsBasedOnMargins() {
   var priority_queue = new PriorityQueue();
 
-  for (let team_index in past_teams) {
-    let team = past_teams[team_index];
+  for (let team_index in bowlies_teams) {
+    let team = bowlies_teams[team_index];
     team.margin = (team.result === 'BYE') ? -Number.MAX_VALUE : GetMargin(team);
     priority_queue.enqueue(team, team.margin);
   }
 
-  past_teams = [];
+  bowlies_teams = [];
 
   let sandy_coburn_cup_points = 1;
 
@@ -69,7 +69,7 @@ function OrderTeamsBasedOnMargins() {
       ++sandy_coburn_cup_points;
     }
 
-    past_teams.push(team);
+    bowlies_teams.push(team);
   }
 }
 
@@ -89,7 +89,6 @@ function SaveBowliesResults() {
 
       let save_button = $('#save-bowlies-button');
 
-      console.log(response)
       if (response.status == 200) {
         ButtonSuccess(save_button, 'Saved');
       } else {
@@ -132,14 +131,11 @@ function RestoreBowliesResults() {
     });
 }
 
-function DiscludeTeams() {
-  const length = past_teams.length;
-  for (let i in past_teams) {
-    const index = length - 1 - i;
-    if (past_teams[index].include != 'true' || past_teams[index].intended_round === '-1') {
-      console.log('deleting', past_teams[index].nickname)
-      delete past_teams[index];
-    }
+bowlies_teams = [];
+function PopulateBowliesTeams() {
+  bowlies_teams = [];
+  for (let team of past_teams) {
+    if (team.include === 'true') bowlies_teams.push(team)
   }
 }
 
@@ -161,10 +157,11 @@ function AutomateBowlies() {
   ];
 
   Promise.all(get_info_from_cache).then(() => {
+    console.log(past_teams)
     GetPastGames().then(() => {
-      DiscludeTeams();
       PopulateTablesWithNicknamesAndVerbs().then(() => {
-        OrderTeamsBasedOnMargins();
+        PopulateBowliesTeams();
+        OrderBowliesTeamsBasedOnMargins();
         FormatBowlies().then(() => EndLoading());
       });
     });

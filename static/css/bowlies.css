@@ -193,5 +193,8 @@ b {
 }
 
 .final-name {
-  color: dodgerblue;
+  color: black;
+  background-color: yellow;
+  opacity: 0.8 !important;
+  padding: 3px;
 }

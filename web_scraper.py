@@ -561,10 +561,6 @@ def get_past_games(games):
     past_games = []
 
     for game in games:
-        game['include'] = 'true' if ('checked' in game['include']) else 'false'
-        game['is_final'] = 'true' if ('checked' in game['is_final']) else 'false'
-        print(game['is_final'])
-
         url = url_generator.get_url(
             int(game['year']), game['gender'], game['division'], game['round'], True, game['is_final'])
 
@@ -579,9 +575,6 @@ def get_future_games(games):
     future_games = []
 
     for game in games:
-        game['include'] = 'true' if ('checked' in game['include']) else 'false'
-        game['is_final'] = 'true' if ('checked' in game['is_final']) else 'false'
-
         url = url_generator.get_url(
             int(game["year"]), game["gender"], game["division"], game["round"], False, game['is_final'])
 

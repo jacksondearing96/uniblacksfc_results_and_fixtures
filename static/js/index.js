@@ -9,12 +9,6 @@ past_table = null;
 future_teams = [];
 future_table = null;
 
-past_disclude_teams = [];
-past_finals_teams = [];
-
-future_disclude_teams = [];
-future_finals_teams = [];
-
 // Initialises a new default game which can be used for either a past or future game.
 function NewGame(is_past_game) {
   return {
@@ -42,9 +36,11 @@ function NewGame(is_past_game) {
     'date_HTML': '',
     'error': '',
     'is_past_game': is_past_game,
-    'is_final': '<input type="checkbox"></input>',
+    'is_final': 'false',
+    'is_final_checkbox': '<input type="checkbox"></input>',
     'match_name': '',
-    'include': '<input type="checkbox" class="checked"></input>'
+    'include': 'true',
+    'include_checkbox': '<input type="checkbox" checked></input>'
   };
 }
 
@@ -164,29 +160,23 @@ function InitialisePastGamesTable() {
     cell.addEventListener("mouseup", function (e) {
       if (e.target.tagName != 'INPUT') return;
 
-      // Set timeout to allow the state of the box to change.
+      const timeForCheckboxToChangeState = 50;
+
       setTimeout(() => {
         let columnIndex = cell.cellIndex;
         let rowIndex = past_table.row(e.target.parentElement).index();
 
-        if (columnIndex === 0) {
+        const includeRow = 0;
+        const finalRow = 1;
 
-          if (past_disclude_teams.includes(rowIndex)) {
-            past_disclude_teams = past_disclude_teams.filter(val => val != rowIndex);
-          } else {
-            past_disclude_teams.push(rowIndex);
-          }
-
-        } else if (columnIndex === 1) {
-
-          if (past_finals_teams.includes(rowIndex)) {
-            past_finals_teams = past_finals_teams.filter(val => rowIndex != val);
-          } else {
-            past_finals_teams.push(rowIndex);
-          }
-
+        if (columnIndex === includeRow) {
+          past_teams[rowIndex].include_checkbox = e.target.checked ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
+          past_teams[rowIndex].include = e.target.checked ? "true" : "false";
+        } else if (columnIndex === finalRow) {
+          past_teams[rowIndex].is_final_checkbox = e.target.checked ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
+          past_teams[rowIndex].is_final = e.target.checked ? "true" : "false";
         }
-      }, 50);
+      }, timeForCheckboxToChangeState);
     });
   };
 
@@ -197,8 +187,8 @@ function InitialisePastGamesTable() {
     'bFilter': false,
     'data': past_teams,
     'columns': [
-      { title: 'Include', data: 'include' },
-      { title: 'Final', data: 'is_final' },
+      { title: 'Include', data: 'include_checkbox' },
+      { title: 'Final', data: 'is_final_checkbox' },
       { title: 'Nickname', data: "nickname" },
       { title: 'Round', data: "round" },
       { title: 'Division', data: "division" },
@@ -273,8 +263,8 @@ function InitialiseFutureGamesTable() {
     'bFilter': false,
     'data': future_teams,
     'columns': [
-      { title: 'Include', data: 'include' },
-      { title: 'Final', data: 'is_final' },
+      { title: 'Include', data: 'include_checkbox' },
+      { title: 'Final', data: 'is_final_checkbox' },
       { title: 'Nickname', data: "nickname" },
       { title: 'Round', data: "round" },
       { title: 'Division', data: "division" },
@@ -356,8 +346,9 @@ function UpdateTeamsWithTeamsFromServer(teams, server_teams, table) {
       teams[i][key] = server_teams[i][key];
     });
 
-    teams[i].include = (teams[i].include === 'true') ? '<input type="checkbox" checked>' : '<input type="checkbox">';
-    teams[i].is_final = (teams[i].is_final === 'true') ? '<input type="checkbox" checked>' : '<input type="checkbox">';
+    // Set the checkboxes based on the include/finals info from the server.
+    teams[i].is_final_checkbox = (teams[i].is_final === 'true') ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
+    teams[i].include_checkbox = (teams[i].include === 'true') ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
 
     // Additional processing.
     teams[i].date = ExpandDate(teams[i].date, teams[i].year);
@@ -672,25 +663,10 @@ function PopulateTablesWithNicknamesAndVerbs() {
   });
 }
 
-function PopulateIncludesAndFinalsChoices() {
-  for (let i of past_disclude_teams) {
-    past_teams[i].include = 'false';
-  }
-  for (let i of past_finals_teams) {
-    past_teams[i].is_final = 'true';
-  }
-  for (let i of future_disclude_teams) {
-    future_teams[i].include = 'false';
-  }
-  for (let i of future_finals_teams) {
-    future_teams[i].is_final = 'true';
-  }
-}
-
 // Retrieves the past and future games from the server and formats the substandard sections.
 function AutomateSubstandard() {
   StartLoading();
-  PopulateIncludesAndFinalsChoices();
+  console.log(past_teams);
   Promise.all([GetPastGames(), GetFutureGames()])
     .then(async () => {
       await PopulateTablesWithNicknamesAndVerbs();
@@ -711,13 +687,6 @@ function InitialiseDateSelector() {
   });
 }
 
-function CheckRequiredBoxes() {
-  let checkboxes_to_be_checked = document.getElementsByClassName('checked');
-  for (let checkbox of checkboxes_to_be_checked) {
-    checkbox.checked = true;
-  }
-}
-
 async function InitialisePage() {
   StartLoading();
 
@@ -736,7 +705,6 @@ async function InitialisePage() {
   Promise.all(resources_from_cache).then(() => {
     InitialisePastGamesTable();
     InitialiseFutureGamesTable();
-    CheckRequiredBoxes();
     EndLoading();
   });
 }

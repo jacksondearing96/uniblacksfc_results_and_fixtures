@@ -1,12 +1,12 @@
 {% for team in teams %}
-{% if 'checked' in team.include %}
+{% if team.include == 'true' %}
 <div class='row'>
   <div class='col-md-12'>
     <p class='date'>{{ team.date_HTML }}</p>
   </div>
 </div>
 
-{% if 'checked' in team.is_final %}
+{% if team.is_final == 'true' %}
 <div class='row'>
   <div class='col-md-12'>
     <p class='match-name'>({{ team.match_name }})</p>
