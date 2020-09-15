@@ -1,5 +1,6 @@
 {% for team in teams %}
 {% if team.include == 'true' %}
+{% if team.error == '' %}
 <div class='row'>
   <div class='col-md-12'>
     <p class='date'>{{ team.date_HTML }}</p>
@@ -62,6 +63,8 @@
   <!-- end if not forfeit or BYE -->
 </table>
 {% endif %}
-<!-- enf if for including a team -->
+<!-- end if team in error -->
+{% endif %}
+<!-- end if for including a team -->
 {% endfor %}
 <!-- end for teams loop -->
