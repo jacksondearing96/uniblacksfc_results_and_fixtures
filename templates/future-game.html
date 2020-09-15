@@ -1,5 +1,6 @@
 {% for team in teams %}
-{% if team.include == 'true' && team.error != '' %}
+{% if team.include == 'true' %}
+{% if team.error == '' %}
 <table class='future-game'>
 
   <div class='row'>
@@ -79,6 +80,8 @@
   </tr>
 </table>
 {% endif %}
-<!-- if team should be included & error -->
+<!-- if team is in error  -->
+{% endif %}
+<!-- if team should be included -->
 {% endfor %}
 <!-- teams loop -->

@@ -643,9 +643,25 @@ function FormatGames(container_selector, teams, title_HTML, server_path) {
   });
 }
 
+function ShowErrors(teams, selector) {
+  $(selector).html('');
+  let hasError = false;
+  for (let team of teams) {
+    if (team.error == '') continue;
+    hasError = true;
+    $(selector).append("<span class='error-message'>" + team.nickname + ": " + team.error + "</span><br>");
+  }
+
+  if (hasError) {
+    $(selector).prepend("<br><br><span class='error-message'> (!) ERRORS (!) </span><br><br>");
+  }
+}
+
 function FormatPastGames() {
   const past_games_title = '<p id="past-games-title"><b><i>"If winning is all there is, we want no part of it"</i></b></p>';
   const past_server_path = '/past-game.html';
+
+  ShowErrors(past_teams, '#past-games-errors');
 
   return new Promise(resolve => {
     FormatGames('#past-games-container', past_teams, past_games_title, past_server_path)
@@ -656,6 +672,8 @@ function FormatPastGames() {
 function FormatFutureGames() {
   const future_games_title = "<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>";
   const future_server_path = '/future-game.html';
+
+  ShowErrors(future_teams, "#future-games-errors");
 
   return new Promise(resolve => {
     FormatGames('#future-games-container', future_teams, future_games_title, future_server_path)
