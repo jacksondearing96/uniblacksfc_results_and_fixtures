@@ -62,6 +62,11 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/songs')
+def songs():
+    return render_template('songs.html')
+
+
 @app.route('/get_css')
 def get_css():
     return read_file_to_string('static/css/subAuto.css')

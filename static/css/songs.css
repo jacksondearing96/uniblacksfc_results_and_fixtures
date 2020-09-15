@@ -1,0 +1,30 @@
+.song-menu-item {
+  text-align: center;
+  font-size: 40px;
+  background-color: grey;
+  color: black;
+  padding: 10px;
+}
+
+.song-menu-item:hover {
+  cursor:pointer;
+}
+
+.song-menu-item img {
+  height: 50px;
+  margin: 10px;
+}
+
+#song {
+  font-size: 60px;
+  padding: 30px;
+}
+
+#song .title {
+  font-size: 100px;
+  text-align: center;
+}
+
+#song .lyrics {
+  white-space: pre-wrap;
+}

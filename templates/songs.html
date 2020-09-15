@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>HYB Songs</title>
+
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/songs.js') }}"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/songs.css') }}">
+</head>
+
+<body>
+  <header>
+    <div class="row">
+      <div class="col-sm song-menu-item" data-song-id="holdYourBowlies">
+        HYB
+      </div>
+      <div class="col-sm song-menu-item">
+        1
+      </div>
+      <div class="col-sm song-menu-item">
+        2
+      </div>
+      <div class="col-sm song-menu-item" data-song-id="greenGingerWine">
+        3
+      </div>
+      <div class="col-sm song-menu-item">
+        <img src="https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png">
+      </div>
+    </div>
+  </header>
+
+  <div id="song">
+    <p class='title'></p>
+    <p class='lyrics'></p>
+  </div>
+</body>
+
+
+</html>
