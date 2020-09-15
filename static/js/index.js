@@ -216,13 +216,18 @@ function InitialiseFutureGamesTable() {
 
   const createdCell = function (cell) {
     let original;
-    cell.setAttribute('contenteditable', true);
-    cell.setAttribute('spellcheck', false);
+
+    // First two columns are checkboxes.
+    if (cell.cellIndex > 1) {
+      cell.setAttribute('contenteditable', true);
+      cell.setAttribute('spellcheck', false);
+    }
+
     cell.addEventListener("mousedown", function (e) {
-      original = e.target.textContent;
+      original = e.target.innerHTML;
     });
     cell.addEventListener("blur", function (e) {
-      if (original !== e.target.textContent) {
+      if (original !== e.target.innerHTML) {
         const row = future_table.row(e.target.parentElement);
         UpdateFutureTeamsFromDOM(row.index());
       }
@@ -230,29 +235,42 @@ function InitialiseFutureGamesTable() {
     cell.addEventListener("mouseup", function (e) {
       if (e.target.tagName != 'INPUT') return;
 
+      const timeForCheckboxToChangeState = 50;
+
       // Set timeout to allow the state of the box to change.
       setTimeout(() => {
         let columnIndex = cell.cellIndex;
         let rowIndex = future_table.row(e.target.parentElement).index();
 
-        if (columnIndex === 0) {
+        const includeRow = 0;
+        const finalRow = 1;
 
-          if (future_disclude_teams.includes(rowIndex)) {
-            future_disclude_teams = future_disclude_teams.filter(val => val != rowIndex);
-          } else {
-            future_disclude_teams.push(rowIndex);
-          }
-
-        } else if (columnIndex === 1) {
-
-          if (future_finals_teams.includes(rowIndex)) {
-            future_finals_teams = future_finals_teams.filter(val => rowIndex != val);
-          } else {
-            future_finals_teams.push(rowIndex);
-          }
-
+        if (columnIndex === includeRow) {
+          future_teams[rowIndex].include_checkbox = e.target.checked ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
+          future_teams[rowIndex].include = e.target.checked ? "true" : "false";
+        } else if (columnIndex === finalRow) {
+          future_teams[rowIndex].is_final_checkbox = e.target.checked ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
+          future_teams[rowIndex].is_final = e.target.checked ? "true" : "false";
         }
-      }, 50);
+
+        // if (columnIndex === 0) {
+
+        //   if (future_disclude_teams.includes(rowIndex)) {
+        //     future_disclude_teams = future_disclude_teams.filter(val => val != rowIndex);
+        //   } else {
+        //     future_disclude_teams.push(rowIndex);
+        //   }
+
+        // } else if (columnIndex === 1) {
+
+        //   if (future_finals_teams.includes(rowIndex)) {
+        //     future_finals_teams = future_finals_teams.filter(val => rowIndex != val);
+        //   } else {
+        //     future_finals_teams.push(rowIndex);
+        //   }
+
+        // }
+      }, timeForCheckboxToChangeState);
     });
   };
 
