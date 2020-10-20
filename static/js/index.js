@@ -644,14 +644,20 @@ function FormatGames(container_selector, teams, title_HTML, server_path) {
 }
 
 function ShowErrors(teams, selector) {
+
+  // Clear the current errors.
   $(selector).html('');
+
   let hasError = false;
+
+  // Iterate through teams and append all errors to the HTML.
   for (let team of teams) {
     if (team.error == '') continue;
     hasError = true;
     $(selector).append("<span class='error-message'>" + team.nickname + ": " + team.error + "</span><br>");
   }
 
+  // If at least one error was found, prepend the title of the error section.
   if (hasError) {
     $(selector).prepend("<br><br><span class='error-message'> (!) ERRORS (!) </span><br><br>");
   }
