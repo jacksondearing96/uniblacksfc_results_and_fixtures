@@ -16,7 +16,7 @@ html5lib==1.1
 idna==2.8
 ipaddress==1.0.23
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 kiwisolver==1.1.0
 libclang-py3==3.9.0
 MarkupSafe==1.1.1
