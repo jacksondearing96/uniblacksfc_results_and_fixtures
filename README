@@ -1,0 +1,14 @@
+# Create a virtualenv that uses python2.7 as default.
+python2.7 -m virtualenv ~/venvs/subAuto
+
+# Activate the venv.
+source ~/venvs/subAuto/bin/activate
+
+# Install all requirements.
+pip install -t lib -r requirements.txt
+
+# Run the test server.
+./test_server
+
+# View the test server application.
+http://localhost:8080
