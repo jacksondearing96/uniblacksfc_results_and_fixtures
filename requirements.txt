@@ -8,3 +8,7 @@ googleapis-common-protos==1.52.0
 urllib3==1.25.9
 uWSGI==2.0.19.1
 GoogleAppEngineCloudStorageClient==1.9.22.1
+click==5.1
+Flask==1.1.2
+enum==0.4.7
+selenium==3.141.0

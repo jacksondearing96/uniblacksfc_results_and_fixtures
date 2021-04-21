@@ -633,7 +633,7 @@ function FormatGames(container_selector, teams, title_HTML, server_path) {
     // Clear current content, populate with only the title.
     $(container_selector).html(title_HTML);
 
-    ReOrderTeams(teams);
+    //ReOrderTeams(teams);
 
     for (let team of teams) ProcessLocation(team);
 

@@ -32,7 +32,8 @@ url_codes = {
                 "1 Res": "573800",
                 "C1":"573801",
                 "C4":"573814",
-                "C6":"573804"
+                "C7":"577089",
+                "C8":"573826",
                 },
             "Womens": {
                 "1":"573803",
@@ -81,6 +82,7 @@ def get_url_code(year, gender, division):
 
 
 def get_url(year, gender, division, round, past=True, is_final=False):
+    print(url_codes)
     code = get_url_code(year, gender, division)
     if not code:
         print('Error - could not find url code.')
@@ -89,8 +91,10 @@ def get_url(year, gender, division, round, past=True, is_final=False):
     fixture_or_round = 'ROUND'
     if not past: fixture_or_round = 'FIXTURE'
     normal_or_final = '&pool=1'
-    if is_final is not False: normal_or_final = ''
-    return 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-' + code + '-0&a=' + fixture_or_round + round + normal_or_final
+    if is_final: normal_or_final = ''
+    url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-' + code + '-0&a=' + fixture_or_round + round + normal_or_final
+    print(url)
+    return url
 
 
 # TODO: Extend to account for finals matches
