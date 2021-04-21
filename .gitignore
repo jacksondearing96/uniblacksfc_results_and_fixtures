@@ -4,3 +4,4 @@
 venv
 *.pyc
 lib/*
+connect_to_database.py

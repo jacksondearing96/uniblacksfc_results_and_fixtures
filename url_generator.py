@@ -28,56 +28,20 @@ logging.basicConfig(level=logging.INFO)
 # pool=0 will land on finals if they exist
 # https://websites.sportstg.com/comp_info.cgi?client=1-114-0-510206-0&pool=1&round=1&a=ROUND
 
+import util
+import json
 
-url_codes = {
-    "2021": {
-        "Mens": {
-            "1": "573817",
-            "1 Res": "573800",
-            "C1":"573801",
-            "C4":"573814",
-            "C7":"577089",
-            "C8":"573826",
-        },
-        "Womens": {
-            "1":"573803",
-            "1 Res":"573811"
-        }
-    },
-    "2020": {
-        "Mens": {
-            "1": "547208",
-            "1 Res": "547219",
-            "C1": "547209",
-            "C4": "547212",
-            "C6": "557892",
-            "C7": "547401"
-        },
-        "Womens": {
-            "1": "548065",
-            "1 Res": "555668"
-        }
-    },
-    "2019": {
-        "Mens": {
-            "1": "510206",
-        }
-    },
-    "2018": {
-        "Womens": {
-            "1": "522288",
-        }
-    },
-}
-
+team_configurations_str = util.read_file_to_string('database/team_configurations.json')
+team_configurations = json.loads(team_configurations_str)
 
 def get_url_code(year, gender, division):
     year = str(year)
+    global team_configurations
 
-    if not url_codes.has_key(year):
+    if not team_configurations.has_key(year):
         logging.error('Failed to get_url_code year: ' + year + ' was invalid.')
         return None
-    year = url_codes[year]
+    year = team_configurations[year]
 
     if not year.has_key(gender):
         logging.error('Failed to get_url_code, gender: ' + gender + ' was not present under year: ' + year)
@@ -87,9 +51,12 @@ def get_url_code(year, gender, division):
     if not gender.has_key(division):
         logging.error('Failed to get_url_code, division: ' + division + ' was not present under year: ' + year + ' and gender: ' + gender)
         return None
-    code = gender[division]
+    team = gender[division]
 
-    return code
+    if not team.has_key('url_code'):
+        logging.error('Failed to get_url_code, url_code was not present for division: ' + division + ' year: ' + year + ' and gender: ' + gender)
+
+    return team['url_code'] 
 
 
 def get_url(year, gender, division, round, past=True, is_final=False):

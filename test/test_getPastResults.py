@@ -17,9 +17,6 @@ class GetPastResults(unittest.TestCase):
         round = 2
         year = 2019
         game = web_scraper.Game(round, year, self.url)
-        print('\nGAME IS *****')
-        json.dumps([ game.__dict__ ])
-        print('*****')
 
         web_scraper.populate_game_from_sportstg(game)
 
@@ -164,26 +161,49 @@ class GetPastResults(unittest.TestCase):
         self.assertEqual(gk, '')
         self.assertEqual(bp, '')
 
-    def test_insert_nicknames(self):
-        names_and_nicknames = web_scraper.get_player_names_from_cache()
 
-        names = 'J. Dearing'
-        names = web_scraper.insert_nicknames(names, names_and_nicknames)
-        self.assertEqual(names[0]['name'], 'Buck Hunter (Jackson Dearing)')
-        self.assertEqual(names[0]['goals'], '')
+    def test_get_past_games(self):
+        past_games = '''
+        {
+            "year":2021,
+            "round":"1",
+            "gender":"Mens",
+            "division":"1",
+            "is_final":0,
+            "is_past_game":1,
+            "include_player_nicknames":0,
+            "skip_this_game":0
+        }
+        '''
 
-        names = 'J. Dearing 7, E. Dadds'
-        names = web_scraper.insert_nicknames(names, names_and_nicknames)
-        self.assertEqual(names[0]['name'], 'Buck Hunter (Jackson Dearing)')
-        self.assertEqual(names[0]['goals'], ' 7')
-        self.assertEqual(names[1]['name'], 'Ya Mumms ya Dadds (Edward Dadds)')
-        self.assertEqual(names[1]['goals'], '')
+        populated_past_game_json = json.loads(web_scraper.get_game(json.loads(past_games)))
+        expected_output = '''
+        {
+            "result": "LOSS",
+            "is_home_game": false,
+            "opposition_nickname": null,
+            "location_nickname": null,
+            "score_against": "10.8-68",
+            "match_name": null,
+            "url": "https://websites.sportstg.com/comp_info.cgi?c=1-114-0-573817-0&a=ROUND&round=1&pool=1",
+            "goal_kickers": "M. Langridge 2, H. Gloyne, M. Olekalns, M. Marini, E. Sims, R. Marini",
+            "time": "2:15 PM",
+            "location": "Caterer Oval",
+            "score_for": "7.7-49",
+            "error": "",
+            "is_past_game": true,
+            "image_url": "http://websites.sportstg.com/pics/00/01/76/43/1764333_1_T.jpg",
+            "is_final": false,
+            "opposition": "St Peter's OC",
+            "year": 2021,
+            "date": "Sat 10 Apr",
+            "include_player_nicknames": false,
+            "location_url": "https://websites.sportstg.com/comp_info.cgi?round=1&a=VENUE&venueid=19057027&c=1-114-0-573817-0&fID=125673421",
+            "best_players": "D. Cunningham, C. Noonan, B. Adams, S. Jankewicz, R. Marini, H. Wallace",
+            "round": 1,
+            "skip_this_game": false
+        }
+        '''
+        expected_output_json = json.loads(expected_output)
 
-        names = ''
-        names = web_scraper.insert_nicknames(names, names_and_nicknames)
-        self.assertEqual(names, [])
-
-        names = None
-        names = web_scraper.insert_nicknames(names, names_and_nicknames)
-        self.assertEqual(names, [])
-
+        self.assertEqual(json.dumps(populated_past_game_json, sort_keys=True), json.dumps(expected_output_json, sort_keys=True)) 

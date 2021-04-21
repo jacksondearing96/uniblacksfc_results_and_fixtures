@@ -1,0 +1,94 @@
+{
+  "2021": {
+    "Mens": {
+      "1": {
+        "url_code": "573817",
+        "nickname": "Benny & the Jets"
+      },
+      "1 Res": {
+        "url_code": "573800",
+        "nickname": "G Whizz & the B Grade Fizz"
+      },
+      "C1": {
+        "url_code": "573801",
+        "nickname": "The Chardonnay Socialists"
+      },
+      "C4": {
+        "url_code": "573814",
+        "nickname": "The B@stards"
+      },
+      "C7": {
+        "url_code": "577089",
+        "nickname": "THE SCUM"
+      },
+      "C8": {
+        "url_code": "573826",
+        "nickname": "The Brady Bunch"
+      }
+    },
+    "Womens": {
+      "1": {
+        "url_code": "573803",
+        "nickname": "The Big Lez Show"
+      },
+      "1 Res": {
+        "url_code": "573811",
+        "nickname": "The Queen Bs"
+      }
+    }
+  },
+  "2020": {
+    "Mens": {
+      "1": {
+        "url_code": "547208",
+        "nickname": "Benny & his Jets"
+      },
+      "1 Res": {
+        "url_code": "547219",
+        "nickname": "Pup & the young dawgs"
+      },
+      "C1": {
+        "url_code": "547209",
+        "nickname": "The Chardonnay Socialists"
+      },
+      "C4": {
+        "url_code": "547212",
+        "nickname": "The B@stards"
+      },
+      "C6": {
+        "url_code": "557892",
+        "nickname": "THE SCUM"
+      },
+      "C7": {
+        "url_code": "547401",
+        "nickname": "The Brady Bunch"
+      }
+    },
+    "Womens": {
+      "1": {
+        "url_code": "548065",
+        "nickname": "Moodog and his A Grade Vintage"
+      },
+      "1 Res": {
+        "url_code": "555668",
+        "nickname": "The Big Lez Show"
+      }
+    }
+  },
+  "2019": {
+    "Mens": {
+      "1": {
+        "url_code": "510206",
+        "nickname": "Benny & his Jets"
+      }
+    }
+  },
+  "2018": {
+    "Womens": {
+      "1": {
+        "url_code": "522288",
+        "nickname": "Boxhead and his A Grade Box Cutters"
+      }
+    }
+  }
+}

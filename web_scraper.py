@@ -8,6 +8,9 @@ import json
 import urllib
 from selenium import webdriver
 import time
+import logging
+from game_data_structure import Game
+import aufc_database_proxy
 
 import sys
 reload(sys)
@@ -23,36 +26,6 @@ FUTURE_GAME = False
 # This might make it easier than asking for explicit rounds for each team which would require manual work.
 
 
-class Game(object):
-    # Object to hold all the info about a game (past or present).
-    # This should maintain variable names that are compatible with the JSON objects
-    # that are expected when this class is converted into a dict and sent to the 
-    # front end application. See index.js for the appropriate naming conventions.
-    def __init__(self, round, year, url, is_past_game=True, include_player_nicknames=False, skip_this_game=False, is_final=False):
-        self.round = round
-        self.year = year
-        self.url = url
-        self.is_past_game = is_past_game
-        self.include_player_nicknames = include_player_nicknames 
-        self.skip_this_game = skip_this_game 
-        self.is_final = is_final
-
-        self.match_name = None
-        self.date = None
-        self.time = None
-        self.opposition = None
-        self.image_url = None
-        self.location = None
-        self.location_url = None
-        self.is_home_game = None
-
-        self.result = None
-        self.score_for = None
-        self.score_against = None
-        self.goal_kickers = None
-        self.best_players = None
-
-        self.error = ''
 
 def server_failure():
     game = Game(0, 0, '')
@@ -63,7 +36,7 @@ def server_failure():
 def error(message, expected=None, actual=None):
     # Print an error message. Optional args for expected and actual results.
     if (debug):
-        print('(!) ERROR - ' + message)
+        logging.error(message)
         if expected is not None:
             print('\tExpected: ' + str(expected))
         if actual is not None:
@@ -217,157 +190,6 @@ def extract_goal_kickers_and_best_players(goal_kickers_and_best_players):
         return '', ''
 
 
-def open_aufc_database():
-    # Opens the AUFC database, logs in and returns a driver for the page.
-    # Open headless chrome.
-    options = webdriver.ChromeOptions()
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('--incognito')
-    options.add_argument('--headless')
-    driver = webdriver.Chrome(
-        "/Users/jacksondearing/Desktop/football_results_automation/chromedriver", chrome_options=options)
-
-    # AUFC database.
-    driver.get("http://uniblacksfc.com.au/members/index.php")
-
-    # Fill in username and password.
-    driver.find_element_by_id('username').send_keys('bobneil')
-    driver.find_element_by_id('password').send_keys('bobneil134!')
-    login_button_selector = 'body > div > div.row > div:nth-child(2) > form > button'
-    driver.find_element_by_css_selector(login_button_selector).click()
-
-    return driver
-
-
-def update_nicknames_from_database():
-    # This logs into the AUFC database front end and searches for all the opposition nicknames.
-    # Updates the .csv cached file 'nicknames.csv' with each opposition nickname and 
-    # there nickname in the format <name>:<nickname>
-    # Storing this information in a cache greatly improves the real-time performance of the system.
-    try:
-        driver = open_aufc_database()
-
-        driver.find_element_by_id("db-menu-opposition").click()
-        time.sleep(1)
-        
-        # Perform an empty search to get all registered players.
-        driver.find_element_by_css_selector(
-            '#form-opposition-search > button').click()
-        time.sleep(3)
-
-        # Get opposition names.
-        names = driver.find_elements_by_css_selector('#opposition-search-div > div > table > tbody > tr > td:nth-child(1)')
-        names = map(lambda x: x.get_attribute('innerHTML'), names)
-
-        # Get opposition nicknames.
-        nicknames = driver.find_elements_by_css_selector('#opposition-search-div > div > table > tbody > tr > td:nth-child(2)')
-        nicknames = map(lambda x: x.get_attribute('innerHTML'), nicknames)
-
-        # Verify lengths are consistent.
-        if (len(names) != len(nicknames)):
-            error('Scraped a different number of names and nicknames')
-
-        with open('database/nicknames.csv', 'w') as file:
-            for name, nickname in zip(names, nicknames):
-                name = name.replace('amp;','')
-                nickname = nickname.replace('amp;','')
-                file.write(name + '::' + nickname + ',\n')
-
-        driver.close()
-        return True
-    except:
-        return False
-
-
-def update_ground_names_from_database():
-    # This logs into the AUFC database front end and searches for all the opposition ground names.
-    # Updates the .csv cached file 'ground_nicknames.csv' with each opposition ground name and 
-    # their ground nickname in the format <name>:<nickname>
-    # Storing this information in a cache greatly improves the real-time performance of the system.
-    try:
-        driver = open_aufc_database()
-
-        driver.find_element_by_id("db-menu-grounds").click()
-        time.sleep(1)
-        
-        # Perform an empty search to get all registered players.
-        driver.find_element_by_css_selector(
-            '#form-ground-search > button').click()
-        time.sleep(3)
-
-        # Get opposition ground names.
-        names = driver.find_elements_by_css_selector('#ground-search-div > div > table > tbody > tr > td:nth-child(1)')
-        names = map(lambda x: x.get_attribute('innerHTML'), names)
-
-        # Get opposition ground nicknames.
-        nicknames = driver.find_elements_by_css_selector('#ground-search-div > div > table > tbody > tr > td:nth-child(2)')
-        nicknames = map(lambda x: x.get_attribute('innerHTML'), nicknames)
-
-        # Verify lengths are consistent.
-        if (len(names) != len(nicknames)):
-            error('Scraped a different number of names and nicknames')
-
-        with open('database/ground_nicknames.csv', 'w') as file:
-            for name, nickname in zip(names, nicknames):
-                name = name.replace('amp;','')
-                nickname = nickname.replace('amp;','')
-                file.write(name + '::' + nickname + ',\n')
-
-        driver.close()
-        return True
-    except:
-        return False
-
-
-def update_player_names_from_database():
-    # This logs into the AUFC database front end and searches for all the registered players.
-    # It updates the .csv cached file 'registered_players.csv' with each registered player and 
-    # there nickname in the format <name>:<nickname>
-    # Storing this information in a cache greatly improves the real-time performance of the system.
-    try:
-        driver = open_aufc_database()
-
-        driver.find_element_by_id("db-menu-registration").click()
-        time.sleep(1)
-
-        # Perform an empty search to get all registered players.
-        driver.find_element_by_css_selector(
-            '#form-registration-search > button').click()
-        time.sleep(3)
-
-        names = driver.find_elements_by_class_name('registration-edit-name')
-        names = map(lambda x: x.get_attribute('innerHTML'), names)
-        nicknames = driver.find_elements_by_css_selector(
-            '.registration-edit-name + td')
-        nicknames = map(lambda x: x.get_attribute('innerHTML'), nicknames)
-
-        if (len(names) != len(nicknames)):
-            error('Scraped a different number of names and nicknames')
-
-        with open('database/registered_players.csv', 'w') as file:
-            for name, nickname in zip(names, nicknames):
-                name_parts = name.split(', ')
-                initial = name_parts[1][0] + '.'
-                full_name = name_parts[1] + ' ' + name_parts[0]
-                file.write(
-                    initial + ' ' + name_parts[0] + '::' + str(nickname) + ' (' + full_name + ')' + '\n')
-
-        driver.close()
-        return True
-    except:
-        return False
-
-
-def get_player_names_from_cache():
-    names_and_nicknames = {}
-    with open('database/registered_players.csv', 'r') as file:
-        lines = file.readlines()
-        for line in lines:
-            parts = line.split('::')
-            names_and_nicknames[parts[0]] = parts[1]
-    return names_and_nicknames
-
-
 def insert_nicknames(names, names_and_nicknames):
     # Takes a str of names and inserts the nickname for that particular player according to 
     # the cached nicknames.
@@ -426,7 +248,7 @@ def get_actual_round(game_json):
     return int(str_with_round_embedded)
 
 
-def GetGameLocation(game_json, game):
+def get_game_location(game_json, game):
     # Extracts and returns the game location from the json.
     game.location = urllib.unquote(game_json['VenueName'])
     if game.location == 'Forfeit':
@@ -493,7 +315,7 @@ def populate_game_from_sportstg(game):
             return
 
         # Get the location and the associated location url.
-        GetGameLocation(game_json, game)
+        get_game_location(game_json, game)
         get_data_and_time(game_json, game)
 
         game.is_home_game = urllib.unquote(
@@ -545,7 +367,7 @@ def populate_game_from_sportstg(game):
                 game.result = 'OPPOSITION_FORFEIT'
 
         if game.include_player_nicknames:
-            names_and_nicknames = get_player_names_from_cache()
+            names_and_nicknames = aufc_database_proxy.get_player_names()
             game.goal_kickers = insert_nicknames(
                 game.goal_kickers, names_and_nicknames)
             game.best_players = insert_nicknames(
@@ -555,30 +377,23 @@ def populate_game_from_sportstg(game):
         return
 
 
+def get_game(game):
+    url = url_generator.get_url(
+        int(game['year']),
+        game['gender'],
+        game['division'],
+        int(game['round']),
+        bool(game['is_past_game']),
+        bool(game['is_final']))
 
-def get_past_games(games):
-    past_games = []
+    game_to_fill = Game(
+        int(game['round']),
+        int(game['year']),
+        url,
+        bool(game['is_past_game']),
+        bool(game['include_player_nicknames']),
+        bool(game['skip_this_game']),
+        bool(game['is_final']))
 
-    for game in games:
-        url = url_generator.get_url(
-            int(game['year']), game['gender'], game['division'], game['round'], True, game['is_final'])
-
-        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['include_player_nicknames'], game['skip_this_game'], game['is_final'])
-        populate_game_from_sportstg(game_to_fill)
-        past_games.append(game_to_fill.__dict__)
-
-    return json.dumps(past_games)
-
-
-def get_future_games(games):
-    future_games = []
-
-    for game in games:
-        url = url_generator.get_url(
-            int(game["year"]), game["gender"], game["division"], game["round"], False, game['is_final'])
-
-        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['include_player_nicknames'], game['skip_this_game'], game['is_final'])
-        populate_game_from_sportstg(game_to_fill)
-        future_games.append(game_to_fill.__dict__)
-
-    return json.dumps(future_games)
+    populate_game_from_sportstg(game_to_fill)
+    return json.dumps(game_to_fill.__dict__)
