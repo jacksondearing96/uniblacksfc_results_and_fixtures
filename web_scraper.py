@@ -28,34 +28,30 @@ class Game(object):
     # This should maintain variable names that are compatible with the JSON objects
     # that are expected when this class is converted into a dict and sent to the 
     # front end application. See index.js for the appropriate naming conventions.
-    def __init__(self, round, year, url, is_past_game=True, option='SUBSTANDARD', include=True, is_final=False):
+    def __init__(self, round, year, url, is_past_game=True, include_player_nicknames=False, skip_this_game=False, is_final=False):
         self.round = round
         self.year = year
+        self.url = url
+        self.is_past_game = is_past_game
+        self.include_player_nicknames = include_player_nicknames 
+        self.skip_this_game = skip_this_game 
+        self.is_final = is_final
+
+        self.match_name = None
         self.date = None
         self.time = None
-        self.url = url
-
         self.opposition = None
         self.image_url = None
-
         self.location = None
         self.location_url = None
-
         self.is_home_game = None
-        self.result = None
 
+        self.result = None
         self.score_for = None
         self.score_against = None
-
         self.goal_kickers = None
         self.best_players = None
 
-        self.is_past_game = is_past_game
-        self.is_final = is_final
-        self.match_name = None
-
-        self.include = include
-        self.option = option
         self.error = ''
 
 def server_failure():
@@ -435,7 +431,7 @@ def GetGameLocation(game_json, game):
     game.location = urllib.unquote(game_json['VenueName'])
     if game.location == 'Forfeit':
         game.result = 'FORFEIT'
-    game.location_url = game_json['VenueURL']
+    game.location_url = 'https://websites.sportstg.com/' + game_json['VenueURL']
     game.location = game.location.strip()
 
 
@@ -450,7 +446,7 @@ def get_data_and_time(game_json, game):
 
 def populate_game_from_sportstg(game):
     try:
-        if game.include != 'true': return
+        if game.skip_this_game: return
 
         if 'sportstg.com' not in game.url:
             error('URL error: incorrect url with no sportstg present')
@@ -467,7 +463,7 @@ def populate_game_from_sportstg(game):
 
         matches_json = get_matches_json(html)
         if matches_json is None:
-            game.include = 'false'
+            game.skip_this_game = True
             return
 
         game_json = get_game_json_for_adelaide_uni(matches_json)
@@ -514,7 +510,7 @@ def populate_game_from_sportstg(game):
 
         if game.is_home_game:
             game.opposition = urllib.unquote(game_json['AwayClubName'])
-            game.image_url = game_json['AwayClubLogo']
+            game.image_url = 'http:' + game_json['AwayClubLogo']
             if game.is_past_game:
                 game.score_against = game_json['AwayScore']
                 game.score_for = game_json['HomeScore']
@@ -525,7 +521,7 @@ def populate_game_from_sportstg(game):
                         goal_kickers_and_best_players = goal_kickers_and_best_players_list[0]
         else:
             game.opposition = urllib.unquote(game_json['HomeClubName'])
-            game.image_url = game_json['HomeClubLogo']
+            game.image_url = 'http:' + game_json['HomeClubLogo']
             if game.is_past_game:
                 game.score_against = game_json['HomeScore']
                 game.score_for = game_json['AwayScore']
@@ -548,7 +544,7 @@ def populate_game_from_sportstg(game):
             if game.score_for == u'10.0-60':
                 game.result = 'OPPOSITION_FORFEIT'
 
-        if game.option == 'BOWLIES':
+        if game.include_player_nicknames:
             names_and_nicknames = get_player_names_from_cache()
             game.goal_kickers = insert_nicknames(
                 game.goal_kickers, names_and_nicknames)
@@ -567,7 +563,7 @@ def get_past_games(games):
         url = url_generator.get_url(
             int(game['year']), game['gender'], game['division'], game['round'], True, game['is_final'])
 
-        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'], game['include'], game['is_final'])
+        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['include_player_nicknames'], game['skip_this_game'], game['is_final'])
         populate_game_from_sportstg(game_to_fill)
         past_games.append(game_to_fill.__dict__)
 
@@ -581,7 +577,7 @@ def get_future_games(games):
         url = url_generator.get_url(
             int(game["year"]), game["gender"], game["division"], game["round"], False, game['is_final'])
 
-        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['option'], game['include'], game['is_final'])
+        game_to_fill = Game(game['round'], game['year'], url, game['is_past_game'], game['include_player_nicknames'], game['skip_this_game'], game['is_final'])
         populate_game_from_sportstg(game_to_fill)
         future_games.append(game_to_fill.__dict__)
 

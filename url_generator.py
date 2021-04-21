@@ -1,3 +1,7 @@
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
 # 2020 Div 1 Mens
 # https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547208-0&a=FIXTURE
 # 2020 Div 1 Res Mens
@@ -26,20 +30,20 @@
 
 
 url_codes = {
-        "2021": {
-            "Mens": {
-                "1": "573817",
-                "1 Res": "573800",
-                "C1":"573801",
-                "C4":"573814",
-                "C7":"577089",
-                "C8":"573826",
-                },
-            "Womens": {
-                "1":"573803",
-                "1 Res":"573811"
-                }
-            },
+    "2021": {
+        "Mens": {
+            "1": "573817",
+            "1 Res": "573800",
+            "C1":"573801",
+            "C4":"573814",
+            "C7":"577089",
+            "C8":"573826",
+        },
+        "Womens": {
+            "1":"573803",
+            "1 Res":"573811"
+        }
+    },
     "2020": {
         "Mens": {
             "1": "547208",
@@ -69,32 +73,43 @@ url_codes = {
 
 def get_url_code(year, gender, division):
     year = str(year)
+
     if not url_codes.has_key(year):
+        logging.error('Failed to get_url_code year: ' + year + ' was invalid.')
         return None
     year = url_codes[year]
+
     if not year.has_key(gender):
+        logging.error('Failed to get_url_code, gender: ' + gender + ' was not present under year: ' + year)
         return None
     gender = year[gender]
+
     if not gender.has_key(division):
+        logging.error('Failed to get_url_code, division: ' + division + ' was not present under year: ' + year + ' and gender: ' + gender)
         return None
     code = gender[division]
+
     return code
 
 
 def get_url(year, gender, division, round, past=True, is_final=False):
-    print(url_codes)
     code = get_url_code(year, gender, division)
+
     if not code:
-        print('Error - could not find url code.')
+        logging.error('Error - could not get_url code.')
         return None
+
     round = '&round=' + str(round)
+
     fixture_or_round = 'ROUND'
     if not past: fixture_or_round = 'FIXTURE'
+
     normal_or_final = '&pool=1'
     if is_final: normal_or_final = ''
+
     url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-' + code + '-0&a=' + fixture_or_round + round + normal_or_final
-    print(url)
+    
+    logging.info('Determining url for: year=' + str(year) + ', gender=' + gender + ', div=' + division + ', round=' + round + ', past=' + str(past) + ', is_final=' + str(is_final))
+    logging.info(url)
+
     return url
-
-
-# TODO: Extend to account for finals matches

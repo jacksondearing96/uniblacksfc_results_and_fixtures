@@ -5,10 +5,8 @@ from bs4 import BeautifulSoup
 
 import web_scraper
 
-PAST_GAME = True
 
-
-class web_scraperTest(unittest.TestCase):
+class GetPastResults(unittest.TestCase):
 
     def setUp(self):
         # Div 1, Round 2, 2019, Adl uni vs Brighton.
@@ -16,17 +14,24 @@ class web_scraperTest(unittest.TestCase):
 
     # Testing basic case. Uni away.
     def test_populate_game_from_sportstg(self):
-        game = web_scraper.Game(2, 2019, self.url, PAST_GAME, 'SUBSTANDARD')
+        round = 2
+        year = 2019
+        game = web_scraper.Game(round, year, self.url)
+        print('\nGAME IS *****')
+        json.dumps([ game.__dict__ ])
+        print('*****')
+
         web_scraper.populate_game_from_sportstg(game)
+
         self.assertEqual(game.opposition, 'Brighton Bombers')
         self.assertEqual(game.image_url,
-                         u'//websites.sportstg.com/pics/00/36/07/46/36074646_1_T.jpg')
+                         u'http://websites.sportstg.com/pics/00/36/07/46/36074646_1_T.jpg')
         self.assertEqual(game.is_home_game, False)
         self.assertEqual(game.location, 'Brighton Oval')
         self.assertEqual(
-            game.location_url, u'comp_info.cgi?round=2&a=VENUE&venueid=26688848&c=1-114-0-510206-0&fID=125234885')
+            game.location_url, u'https://websites.sportstg.com/comp_info.cgi?round=2&a=VENUE&venueid=26688848&c=1-114-0-510206-0&fID=125234885')
         self.assertEqual(game.result,  'WIN')
-        self.assertEqual(game.round, 2)
+        self.assertEqual(game.round, round)
         self.assertEqual(game.time, u'2:15 PM')
         self.assertEqual(game.date, u'Sat 13 Apr')
         self.assertEqual(game.score_for, u'12.13-85')
@@ -49,15 +54,15 @@ class web_scraperTest(unittest.TestCase):
     # Basic game, uni home.
     def test_get_past_game_home_game(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-510206-0&pool=1&round=3&a=ROUND'
-        game = web_scraper.Game(3, 2019, url, PAST_GAME, 'SUBSTANDARD')
+        game = web_scraper.Game(3, 2019, url)
         web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.opposition, u'Goodwood Saints')
         self.assertEqual(game.image_url,
-                         u'//websites.sportstg.com/pics/00/02/20/16/2201604_1_T.jpg')
+                         u'http://websites.sportstg.com/pics/00/02/20/16/2201604_1_T.jpg')
         self.assertEqual(game.is_home_game, True)
         self.assertEqual(game.location, 'University Oval')
         self.assertEqual(
-            game.location_url, u'comp_info.cgi?round=3&a=VENUE&venueid=15225989&c=1-114-0-510206-0&fID=125234850')
+            game.location_url, u'https://websites.sportstg.com/comp_info.cgi?round=3&a=VENUE&venueid=15225989&c=1-114-0-510206-0&fID=125234850')
         self.assertEqual(game.result,  'WIN')
         self.assertEqual(game.round, 3)
         self.assertEqual(game.time, u'2:30 PM')
@@ -68,13 +73,13 @@ class web_scraperTest(unittest.TestCase):
     # Womens game.
     def test_get_past_game_womens_game(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-6951-0-522600-0&pool=1&round=14&a=ROUND'
-        game = web_scraper.Game(14, 2019, url, PAST_GAME, 'SUBSTANDARD')
+        game = web_scraper.Game(14, 2019, url)
         web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.opposition, u'SMOSH West Lakes')
         self.assertEqual(game.is_home_game, False)
         self.assertEqual(game.location, 'Semaphore Park Oval')
         self.assertEqual(
-            game.location_url, u'comp_info.cgi?round=14&a=VENUE&venueid=27368027&c=1-6951-0-522600-0&fID=125275487')
+            game.location_url, u'https://websites.sportstg.com/comp_info.cgi?round=14&a=VENUE&venueid=27368027&c=1-6951-0-522600-0&fID=125275487')
         self.assertEqual(game.result, 'LOSS')
         self.assertEqual(game.round, 14)
         self.assertEqual(game.time, u'4:45 PM')
@@ -90,7 +95,7 @@ class web_scraperTest(unittest.TestCase):
 
     def test_opposition_forfeit(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-557892-0&a=ROUND&round=4&pool=1'
-        game = web_scraper.Game(4, 2020, url, PAST_GAME, 'SUBSTANDARD')
+        game = web_scraper.Game(4, 2020, url)
         web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.opposition, u'Hectorville')
         self.assertEqual(game.is_home_game, True)
@@ -105,7 +110,7 @@ class web_scraperTest(unittest.TestCase):
 
     def test_get_past_game_forfeit_against(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-6951-0-522600-0&pool=1&round=1&a=ROUND'
-        game = web_scraper.Game(1, 2019, url, PAST_GAME, 'SUBSTANDARD')
+        game = web_scraper.Game(1, 2019, url)
         web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.result, 'OPPOSITION_FORFEIT')
 
