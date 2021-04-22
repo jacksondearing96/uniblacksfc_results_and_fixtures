@@ -103,46 +103,42 @@ class GetFutureGameDetails(unittest.TestCase):
 
     # API level call with JSON post data.
     def test_get_future_game(self):
-        past_games = '''
-        {
+        future_game = {
             "year":2021,
             "round":"1",
             "gender":"Mens",
             "division":"1",
-            "is_final":0,
-            "is_past_game":false,
-            "include_player_nicknames":0,
-            "skip_this_game":0
+            "is_final": False,
+            "is_past_game": False,
+            "include_player_nicknames": False,
+            "skip_this_game": False
         }
-        '''
 
-        populated_past_game_json = json.loads(web_scraper.get_game(json.loads(past_games)))
-        expected_output_json = json.loads('''
-        {
-            "result": null,
-            "is_home_game": false,
-            "score_against": null,
-            "match_name": null,
+        scraped_game = web_scraper.get_game_details_from_sportstg(future_game)
+        expected_output = {
+            "result": None,
+            "is_home_game": False,
+            "score_against": None,
+            "match_name": None,
             "url": "https://websites.sportstg.com/comp_info.cgi?c=1-114-0-573817-0&a=FIXTURE&round=1&pool=1",
             "goal_kickers": "",
             "time": "2:15 PM",
             "location": "Caterer Oval",
-            "location_nickname": null,
-            "score_for": null,
+            "location_nickname": "Hackney High",
+            "score_for": None,
             "error": "",
-            "is_past_game": false,
+            "is_past_game": False,
             "image_url": "http://websites.sportstg.com/pics/00/01/76/43/1764333_1_T.jpg",
-            "is_final": false,
+            "is_final": False,
             "opposition": "St Peter's OC",
             "year": 2021,
-            "opposition_nickname": null,
+            "opposition_nickname": "The Silver Spooners",
             "date": "Sat 10 Apr",
-            "include_player_nicknames": false,
+            "include_player_nicknames": False,
             "location_url": "https://websites.sportstg.com/comp_info.cgi?round=1&a=VENUE&venueid=19057027&c=1-114-0-573817-0&fID=125673421",
             "best_players": "",
             "round": 1,
-            "skip_this_game": false
+            "skip_this_game": False
         }
-        ''')
 
-        self.assertEqual(json.dumps(populated_past_game_json, sort_keys=True), json.dumps(expected_output_json, sort_keys=True))
+        self.assertEquals(scraped_game.__dict__, expected_output)

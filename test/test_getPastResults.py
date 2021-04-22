@@ -33,11 +33,17 @@ class GetPastResults(unittest.TestCase):
         self.assertEqual(game.date, u'Sat 13 Apr')
         self.assertEqual(game.score_for, u'12.13-85')
         self.assertEqual(game.score_against, u'12.9-81')
-        goal_kickers = 'N. Langridge 4, C. Parker 2, R. Marini, M. Langridge, S. Sharley, A. Offe, J. Keynes, M. Slade'
-        best_players = 'D. Cunningham, C. Parker, B. Adams, N. Langridge, M. Marini, A. Offe'
-        self.assertEqual(game.goal_kickers,
-                         goal_kickers)
-        self.assertEqual(game.best_players, best_players)
+        goal_kickers = [{'name': u'N. Langridge', 'goals': 4}, {'name': u'C. Parker', 'goals': 2}, {'name': u'R. Marini', 'goals': 1}, {'name': u'M. Langridge', 'goals': 1}, {'name': u'S. Sharley', 'goals': 1}, {'name': u'A. Offe', 'goals': 1}, {'name': u'J. Keynes', 'goals': 1}, {'name': u'M. Slade', 'goals': 1}] 
+        best_players = [{'name': u'D. Cunningham'}, {'name': u'C. Parker'}, {'name': u'B. Adams'}, {'name': u'N. Langridge'}, {'name': u'M. Marini'}, {'name': u'A. Offe'}]
+
+        self.assertEqual(len(game.goal_kickers),
+                         len(goal_kickers))
+        self.assertEqual(len(game.best_players), len(best_players))
+
+        for i in range(len(goal_kickers)):
+            self.assertEqual(game.goal_kickers[i], goal_kickers[i])
+        for i in range(len(best_players)):
+            self.assertEqual(game.best_players[i], best_players[i])
 
 
     def test_get_match_result(self):
@@ -84,11 +90,19 @@ class GetPastResults(unittest.TestCase):
         self.assertEqual(game.score_for, u'0.0-0')
         self.assertEqual(game.score_against, u'13.17-95')
 
-        goal_kickers = ''
-        best_players = 'R. Gardiner, M. von der Borch-Jardine, M. Williams, M. Lock, B. Badenoch, J. Betts'
-        self.assertEqual(game.goal_kickers,
-                         goal_kickers)
-        self.assertEqual(game.best_players, best_players)
+        goal_kickers = []
+        best_players = [
+            {"name": u"R. Gardiner"},
+            {"name": u"M. von der Borch-Jardine"},
+            {"name": u"M. Williams"},
+            {"name": u"M. Lock"},
+            {"name": u"B. Badenoch"},
+            {"name": u"J. Betts"},
+        ]
+        self.assertEqual(len(game.goal_kickers), len(goal_kickers))
+        self.assertEqual(len(game.best_players), len(best_players))
+        for i in range(len(best_players)):
+            self.assertEqual(game.best_players[i], best_players[i])
 
     def test_opposition_forfeit(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-557892-0&a=ROUND&round=4&pool=1'
@@ -152,58 +166,56 @@ class GetPastResults(unittest.TestCase):
     def test_extract_goal_kickers_and_best_players(self):
         # Working case is already tested in the full system test above. Just test edge cases here.
         gk, bp = web_scraper.extract_goal_kickers_and_best_players('')
-        self.assertEqual(gk, '')
-        self.assertEqual(bp, '')
+        self.assertEqual(gk, [])
+        self.assertEqual(bp, [])
         gk, bp = web_scraper.extract_goal_kickers_and_best_players(None)
-        self.assertEqual(gk, '')
-        self.assertEqual(bp, '')
+        self.assertEqual(gk, [])
+        self.assertEqual(bp, [])
         gk, bp = web_scraper.extract_goal_kickers_and_best_players([])
-        self.assertEqual(gk, '')
-        self.assertEqual(bp, '')
+        self.assertEqual(gk, [])
+        self.assertEqual(bp, [])
 
 
     def test_get_past_games(self):
-        past_games = '''
-        {
+        past_game_details = {
             "year":2021,
             "round":"1",
             "gender":"Mens",
             "division":"1",
-            "is_final":0,
-            "is_past_game":1,
-            "include_player_nicknames":0,
-            "skip_this_game":0
+            "is_final": False,
+            "is_past_game": True,
+            "include_player_nicknames": False,
+            "skip_this_game":False
         }
-        '''
 
-        populated_past_game_json = json.loads(web_scraper.get_game(json.loads(past_games)))
-        expected_output = '''
-        {
+        scraped_game_details = web_scraper.get_game_details_from_sportstg(past_game_details)
+        expected_output = {
             "result": "LOSS",
-            "is_home_game": false,
-            "opposition_nickname": null,
-            "location_nickname": null,
+            "is_home_game": False,
+            "location_nickname": 'Hackney High',
             "score_against": "10.8-68",
-            "match_name": null,
+            "match_name": None,
             "url": "https://websites.sportstg.com/comp_info.cgi?c=1-114-0-573817-0&a=ROUND&round=1&pool=1",
-            "goal_kickers": "M. Langridge 2, H. Gloyne, M. Olekalns, M. Marini, E. Sims, R. Marini",
+            "goal_kickers": [{'fullname': u'Matthew Langridge', 'nickname': u'Good Langridge', 'name': u'M. Langridge', 'memberID': 27080}, {'fullname': u'Harrison Gloyne', 'nickname': u'The Path', 'name': u'H. Gloyne', 'memberID': 26909}, {'fullname': u'Maris Olekalns', 'nickname': u'Son of a Gun', 'name': u'M. Olekalns', 'memberID': 27683}, {'fullname': u'Mitchell Marini', 'nickname': u'Nonna Marini', 'name': u'M. Marini', 'memberID': 27375}, {'fullname': u'Edward Sims', 'nickname': u'Virtual Reality', 'name': u'E. Sims', 'memberID': 27513}, {'fullname': u'Ryan Marini', 'nickname': u'Nonno Marini', 'name': u'R. Marini', 'memberID': 27317}],
             "time": "2:15 PM",
             "location": "Caterer Oval",
             "score_for": "7.7-49",
             "error": "",
-            "is_past_game": true,
+            "is_past_game": True,
             "image_url": "http://websites.sportstg.com/pics/00/01/76/43/1764333_1_T.jpg",
-            "is_final": false,
+            "is_final": False,
             "opposition": "St Peter's OC",
+            "opposition_nickname": "The Silver Spooners",
             "year": 2021,
             "date": "Sat 10 Apr",
-            "include_player_nicknames": false,
+            "include_player_nicknames": False,
             "location_url": "https://websites.sportstg.com/comp_info.cgi?round=1&a=VENUE&venueid=19057027&c=1-114-0-573817-0&fID=125673421",
-            "best_players": "D. Cunningham, C. Noonan, B. Adams, S. Jankewicz, R. Marini, H. Wallace",
+            "best_players": [{'fullname': u'Damian Cunningham', 'nickname': u'Cunninghams Warehouse, Yes Sir-eee!!!', 'name': u'D. Cunningham', 'memberID': 26610}, {'fullname': u'Conor Noonan', 'nickname': u'Harry Styles', 'name': u'C. Noonan', 'memberID': 27208}, {'fullname': u'Ben Adams', 'nickname': u'The Adams Family', 'name': u'B. Adams', 'memberID': 27099}, {'fullname': u'Stefan Jankewicz', 'nickname': u'Stef-Hahn Super Dry', 'name': u'S. Jankewicz', 'memberID': 27316}, {'fullname': u'Ryan Marini', 'nickname': u'Nonno Marini', 'name': u'R. Marini', 'memberID': 27317}, {'fullname': u'Hamish Wallace', 'nickname': u'Wallace & Gromit', 'name': u'H. Wallace', 'memberID': 27443}],
             "round": 1,
-            "skip_this_game": false
+            "skip_this_game": False
         }
-        '''
-        expected_output_json = json.loads(expected_output)
 
-        self.assertEqual(json.dumps(populated_past_game_json, sort_keys=True), json.dumps(expected_output_json, sort_keys=True)) 
+        scraped_game_details = scraped_game_details.__dict__
+        self.assertEqual(len(scraped_game_details.keys()), len(expected_output))
+        for key in expected_output.keys():
+            self.assertEqual(scraped_game_details[key], expected_output[key])

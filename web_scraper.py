@@ -10,7 +10,7 @@ from selenium import webdriver
 import time
 import logging
 from game_data_structure import Game
-import aufc_database_proxy
+from aufc_database_proxy import AufcDatabaseProxy
 
 import sys
 reload(sys)
@@ -59,8 +59,9 @@ def get_match_result(score_for, score_against):
             return "LOSS"
         if score_for_total == score_against_total:
             return "DRAW"
-    except:
-        pass
+    except Exception as e:
+        logging.error(e)
+
     return None
 
 
@@ -81,10 +82,10 @@ def get_matches_json(html):
                 try:
                     matchesJSON = json.loads(text)
                     return matchesJSON
-                except:
-                    pass
-    except:
-        pass
+                except Exception as e:
+                    logging.error(e)
+    except Exception as e:
+        logging.error(e)
 
     error('Could not find match JSON in HTML of page.')
     return None
@@ -105,8 +106,8 @@ def get_game_json_for_adelaide_uni(matches):
             away_club = urllib.unquote(match['AwayClubName'])
             if home_club == adelaide_uni or away_club == adelaide_uni:
                 return match
-    except:
-        pass
+    except Exception as e:
+        logging.error(e)
 
     error('Could not find Adelaide uni in the list of matches.')
     return None
@@ -137,7 +138,8 @@ def get_and_verify_year(html, expected_year):
         if actualYear != str(expected_year):
             error('Incorrect year, expected is different from actual', actualYear, str(expected_year))
             return 'X'
-    except:
+    except Exception as e:
+        logging.error(e)
         return 'X'
 
     return int(actualYear)
@@ -156,7 +158,7 @@ def extract_goal_kickers_and_best_players(goal_kickers_and_best_players):
 
         if not best_players_present and  not goal_kickers_present:
             error('Neither Goal Kickers nor Best Players were present in the string to extract them from')
-            return '', ''
+            return [], []
 
         # Remove the unwanted HTML.
         goal_kickers_and_best_players = goal_kickers_and_best_players.replace(
@@ -185,54 +187,37 @@ def extract_goal_kickers_and_best_players(goal_kickers_and_best_players):
             goal_kickers = goal_kickers_and_best_players[1]
             best_players = goal_kickers_and_best_players[2]
 
-        return goal_kickers, best_players
-    except:
-        return '', ''
+        goal_kickers = get_players_array_from_comma_separated_string(goal_kickers)
+        best_players = get_players_array_from_comma_separated_string(best_players)
 
+        # Parse the number of goals kicked for each goal kicker.
+        for goal_kicker in goal_kickers:
+            goal_kicker['goals'] = 1
 
-def insert_nicknames(names, names_and_nicknames):
-    # Takes a str of names and inserts the nickname for that particular player according to 
-    # the cached nicknames.
-    # Returns a list of objects that preserves the goals kicked by that player in the form:
-    # [ { name: '<NICKNAME> (<NAME>)', goals: '<GOALS>' }  , ... ]
-
-    try:
-        if names is None or names == '':
-            return []
-
-        names = names.split(', ')
-        for i in range(len(names)):
-
-            if len(names[i]) == 0:
+            if ' ' not in goal_kicker['name']:
                 continue
 
-            # Save and remove the number of goals kicked
-            goals = ''
-            while names[i][-1].isdigit() or names[i][-1] == ' ':
-                goals = names[i][-1] + goals
-                names[i] = names[i][:-1]
-                if len(names) == 0:
-                    break
+            potential_goal = goal_kicker['name'].split(' ')[-1]
+            if potential_goal.isdigit():
+                goal_kicker['goals'] = int(potential_goal)
+                # Remove the goal from the name.
+                goal_kicker['name'] = goal_kicker['name'].rsplit(' ', 1)[0]
 
-            
-            if names[i] in names_and_nicknames:
-                names[i] = names_and_nicknames[names[i]]
+        return goal_kickers, best_players
 
-            # Surpress this for now as we don't want it showing up in the bowlies results.
-            #     # This means there is no nickname for this name:
-            #     if names[i][0:2] == ' (':
-            #         names[i] = '<NO NICKNAME>' + names[i]
+    except Exception as e:
+        logging.error(e)
+        return [], []
 
-            # else:
-            #     names[i] = '<PLAYER NOT IN DATABASE>' + names[i]
 
-            names[i] = {'name': names[i], 'goals': goals}
-            names[i]['name'] = names[i]['name'].replace('amp;', '')
-            names[i]['name'] = names[i]['name'].replace('\n', '')
+def get_players_array_from_comma_separated_string(players_str):
+    players = players_str.split(', ')
+    if players == ['']: players = []
 
-        return names
-    except:
-        return []
+    players_arr = []
+    for player in players:
+        players_arr.append({'name': player})
+    return players_arr
 
 
 def get_actual_round(game_json):
@@ -367,17 +352,18 @@ def populate_game_from_sportstg(game):
                 game.result = 'OPPOSITION_FORFEIT'
 
         if game.include_player_nicknames:
-            names_and_nicknames = aufc_database_proxy.get_player_names()
+            names_and_nicknames = AufcDatabaseProxy.get_player_names()
             game.goal_kickers = insert_nicknames(
                 game.goal_kickers, names_and_nicknames)
             game.best_players = insert_nicknames(
                 game.best_players, names_and_nicknames)
 
-    except:
+    except Exception as e:
+        logging.error(e)
         return
 
 
-def get_game(game):
+def get_game_details_from_sportstg(game):
     url = url_generator.get_url(
         int(game['year']),
         game['gender'],
@@ -386,7 +372,7 @@ def get_game(game):
         bool(game['is_past_game']),
         bool(game['is_final']))
 
-    game_to_fill = Game(
+    populated_game = Game(
         int(game['round']),
         int(game['year']),
         url,
@@ -395,5 +381,22 @@ def get_game(game):
         bool(game['skip_this_game']),
         bool(game['is_final']))
 
-    populate_game_from_sportstg(game_to_fill)
-    return json.dumps(game_to_fill.__dict__)
+    # Scrape details from sportstg.
+    populate_game_from_sportstg(populated_game)
+
+    # Populate nicknames.
+    populated_game.opposition_nickname = AufcDatabaseProxy.get_opposition_nickname(populated_game.opposition)
+    populated_game.location_nickname = AufcDatabaseProxy.get_ground_nickname(populated_game.location)
+    
+    for i in range(len(populated_game.goal_kickers)):
+        populated_game.goal_kickers[i] = AufcDatabaseProxy.get_player_nickname(populated_game.goal_kickers[i]['name'])
+
+    for i in range(len(populated_game.best_players)):
+        populated_game.best_players[i] = AufcDatabaseProxy.get_player_nickname(populated_game.best_players[i]['name'])
+
+    # Get the correct image url (may need to be overridden).
+    override_image_url = AufcDatabaseProxy.get_override_image_url(populated_game.opposition)
+    if override_image_url != '':
+        populated_game.image_url = override_image_url
+
+    return populated_game

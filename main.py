@@ -49,7 +49,8 @@ def get_teams():
 def get_game():
     try:
         game = request.get_json(force=True)
-        return web_scraper.get_game(game)
+        game = web_scraper.get_game_details_from_sportstg(game)
+
     except:
         return web_scraper.server_failure()
 
