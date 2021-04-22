@@ -4,4 +4,4 @@
 venv
 *.pyc
 lib/*
-connect_to_database.pydatabase_credentials.py
+database_credentials.py
