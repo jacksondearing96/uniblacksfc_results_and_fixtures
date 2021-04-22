@@ -12,3 +12,7 @@ pip install -t lib -r requirements.txt
 
 # View the test server application.
 http://localhost:8080
+
+# Connecting to uniblacksfc database.
+# in Siteground -> Site Tools -> MySQL -> Remote
+# Add the relevant IP address or domain, this will validate connections
