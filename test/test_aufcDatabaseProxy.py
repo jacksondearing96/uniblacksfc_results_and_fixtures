@@ -80,6 +80,7 @@ class TestAufcDatabaseProxy(unittest.TestCase):
         self.assertEquals(AufcDatabaseProxy.get_ground_nickname('Goodwood Oval'), 'Sin Stadium')
         self.assertEquals(AufcDatabaseProxy.get_ground_nickname('Non existant Oval'), '')
         self.assertEquals(AufcDatabaseProxy.get_ground_nickname('Caterer Oval'), 'Hackney High')
+        self.assertEquals(AufcDatabaseProxy.get_ground_nickname('Ray White TTG Oval (Pertaringa)'), '')
 
     def test_get_correct_image_url(self):
         self.assertEquals(AufcDatabaseProxy.get_override_image_url("Morphettville Park"),
