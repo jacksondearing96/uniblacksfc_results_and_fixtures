@@ -21,11 +21,9 @@ class AufcDatabaseProxy(object):
 
     image_url_overrides = None
 
-    connection = None
-
     @classmethod 
     def connect_to_aufc_database(cls):
-        AufcDatabaseProxy.connection = mysql.connector.connect(
+        return mysql.connector.connect(
             host=DatabaseCredentials.host,
             user=DatabaseCredentials.user,
             password=DatabaseCredentials.password,
@@ -79,8 +77,8 @@ class AufcDatabaseProxy(object):
 
     @classmethod 
     def update_player_names_and_nicknames(cls):
-        AufcDatabaseProxy.connect_to_aufc_database()
-        cursor = AufcDatabaseProxy.connection.cursor()
+        connection = AufcDatabaseProxy.connect_to_aufc_database()
+        cursor = connection.cursor()
 
         cursor.execute('SELECT FirstName, Surname, Nickname, MemberID FROM members WHERE FirstName != ""')
         players_and_nicknames = cursor.fetchall()
@@ -105,15 +103,15 @@ class AufcDatabaseProxy(object):
 
             AufcDatabaseProxy.player_names_and_nicknames[key] = entry
         
-        AufcDatabaseProxy.connection.close()
+        connection.close()
 
 
     @classmethod 
     def update_ground_nicknames(cls):
         AufcDatabaseProxy.update_ground_nicknames_overrides()
 
-        AufcDatabaseProxy.connect_to_aufc_database()
-        cursor = AufcDatabaseProxy.connection.cursor()
+        connection = AufcDatabaseProxy.connect_to_aufc_database()
+        cursor = connection.cursor()
 
         cursor.execute('SELECT Ground, Nickname FROM grounds')
         grounds_and_nicknames = cursor.fetchall()
@@ -129,15 +127,15 @@ class AufcDatabaseProxy(object):
             for ground_name in AufcDatabaseProxy.ground_nicknames_overrides.keys():
                 AufcDatabaseProxy.ground_nicknames[ground_name] = AufcDatabaseProxy.ground_nicknames_overrides[ground_name]
         
-        AufcDatabaseProxy.connection.close()
+        connection.close()
     
 
     @classmethod 
     def update_opposition_nicknames(cls):
         AufcDatabaseProxy.update_opposition_nicknames_overrides()
 
-        AufcDatabaseProxy.connect_to_aufc_database()
-        cursor = AufcDatabaseProxy.connection.cursor()
+        connection = AufcDatabaseProxy.connect_to_aufc_database()
+        cursor = connection.cursor()
 
         cursor.execute("SELECT OppositionName, Nickname FROM oppositionclubs")
         opposition_names_and_nicknames = cursor.fetchall()
@@ -155,7 +153,7 @@ class AufcDatabaseProxy(object):
                 AufcDatabaseProxy.opposition_nicknames[override_name] = AufcDatabaseProxy.opposition_nicknames_overrides[override_name]
 
         
-        AufcDatabaseProxy.connection.close()
+        connection.close()
 
 
     @classmethod 
@@ -165,7 +163,7 @@ class AufcDatabaseProxy(object):
             return AufcDatabaseProxy.player_names_and_nicknames[player_name]
         
         logging.warning('No match for player: {} in database.'.format(player_name))
-        return {} 
+        return { 'name': player_name, 'nickname': '', 'fullname': '', 'memberID': 0 } 
 
 
     @classmethod 

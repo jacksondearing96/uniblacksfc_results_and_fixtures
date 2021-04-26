@@ -1,22 +1,16 @@
-$(document).ready(function () {
-  fetch("/input-table-teams-data", {
-    method: "GET",
-  })
-    .then((response) => response.text())
-    .then((data) => {
-      // console.log(data);
-      // console.log(JSON.parse(data));
-    });
-});
+const ROUND_INDEX = 0;
+const SKIP_THIS_GAME_CHECKBOX_INDEX = 1;
+const IS_FINAL_CHECKBOX_INDEX = 2;
 
 $(document).ready(function () {
-  const SKIP_THIS_GAME_CHECKBOX_INDEX = 4;
-  const IS_FINAL_CHECKBOX_INDEX = 5;
-
   const createdCell = function (cell) {
+    // Don't want the first 4 columns to be editable.
+    // These are nickname, division, gender and year.
+    if (cell.cellIndex < 4) return;
+
     let original;
 
-    cell.setAttribute("contenteditable", true);
+    //cell.setAttribute("contenteditable", true);
     cell.setAttribute("spellcheck", false);
 
     cell.addEventListener("focus", function (e) {
@@ -27,7 +21,6 @@ $(document).ready(function () {
       if (original !== e.target.textContent) {
         const row = bowlies_table.row(e.target.parentElement);
         row.invalidate();
-        console.log("Row changed: ", row.data());
       }
     });
   };
@@ -41,17 +34,18 @@ $(document).ready(function () {
     serverSide: true,
     ajax: {
       url: "/input-table-teams-data",
+      data: { year: 2021 },
       datatype: "JSON",
       dataSrc: (jsonTableData) => jsonTableData,
     },
     columns: [
+      { title: "Round", data: "round" },
+      { title: "Include", data: "skip_this_game" },
+      { title: "Final", data: "is_final" },
       { title: "Nickname", data: "nickname" },
       { title: "Division", data: "division" },
       { title: "Gender", data: "gender" },
       { title: "Year", data: "year" },
-      { title: "Include", data: "skip_this_game" },
-      { title: "Final", data: "is_final" },
-      { title: "Round", data: "round" },
     ],
     columnDefs: [
       {
@@ -61,7 +55,21 @@ $(document).ready(function () {
       },
       {
         // Checkbox inputs.
-        targets: [SKIP_THIS_GAME_CHECKBOX_INDEX, IS_FINAL_CHECKBOX_INDEX],
+        targets: SKIP_THIS_GAME_CHECKBOX_INDEX,
+        searchable: false,
+        orderable: false,
+        className: "dt-body-center",
+        render: function (data, type, full, meta) {
+          return (
+            '<input type="checkbox" checked name="id[]" value="' +
+            $("<div/>").text(data).html() +
+            '">'
+          );
+        },
+      },
+      {
+        // Checkbox inputs.
+        targets: IS_FINAL_CHECKBOX_INDEX,
         searchable: false,
         orderable: false,
         className: "dt-body-center",
@@ -73,9 +81,71 @@ $(document).ready(function () {
           );
         },
       },
+      {
+        // Checkbox inputs.
+        targets: ROUND_INDEX,
+        searchable: false,
+        orderable: false,
+        className: "dt-body-center",
+        render: function (data, type, full, meta) {
+          return '<input type="number" name="id[]" value="1">';
+        },
+      },
     ],
   });
 });
+
+function getIncludeCheckboxSelector(rowIndex) {
+  return (
+    "#bowlies-table > tbody > tr:nth-child(" +
+    (rowIndex + 1) +
+    ") > td:nth-child(" +
+    (SKIP_THIS_GAME_CHECKBOX_INDEX + 1) +
+    ") > input[type=checkbox]"
+  );
+}
+
+function getIsFinalCheckboxSelector(rowIndex) {
+  return (
+    "#bowlies-table > tbody > tr:nth-child(" +
+    (rowIndex + 1) +
+    ") > td:nth-child(" +
+    (IS_FINAL_CHECKBOX_INDEX + 1) +
+    ") > input[type=checkbox]"
+  );
+}
+
+function getRoundInputSelector(rowIndex) {
+  return (
+    "#bowlies-table > tbody > tr:nth-child(" +
+    (rowIndex + 1) +
+    ") > td:nth-child(" +
+    (ROUND_INDEX + 1) +
+    ") > input[type=number]"
+  );
+}
+
+function ExtractJSONFromTable() {
+  let rows = [];
+  bowlies_table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+    let row = this.data();
+
+    // Get the boolean values out of the two checkboxes.
+    let include_checkbox = $(getIncludeCheckboxSelector(rowIdx));
+    let is_final_checkbox = $(getIsFinalCheckboxSelector(rowIdx));
+    let round_input = $(getRoundInputSelector(rowIdx));
+
+    row["skip_this_game"] = !include_checkbox.prop("checked");
+    row["is_final"] = is_final_checkbox.prop("checked");
+    row["round"] = round_input.val();
+
+    // Bowlies results must always be past games.
+    row["is_past_game"] = true;
+
+    rows.push(row);
+  });
+  return rows;
+}
 
 function CalculateGrade(percentage) {
   if (percentage >= 85) return "High Distinction";
@@ -164,24 +234,6 @@ function OrderBowliesTeamsBasedOnMargins() {
   }
 }
 
-// function SaveBowliesResults() {
-
-//   var bowlies_results = $('#bowlies-container').html();
-//   if (bowlies_results === '') return;
-
-//   fetch('/save_bowlies_results', { method: 'POST', 'Content-Type': 'text/html', body: bowlies_results })
-//     .then(response => {
-
-//       let save_button = $('#save-bowlies-button');
-
-//       if (response.status == 200) {
-//         ButtonSuccess(save_button, 'Saved');
-//       } else {
-//         ButtonFail(save_button, 'Save Failed');
-//       }
-//     });
-// }
-
 function ButtonSuccess(button, new_text) {
   button.removeClass("btn-primary");
   button.removeClass("btn-danger");
@@ -196,26 +248,6 @@ function ButtonFail(button, new_text) {
   button.html(new_text);
 }
 
-// function RestoreBowliesResults() {
-//   StartLoading();
-
-//   fetch('/restore_bowlies_results', { method: 'GET' })
-//     .then(response => response.text())
-//     .then(data => {
-//       EndLoading();
-
-//       let restore_button = $('#restore-button');
-
-//       if (data !== 'FAIL') {
-//         ButtonSuccess(restore_button, 'Restored');
-//         $('#bowlies-container').html(data);
-//         $('#bowlies-container').css('display', 'block');
-//       } else {
-//         ButtonFail(restore_button, 'Restore Failed');
-//       }
-//     });
-// }
-
 bowlies_teams = [];
 function PopulateBowliesTeams() {
   bowlies_teams = [];
@@ -224,16 +256,48 @@ function PopulateBowliesTeams() {
   }
 }
 
-function AutomateBowlies() {
-  StartLoading();
-
-  $("#bowlies-container").css("display", "block");
-
-  GetPastGames().then(() => {
-    PopulateTablesWithNicknamesAndVerbs().then(() => {
-      PopulateBowliesTeams();
-      OrderBowliesTeamsBasedOnMargins();
-      FormatBowlies().then(() => EndLoading());
-    });
+function GetGameDetailsFromServer(game) {
+  return new Promise((resolve) => {
+    fetch("/get_game", {
+      method: "POST",
+      "Content-Type": "application/json",
+      body: JSON.stringify(game),
+    })
+      .then((response) => response.text())
+      .then((game_data) => {
+        bowlies_teams.push(JSON.parse(game_data));
+        resolve();
+      });
   });
+}
+
+function AutomateBowlies() {
+  let team_configurations_request_data = ExtractJSONFromTable();
+  console.log(team_configurations_request_data);
+
+  // bowlies_teams = [];
+
+  // const promises = [];
+  // for (let i = 0; i < team_configurations_request_data.length; ++i) {
+  //   if (team_configurations_request_data[i]["skip_this_game"]) continue;
+  //   promises.push(
+  //     GetGameDetailsFromServer(team_configurations_request_data[i])
+  //   );
+  // }
+
+  // Promise.all(promises).then(() => {
+  //   console.log(bowlies_teams);
+  // });
+
+  // StartLoading();
+
+  // $("#bowlies-container").css("display", "block");
+
+  // GetPastGames().then(() => {
+  //   PopulateTablesWithNicknamesAndVerbs().then(() => {
+  //     PopulateBowliesTeams();
+  //     OrderBowliesTeamsBasedOnMargins();
+  //     FormatBowlies().then(() => EndLoading());
+  //   });
+  // });
 }

@@ -16,6 +16,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+logging.basicConfig(level=logging.INFO)
+
 debug = True
 
 PAST_GAME = True
@@ -253,8 +255,6 @@ def get_data_and_time(game_json, game):
 
 def populate_game_from_sportstg(game):
     try:
-        if game.skip_this_game: return
-
         if 'sportstg.com' not in game.url:
             error('URL error: incorrect url with no sportstg present')
             return
@@ -270,13 +270,13 @@ def populate_game_from_sportstg(game):
 
         matches_json = get_matches_json(html)
         if matches_json is None:
-            game.skip_this_game = True
+            game.error = "Could not find the matches JSON from the scraped HTML"
             return
 
         game_json = get_game_json_for_adelaide_uni(matches_json)
-
         if game_json == None:
-            game.error = "Team not present in week's matches"
+            game.error = "AUFC not present in week's matches"
+            return
 
         if game_json['MatchName'] != u'':
             game.is_final = 'true'
@@ -351,13 +351,6 @@ def populate_game_from_sportstg(game):
             if game.score_for == u'10.0-60':
                 game.result = 'OPPOSITION_FORFEIT'
 
-        if game.include_player_nicknames:
-            names_and_nicknames = AufcDatabaseProxy.get_player_names()
-            game.goal_kickers = insert_nicknames(
-                game.goal_kickers, names_and_nicknames)
-            game.best_players = insert_nicknames(
-                game.best_players, names_and_nicknames)
-
     except Exception as e:
         logging.error(e)
         return
@@ -371,18 +364,24 @@ def get_game_details_from_sportstg(game):
         int(game['round']),
         bool(game['is_past_game']),
         bool(game['is_final']))
+    logging.info('Extracting game details from URL: ' + url)
 
     populated_game = Game(
         int(game['round']),
         int(game['year']),
         url,
         bool(game['is_past_game']),
-        bool(game['include_player_nicknames']),
-        bool(game['skip_this_game']),
         bool(game['is_final']))
-
+    populated_game.nickname = game['nickname']
+    populated_game.division = game['division']
+    populated_game.gender = game['gender']
+    populated_game.url_code = game['url_code']
+    
     # Scrape details from sportstg.
     populate_game_from_sportstg(populated_game)
+
+    if populated_game.error != '':
+        return populated_game
 
     # Populate nicknames.
     populated_game.opposition_nickname = AufcDatabaseProxy.get_opposition_nickname(populated_game.opposition)

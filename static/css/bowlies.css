@@ -9,6 +9,15 @@ body {
   font-size: 20px;
 }
 
+input[type="checkbox"] {
+  width: 30px;
+  height: 30px;
+}
+
+input[type="number"] {
+  width: 50px;
+}
+
 b {
   float: left;
   text-align: left;
@@ -29,21 +38,24 @@ b {
   color: dodgerblue;
 }
 
-#win-loss-summary, #bowlies-title, #bowlies-container .date {
+#win-loss-summary,
+#bowlies-title,
+#bowlies-container .date {
   margin: 0 auto;
   text-align: center;
 }
 
 #bowlies-container {
   background-color: white;
-  font-family:"Arial",sans-serif;
-  color: rgb(75,75,75);
+  font-family: "Arial", sans-serif;
+  color: rgb(75, 75, 75);
   padding: 5px;
   padding-top: 20px;
   text-align: center;
 }
 
-.goal-kickers, .best-players {
+.goal-kickers,
+.best-players {
   text-align: left;
 }
 
@@ -63,7 +75,7 @@ b {
 }
 
 .spacer {
-  display:block;
+  display: block;
   height: 10px;
 }
 
@@ -86,14 +98,16 @@ b {
   padding: 8px 0px;
 }
 
-#bowlies-container table, #bowlies-container td, #bowlies-container tr {
+#bowlies-container table,
+#bowlies-container td,
+#bowlies-container tr {
   border: 0px;
-  color: rgb(75,75,75);
+  color: rgb(75, 75, 75);
 }
 
 #bowlies-container {
   background-color: lightgrey;
-  color: rgb(75,75,75);
+  color: rgb(75, 75, 75);
 }
 
 #bowlies-container .score {
@@ -106,8 +120,8 @@ b {
 }
 
 .bowlies-game:nth-child(even) {
-  background-color: rgb(30,30,30);
-  color: rgb(200,200,200)
+  background-color: rgb(30, 30, 30);
+  color: rgb(200, 200, 200);
 }
 
 .bowlies-game {
@@ -155,7 +169,8 @@ b {
   opacity: 0.6;
 }
 
-#bowlies-container .uni-logo, #bowlies-container .opposition-logo {
+#bowlies-container .uni-logo,
+#bowlies-container .opposition-logo {
   height: 50px;
 }
 
@@ -166,7 +181,7 @@ b {
 #bowlies-container .results-table {
   text-align: center;
   width: 100%;
-  margin-top: 15px
+  margin-top: 15px;
 }
 
 .error-message {

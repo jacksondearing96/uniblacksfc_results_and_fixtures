@@ -4,14 +4,17 @@ class Game(object):
     # This should maintain variable names that are compatible with the JSON objects
     # that are expected when this class is converted into a dict and sent to the 
     # front end application. See index.js for the appropriate naming conventions.
-    def __init__(self, round, year, url, is_past_game=True, include_player_nicknames=False, skip_this_game=False, is_final=False):
+    def __init__(self, round, year, url, is_past_game=True, is_final=False):
         self.round = round
         self.year = year
         self.url = url
         self.is_past_game = is_past_game
-        self.include_player_nicknames = include_player_nicknames 
-        self.skip_this_game = skip_this_game 
         self.is_final = is_final
+
+        self.nickname = None
+        self.division = None
+        self.gender = None
+        self.url_code = None
 
         self.match_name = None
         self.date = None
