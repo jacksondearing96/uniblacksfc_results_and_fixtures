@@ -54,9 +54,13 @@ function InitialiseWinningVerbs() {
     "crushed",
     "flogged",
     "conquored",
+    "obliterated",
+    "slaughtered",
     "demolished",
     "spanked",
     "annihilated",
+    "dismantled",
+    "decimated",
     "destroyed",
     "wrecked"
   ];

@@ -1,150 +1,72 @@
-{% for team in teams %}
+<!DOCTYPE html>
+<html>
 
-<!-- Bowlies game -->
-<div contenteditable='true' class='bowlies-game row'>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <div class='col-sm-4 bigger'>
-    <span class='sandy-coburn-cup-points'>{{ team.sandy_points }} Sandy Coburn Cup Points</span>
-    <br>
-    {{ team.gender }} Div {{ team.division }}
-    <i class='dull'>known as</i>
-    <br>
-    <span class='nickname'>{{ team.nickname }}</span>
+    <title>Hold Your Bowlies</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/west-end-can.jpeg') }}">
 
-    {% if team.result == 'BYE' %}
-    <br>
-    BYE
-    {% else %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bowlies.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loading-animation.css') }}">
 
-    <br>
-    <span class='spacer'></span>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css">
 
-    <img class='location-pin'
-      src="https://www.freepnglogos.com/uploads/pin-png/file-map-pin-icon-svg-wikimedia-commons-8.png">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
-    {% if team.location_nickname == 'FORFEIT' %}
-    <span class='error-message'>
-      {% endif %}
-
-      {{ team.location_nickname }}
-
-      {% if team.location_nickname == 'FORFEIT' %}
-    </span>
-    {% endif %}
-
-    <br>
-
-    {% if team.is_final == 'true' %}
-    <span class='dull final-name'>{{ team.match_name }}</span>
-    {% endif %}
-
-    <span class='dull'>vs</span>
-    <br>
-    <span class='spacer'></span>
-    <span class='nickname'>{{ team.opposition_nickname }}</span>
-    <br>
-    <span class='dull'>({{ team.opposition }})</span>
-
-    <br>
-
-    {% if team.error != '' %}
-    <span class='error-message'>Round {{ team.round }}: {{ team.error }}</span>
-    {% else %}
-
-    <table class='results-table'>
-      <tr>
-        <td><img class='uni-logo' src="{{ team.AUFC_logo }}"></td>
-        <td><img class='opposition-logo' src="{{ team.image_url }}"></td>
-        <td></td>
-      </tr>
-
-      <tr>
-        <td><span class='score'>{{ team.score_for }}</span></td>
-        <td><span class='score'>{{ team.score_against }}</span></td>
-      </tr>
-    </table>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+    <script type="text/javascript"
+        src="https://editor.datatables.net/extensions/Editor/js/dataTables.editor.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
 
+    <!-- <script src="{{ url_for('static', filename='js/index.js') }}"></script> -->
+    <!-- <script src="{{ url_for('static', filename='js/page_dynamics.js') }}"></script> -->
+    <!-- <script src="{{ url_for('static', filename='js/database.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bowlies.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='js/copy.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/test.js') }}"></script> -->
+    <!-- <script src="{{ url_for('static', filename='js/priority_queue.js') }}"></script> -->
+</head>
 
-    {% if team.margin < 0 %}
-    <span style='color:red'>
-      Losing margin of:
-      {% else %}
-      <span style='color:green'>
-        Winning margin of:
-        <br>
-        {% endif %}
+<body>
+    <div class='container-fluid'>
 
-        {{ team.margin }} points
-      </span>
+        <div id=loading-container>
+            <img id='loading-img' class='rotate' src="{{ url_for('static', filename='img/west-end-can.jpeg') }}">
+        </div>
 
+        <div class='row'>
+            <div class='col-md-12'>
+                <button type='button' class='btn btn-primary' onclick="AutomateBowlies()"
+                    id="automate-bowlies-button">Bowlies Results</button>
+            </div>
+        </div>
 
+        <div class='row'>
+            <div class='col-md-12'>
+                <table id="bowlies-table" class="display" style="width:100%"></table>
+            </div>
+        </div>
 
-  </div>
+        <div class='row'>
+            <div class='col-md-12'>
+                <div id='bowlies-content-container'></div>
+            </div>
+        </div>
+    </div>
 
-  <div class='col-sm-4 goal-kickers'>
-    <span class='label dull'>Goal Kickers:</span>
-    <br>
-    {% for name in team.goal_kickers %}
-    <span class='goals'>{{ name['goals'] }}</span> {{ name['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endfor %}
-  </div>
+</body>
 
-  <div class='col-sm-4 best-players'>
-    <span class='label dull'>Best Players:</span>
-    <br>
-
-    {% if team.best_players|length > 5 %}
-    <span class='bp-position'>6th:</span> {{ team.best_players[5]['name'] }}
-    <br>
-    {% endif %}
-
-    {% if team.best_players|length > 4 %}
-    <span class='bp-position'>5th:</span> {{ team.best_players[4]['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endif %}
-
-    {% if team.best_players|length > 3 %}
-    <span class='bp-position'>4th:</span> {{ team.best_players[3]['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endif %}
-
-    {% if team.best_players|length > 2 %}
-    <span class='bp-position'>3rd:</span> {{ team.best_players[2]['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endif %}
-
-    {% if team.best_players|length > 1 %}
-    <span class='bp-position'>2nd:</span> {{ team.best_players[1]['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endif %}
-
-    {% if team.best_players|length > 0 %}
-    <span class='bp-position'>1st:</span> {{ team.best_players[0]['name'] }}
-    <br>
-    {% endif %}
-
-    {% if team.best_players|length == 0 %}
-    <span class='error-message'>No best players entered yet</span>
-    {% endif %}
-
-    <span class='spacer'></span>
-
-
-    {% endif %}
-    <!-- This is for displaying/hiding the section when there is an error -->
-
-    {% endif %}
-    <!-- If BYE -->
-
-  </div>
-
-</div>
-
-{% endfor %}
+</html>

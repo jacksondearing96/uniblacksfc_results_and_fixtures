@@ -103,5 +103,20 @@ def save_bowlies_results():
 def restore_bowlies_results():
     return util.gcs_read_file_to_string('database/bowlies_saved_results.txt')
 
+
+@app.route('/input-table-teams-data', methods=['GET'])
+def input_table_teams_data():
+    return  '''
+        [{
+            "nickname": "nickname",
+            "division": "1",
+            "gender": "Mens",
+            "year": 2021,
+            "skip_this_game": 0,
+            "is_final": 0,
+            "round": "1"
+        }]
+    '''
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
