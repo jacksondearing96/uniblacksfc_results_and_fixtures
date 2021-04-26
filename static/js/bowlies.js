@@ -275,19 +275,19 @@ function AutomateBowlies() {
   let team_configurations_request_data = ExtractJSONFromTable();
   console.log(team_configurations_request_data);
 
-  // bowlies_teams = [];
+  bowlies_teams = [];
 
-  // const promises = [];
-  // for (let i = 0; i < team_configurations_request_data.length; ++i) {
-  //   if (team_configurations_request_data[i]["skip_this_game"]) continue;
-  //   promises.push(
-  //     GetGameDetailsFromServer(team_configurations_request_data[i])
-  //   );
-  // }
+  const promises = [];
+  for (let i = 0; i < team_configurations_request_data.length; ++i) {
+    if (team_configurations_request_data[i]["skip_this_game"]) continue;
+    promises.push(
+      GetGameDetailsFromServer(team_configurations_request_data[i])
+    );
+  }
 
-  // Promise.all(promises).then(() => {
-  //   console.log(bowlies_teams);
-  // });
+  Promise.all(promises).then(() => {
+    console.log(bowlies_teams);
+  });
 
   // StartLoading();
 
