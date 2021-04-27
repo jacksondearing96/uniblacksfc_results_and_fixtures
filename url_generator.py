@@ -61,11 +61,6 @@ def get_url_code(year, gender, division):
 
 def get_url(year, gender, division, round, past=True, is_final=False):
     code = get_url_code(year, gender, division)
-    logging.info('Determining url for: year=' + str(year) + ', gender=' + gender + ', div=' + division + ', round=' + round + ', past=' + str(past) + ', is_final=' + str(is_final))
-    return get_url(code, round, past, is_final)
-
-
-def get_url(code, round, past=True, is_final=False):
     if not code:
         logging.error('Error - could not get_url code.')
         return None
@@ -82,4 +77,5 @@ def get_url(code, round, past=True, is_final=False):
     
     logging.info(url)
 
+    logging.info('Determining url for: year=' + str(year) + ', gender=' + gender + ', div=' + division + ', round=' + round + ', past=' + str(past) + ', is_final=' + str(is_final))
     return url

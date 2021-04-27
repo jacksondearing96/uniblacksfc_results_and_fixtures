@@ -40,8 +40,8 @@ $(document).ready(function () {
     },
     columns: [
       { title: "Round", data: "round" },
-      { title: "Include", data: "skip_this_game" },
-      { title: "Final", data: "is_final" },
+      { title: "Include Team?", data: "skip_this_game" },
+      { title: "Is A Final?", data: "is_final" },
       { title: "Nickname", data: "nickname" },
       { title: "Division", data: "division" },
       { title: "Gender", data: "gender" },
@@ -155,16 +155,14 @@ function CalculateGrade(percentage) {
   return "Fail";
 }
 
-function IncludeWinLossSummary() {
+function IncludeWinLossSummary(teams) {
   // Enter the win/loss percentage.
   let wins = 0;
   let losses = 0;
 
-  past_teams.forEach((team) => {
-    if (team.result == "BYE" || team.error !== "") return;
+  teams.forEach((team) => {
+    if (isNaN(team.margin) || team.margin <= 0) ++losses;
     if (team.margin > 0) ++wins;
-    if (team.margin < 0) ++losses;
-    if (team.margin === 0) wins += 0.5;
   });
 
   let winning_percentage = Math.round((wins / (wins + losses)) * 100);
@@ -172,80 +170,39 @@ function IncludeWinLossSummary() {
 
   if (winning_percentage == Number.NaN) return;
 
-  $("#bowlies-container").append(
+  $("#bowlies-content-container").append(
     `<div class='row'><div class='col-md-12' id='win-loss-summary'>Won ${wins} out of ${
       wins + losses
     } = ${winning_percentage}% => ${grade}</div></div>`
   );
 }
 
-function FormatBowlies() {
-  // Clear current content, populate with only the title.
-  $("#bowlies-container").html(
-    '<div class="row"><div class="col-md-12" id="bowlies-title">Hold Your Bowlies</div></div>'
-  );
-
-  IncludeWinLossSummary();
-
-  // TODO: Date checks --> should be doing some sort of check here.
-  return new Promise((resolve) => {
-    fetch("/bowlies.html", {
-      method: "POST",
-      "Content-Type": "application/json",
-      body: JSON.stringify(bowlies_teams),
-    })
-      .then((response) => response.text())
-      .then((html) => {
-        $("#bowlies-container").append(html);
-        resolve();
-      });
-  });
-}
-
-function GetMargin(team) {
-  if (team.result === "OPPOSITION_FORFEIT") return 30; // TODO: test this.
-  return GetScoreTotal(team.score_for) - GetScoreTotal(team.score_against);
-}
-
-function OrderBowliesTeamsBasedOnMargins() {
+function OrderTeamsBasedOnMargins(teams) {
   var priority_queue = new PriorityQueue();
 
-  for (let team_index in bowlies_teams) {
-    let team = bowlies_teams[team_index];
-    team.margin = team.result === "BYE" ? -Number.MAX_VALUE : GetMargin(team);
+  for (let team of teams) {
+    if (isNaN(team.margin) || team.margin === null)
+      team.margin = -Number.MAX_VALUE;
     priority_queue.enqueue(team, team.margin);
   }
 
-  bowlies_teams = [];
+  teams = [];
 
   let sandy_coburn_cup_points = 1;
 
-  while (priority_queue.isEmpty() === false) {
+  while (!priority_queue.isEmpty()) {
     let team = priority_queue.dequeue().element;
 
-    if (team.result == "BYE" || team.error !== "") {
+    if (team.margin == -Number.MAX_VALUE) {
       team.sandy_points = 0;
     } else {
       team.sandy_points = sandy_coburn_cup_points;
       ++sandy_coburn_cup_points;
     }
 
-    bowlies_teams.push(team);
+    teams.push(team);
   }
-}
-
-function ButtonSuccess(button, new_text) {
-  button.removeClass("btn-primary");
-  button.removeClass("btn-danger");
-  button.addClass("btn-success");
-  button.html(new_text);
-}
-
-function ButtonFail(button, new_text) {
-  button.removeClass("btn-primary");
-  button.removeClass("btn-success");
-  button.addClass("btn-danger");
-  button.html(new_text);
+  return teams;
 }
 
 bowlies_teams = [];
@@ -271,33 +228,57 @@ function GetGameDetailsFromServer(game) {
   });
 }
 
-function AutomateBowlies() {
-  let team_configurations_request_data = ExtractJSONFromTable();
-  console.log(team_configurations_request_data);
+function GetFormattedBowliesHTML() {
+  // Clear current content, populate with only the title.
+  $("#bowlies-content-container").html(
+    '<div class="row"><div class="col-md-12" id="bowlies-title">Hold Your Bowlies</div></div>'
+  );
+
+  IncludeWinLossSummary(bowlies_teams);
+
+  return new Promise((resolve) => {
+    fetch("/bowlies-content.html", {
+      method: "POST",
+      "Content-Type": "application/json",
+      body: JSON.stringify(bowlies_teams),
+    })
+      .then((response) => response.text())
+      .then((html) => {
+        $("#bowlies-content-container").append(html);
+        resolve();
+      });
+  });
+}
+
+function FormatBowliesTeams(team_configurations_request_data) {
+  StartLoading();
 
   bowlies_teams = [];
 
   const promises = [];
-  for (let i = 0; i < team_configurations_request_data.length; ++i) {
-    if (team_configurations_request_data[i]["skip_this_game"]) continue;
-    promises.push(
-      GetGameDetailsFromServer(team_configurations_request_data[i])
-    );
+  for (let team of team_configurations_request_data) {
+    if (team["skip_this_game"]) continue;
+    promises.push(GetGameDetailsFromServer(team));
   }
 
   Promise.all(promises).then(() => {
+    bowlies_teams = OrderTeamsBasedOnMargins(bowlies_teams);
     console.log(bowlies_teams);
+    GetFormattedBowliesHTML().then(() => EndLoading());
   });
+}
 
-  // StartLoading();
+function AutomateBowlies() {
+  $("#bowlies-content-container").html("");
+  let team_configurations_request_data = ExtractJSONFromTable();
+  FormatBowliesTeams(team_configurations_request_data);
+}
 
-  // $("#bowlies-container").css("display", "block");
-
-  // GetPastGames().then(() => {
-  //   PopulateTablesWithNicknamesAndVerbs().then(() => {
-  //     PopulateBowliesTeams();
-  //     OrderBowliesTeamsBasedOnMargins();
-  //     FormatBowlies().then(() => EndLoading());
-  //   });
-  // });
+function RunTests() {
+  fetch("/test_data")
+    .then((response) => response.text())
+    .then((test_data_str) => {
+      let teams_test_data = JSON.parse(test_data_str);
+      FormatBowliesTeams(teams_test_data);
+    });
 }

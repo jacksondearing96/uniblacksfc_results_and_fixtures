@@ -20,11 +20,10 @@
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
 
 
-    <!-- <script src="{{ url_for('static', filename='js/page_dynamics.js') }}"></script> -->
-    <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/page_dynamics.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/priority_queue.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bowlies.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='js/copy.js') }}"></script> -->
-    <!-- <script src="{{ url_for('static', filename='js/priority_queue.js') }}"></script> -->
 </head>
 
 <body>
@@ -44,6 +43,8 @@
             <div class='col-md-12'>
                 <button type='button' class='btn btn-primary' onclick="AutomateBowlies()"
                     id="automate-bowlies-button">Get Bowlies Results</button>
+                <button type='button' class='btn btn-secondary' onclick="RunTests()"
+                    id="automate-bowlies-button">Test</button>
             </div>
         </div>
 

@@ -1,6 +1,5 @@
+<hr>
 {% for team in teams %}
-
-<!-- Bowlies game -->
 <div contenteditable='true' class='bowlies-game row'>
 
   <div class='col-sm-4 bigger'>
@@ -11,44 +10,51 @@
     <br>
     <span class='nickname'>{{ team.nickname }}</span>
 
-    {% if team.result == 'BYE' %}
+    {% if (team.result == 'BYE') or (team.result == 'OPPOSITION_FORFEIT') or (team.result == 'FORFEIT') %}
     <br>
-    BYE
-    {% else %}
-
-    <br>
-    <span class='spacer'></span>
-
-    <img class='location-pin'
-      src="https://www.freepnglogos.com/uploads/pin-png/file-map-pin-icon-svg-wikimedia-commons-8.png">
-
-    {% if team.location_nickname == 'FORFEIT' %}
     <span class='error-message'>
-      {% endif %}
-
-      {{ team.location_nickname }}
-
-      {% if team.location_nickname == 'FORFEIT' %}
+      {{ team.result }}
     </span>
     {% endif %}
 
     <br>
+    <span class='spacer'></span>
 
+    {% if team.result != 'BYE' %}
+
+    <!-- Location. -->
+    {% if (team.location_nickname != None) and (team.result != 'FORFEIT') and (team.result != 'OPPOSITION_FORFEIT') %}
+    <img class='location-pin'
+      src="https://www.freepnglogos.com/uploads/pin-png/file-map-pin-icon-svg-wikimedia-commons-8.png">
+
+    {{ team.location_nickname }}
+
+    {% if team.location_nickname == '' %}
+    {{ team.location }}
+    {% endif %}
+
+    {% endif %}
+    <br>
+
+    <!-- Match name (relevant only for finals, eg. Semi Final or Grand Final). -->
     {% if team.is_final == 'true' %}
     <span class='dull final-name'>{{ team.match_name }}</span>
     {% endif %}
 
+    <!-- Opposition info. -->
+    {% if team.opposition != None %}
     <span class='dull'>vs</span>
     <br>
     <span class='spacer'></span>
     <span class='nickname'>{{ team.opposition_nickname }}</span>
     <br>
     <span class='dull'>({{ team.opposition }})</span>
-
     <br>
+    {% endif %}
 
-    {% if team.error != '' %}
-    <span class='error-message'>Round {{ team.round }}: {{ team.error }}</span>
+    <!-- Error message. -->
+    {% if (team.error != '') %}
+    <span class='error-message'>{{ team.error }}</span>
     {% else %}
 
     <table class='results-table'>
@@ -66,8 +72,7 @@
 
 
 
-    {% if team.margin < 0 %}
-    <span style='color:red'>
+    {% if team.margin < 0 %} <span style='color:red'>
       Losing margin of:
       {% else %}
       <span style='color:green'>
@@ -82,11 +87,15 @@
 
   </div>
 
+  <!-- Goal kickers and best players. -->
+  {% if (team.result != 'FORFEIT') and (team.result != 'OPPOSITION_FORFEIT') %}
   <div class='col-sm-4 goal-kickers'>
     <span class='label dull'>Goal Kickers:</span>
     <br>
-    {% for name in team.goal_kickers %}
-    <span class='goals'>{{ name['goals'] }}</span> {{ name['name'] }}
+    {% for goal_kicker in team.goal_kickers %}
+    <span class='goals'>{{ goal_kicker['goals'] }}</span>
+    {{ goal_kicker['nickname'] }}
+    ({{ goal_kicker['name'] }})
     <br>
     <span class='spacer'></span>
     {% endfor %}
@@ -96,39 +105,16 @@
     <span class='label dull'>Best Players:</span>
     <br>
 
-    {% if team.best_players|length > 5 %}
-    <span class='bp-position'>6th:</span> {{ team.best_players[5]['name'] }}
-    <br>
-    {% endif %}
+    {% for best_player in team.best_players %}
+    <p class='best-player'>
+      <span class='bp-position'>
+        {{ team.best_players|length - loop.index + 1}}th:
+      </span>
+      {{ best_player['nickname'] }}
+      ({{ best_player['name'] }})
+    </p>
+    {% endfor %}
 
-    {% if team.best_players|length > 4 %}
-    <span class='bp-position'>5th:</span> {{ team.best_players[4]['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endif %}
-
-    {% if team.best_players|length > 3 %}
-    <span class='bp-position'>4th:</span> {{ team.best_players[3]['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endif %}
-
-    {% if team.best_players|length > 2 %}
-    <span class='bp-position'>3rd:</span> {{ team.best_players[2]['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endif %}
-
-    {% if team.best_players|length > 1 %}
-    <span class='bp-position'>2nd:</span> {{ team.best_players[1]['name'] }}
-    <br>
-    <span class='spacer'></span>
-    {% endif %}
-
-    {% if team.best_players|length > 0 %}
-    <span class='bp-position'>1st:</span> {{ team.best_players[0]['name'] }}
-    <br>
-    {% endif %}
 
     {% if team.best_players|length == 0 %}
     <span class='error-message'>No best players entered yet</span>
@@ -136,12 +122,14 @@
 
     <span class='spacer'></span>
 
+    <!-- End if it was some kind of forfeit. -->
+    {% endif %}
+
 
     {% endif %}
-    <!-- This is for displaying/hiding the section when there is an error -->
 
+    <!-- End if it was a bye. -->
     {% endif %}
-    <!-- If BYE -->
 
   </div>
 

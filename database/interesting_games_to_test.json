@@ -1,0 +1,90 @@
+[
+  {
+    "is_final": false,
+    "year": 2021,
+    "gender": "Mens",
+    "round": "1",
+    "nickname": "The Brady Bunch",
+    "url_code": "573826",
+    "skip_this_game": false,
+    "division": "C8",
+    "is_past_game": true
+  },
+  {
+    "is_final": false,
+    "year": 2021,
+    "gender": "Womens",
+    "round": "1",
+    "nickname": "The Big Lez Show",
+    "url_code": "573803",
+    "skip_this_game": false,
+    "division": "1",
+    "is_past_game": true
+  },
+  {
+    "is_final": false,
+    "year": 2021,
+    "gender": "Mens",
+    "round": "3",
+    "nickname": "THE SCUM",
+    "url_code": "577089",
+    "skip_this_game": false,
+    "division": "C7",
+    "is_past_game": true
+  },
+  {
+    "is_final": false,
+    "year": 2021,
+    "gender": "Mens",
+    "round": "1",
+    "nickname": "THE SCUM",
+    "url_code": "577089",
+    "skip_this_game": false,
+    "division": "C7",
+    "is_past_game": true
+  },
+  {
+    "is_final": false,
+    "year": 2020,
+    "gender": "Mens",
+    "round": 6,
+    "nickname": "The B@stards",
+    "url_code": "547212",
+    "skip_this_game": false,
+    "division": "C4",
+    "is_past_game": true
+  },
+  {
+    "is_final": true,
+    "year": 2020,
+    "gender": "Mens",
+    "round": 2,
+    "nickname": "The B@stards",
+    "url_code": "547212",
+    "skip_this_game": false,
+    "division": "C4",
+    "is_past_game": true
+  },
+  {
+    "is_final": true,
+    "year": 2020,
+    "gender": "Mens",
+    "round": 4,
+    "nickname": "The B@stards",
+    "url_code": "547212",
+    "skip_this_game": false,
+    "division": "C4",
+    "is_past_game": true
+  },
+  {
+    "is_final": true,
+    "year": 202044,
+    "gender": "Mens",
+    "round": 4,
+    "nickname": "Invalid",
+    "url_code": "345698347597245",
+    "skip_this_game": false,
+    "division": "C4",
+    "is_past_game": true
+  }
+]

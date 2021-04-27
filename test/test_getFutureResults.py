@@ -29,7 +29,7 @@ class GetFutureGameDetails(unittest.TestCase):
         year = 2020
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-114-0-547208-0&a=ROUND&round=1&pool=1'
         is_final = False
-        game = web_scraper.Game(round, year, url, FUTURE_GAME, DONT_INCLUDE_PLAYER_NICKNAMES, DONT_SKIP_THIS_GAME, is_final)
+        game = web_scraper.Game(round, year, url, FUTURE_GAME, is_final)
 
         web_scraper.populate_game_from_sportstg(game)
 
@@ -66,7 +66,7 @@ class GetFutureGameDetails(unittest.TestCase):
         year = 2020
         url = 'https://websites.sportstg.com/comp_info.cgi?a=ROUND&round=2&client=1-114-0-548065-0&pool=1001'
         is_final = True
-        game = web_scraper.Game(round, year, url, FUTURE_GAME, DONT_INCLUDE_PLAYER_NICKNAMES, DONT_SKIP_THIS_GAME, is_final)
+        game = web_scraper.Game(round, year, url, FUTURE_GAME, is_final)
 
         web_scraper.populate_game_from_sportstg(game)
 
@@ -108,6 +108,8 @@ class GetFutureGameDetails(unittest.TestCase):
             "round":"1",
             "gender":"Mens",
             "division":"1",
+            "nickname":"Benny and the Jets",
+            "url_code":"573817",
             "is_final": False,
             "is_past_game": False,
             "include_player_nicknames": False,
@@ -126,6 +128,13 @@ class GetFutureGameDetails(unittest.TestCase):
             "location": "Caterer Oval",
             "location_nickname": "Hackney High",
             "score_for": None,
+            "nickname": "Benny and the Jets",
+            "division": "1",
+            "gender": "Mens",
+            'AUFC_logo': 'https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png',
+            "url_code": "573817",
+            "margin": None,
+            "win_or_loss_verb": None,
             "error": "",
             "is_past_game": False,
             "image_url": "http://websites.sportstg.com/pics/00/01/76/43/1764333_1_T.jpg",
@@ -134,11 +143,9 @@ class GetFutureGameDetails(unittest.TestCase):
             "year": 2021,
             "opposition_nickname": "The Silver Spooners",
             "date": "Sat 10 Apr",
-            "include_player_nicknames": False,
             "location_url": "https://websites.sportstg.com/comp_info.cgi?round=1&a=VENUE&venueid=19057027&c=1-114-0-573817-0&fID=125673421",
             "best_players": "",
             "round": 1,
-            "skip_this_game": False
         }
 
         self.assertEquals(scraped_game.__dict__, expected_output)

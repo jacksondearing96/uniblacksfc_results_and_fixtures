@@ -16,3 +16,10 @@ http://localhost:8080
 # Connecting to uniblacksfc database.
 # in Siteground -> Site Tools -> MySQL -> Remote
 # Add the relevant IP address or domain, this will validate connections
+
+# Great resource on pyenv which can be used to change versions of python.
+https://realpython.com/intro-to-pyenv/
+
+# Solution to jinja2 template rendering in Flask not working for local
+development server:
+https://stackoverflow.com/questions/60533259/devappserver-py-for-app-engine-std-on-localhost-is-clearing-os-uname-crashing

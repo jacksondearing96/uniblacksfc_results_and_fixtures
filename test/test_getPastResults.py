@@ -119,6 +119,13 @@ class GetPastResults(unittest.TestCase):
         self.assertEqual(game.goal_kickers, '')
         self.assertEqual(game.best_players, '')
 
+    def test_bye(self):
+        url = 'https://websites.sportstg.com/comp_info.cgi?round=6&a=ROUND&client=1-114-0-547212-0&pool=1'
+        game = web_scraper.Game(6, 2020, url)
+        web_scraper.populate_game_from_sportstg(game)
+        self.assertEqual(game.result, 'BYE')
+        self.assertEqual(game.error, '')
+
     def test_get_past_game_forfeit_against(self):
         url = 'https://websites.sportstg.com/comp_info.cgi?c=1-6951-0-522600-0&pool=1&round=1&a=ROUND'
         game = web_scraper.Game(1, 2019, url)
@@ -154,9 +161,9 @@ class GetPastResults(unittest.TestCase):
         self.assertEqual(web_scraper.get_matches_json([]), None)
 
     def test_get_match_result(self):
-        self.assertEqual(web_scraper.get_match_result('1.2-10', '1.2-11'), 'LOSS')
-        self.assertEqual(web_scraper.get_match_result('1.2-12', '1.2-11'), 'WIN')
-        self.assertEqual(web_scraper.get_match_result('1.2-11', '1.2-11'), 'DRAW')
+        self.assertEqual(web_scraper.get_match_result('1.2-10', '1.2-11'), ('LOSS', -1, 'def. by'))
+        self.assertEqual(web_scraper.get_match_result('1.2-12', '1.2-11'), ('WIN', 1, 'defeated'))
+        self.assertEqual(web_scraper.get_match_result('1.2-11', '1.2-11'), ('DRAW', 0, 'drew against'))
         self.assertEqual(web_scraper.get_match_result('1.210', '1.2-11'), None)
         self.assertEqual(web_scraper.get_match_result([], '1.2-11'), None)
         self.assertEqual(web_scraper.get_match_result('', ''), None)
@@ -182,6 +189,8 @@ class GetPastResults(unittest.TestCase):
             "round":"1",
             "gender":"Mens",
             "division":"1",
+            "nickname": "Benny and the Jets",
+            "url_code": "573817",
             "is_final": False,
             "is_past_game": True,
             "include_player_nicknames": False,
@@ -200,7 +209,14 @@ class GetPastResults(unittest.TestCase):
             "time": "2:15 PM",
             "location": "Caterer Oval",
             "score_for": "7.7-49",
+            "win_or_loss_verb": "def. by",
+            "margin": -19,
             "error": "",
+            "nickname": "Benny and the Jets",
+            "division": "1",
+            "gender": "Mens",
+            "AUFC_logo": 'https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png',
+            "url_code": "573817",
             "is_past_game": True,
             "image_url": "http://websites.sportstg.com/pics/00/01/76/43/1764333_1_T.jpg",
             "is_final": False,
@@ -208,11 +224,9 @@ class GetPastResults(unittest.TestCase):
             "opposition_nickname": "The Silver Spooners",
             "year": 2021,
             "date": "Sat 10 Apr",
-            "include_player_nicknames": False,
             "location_url": "https://websites.sportstg.com/comp_info.cgi?round=1&a=VENUE&venueid=19057027&c=1-114-0-573817-0&fID=125673421",
             "best_players": [{'fullname': u'Damian Cunningham', 'nickname': u'Cunninghams Warehouse, Yes Sir-eee!!!', 'name': u'D. Cunningham', 'memberID': 26610}, {'fullname': u'Conor Noonan', 'nickname': u'Harry Styles', 'name': u'C. Noonan', 'memberID': 27208}, {'fullname': u'Ben Adams', 'nickname': u'The Adams Family', 'name': u'B. Adams', 'memberID': 27099}, {'fullname': u'Stefan Jankewicz', 'nickname': u'Stef-Hahn Super Dry', 'name': u'S. Jankewicz', 'memberID': 27316}, {'fullname': u'Ryan Marini', 'nickname': u'Nonno Marini', 'name': u'R. Marini', 'memberID': 27317}, {'fullname': u'Hamish Wallace', 'nickname': u'Wallace & Gromit', 'name': u'H. Wallace', 'memberID': 27443}],
             "round": 1,
-            "skip_this_game": False
         }
 
         scraped_game_details = scraped_game_details.__dict__

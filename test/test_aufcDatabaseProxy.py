@@ -7,9 +7,9 @@ from aufc_database_proxy import AufcDatabaseProxy
 class TestAufcDatabaseProxy(unittest.TestCase):
 
     def test_connect_to_database(self):
-        AufcDatabaseProxy.connect_to_aufc_database()
-        self.assertIsNotNone(AufcDatabaseProxy.connection)
-        AufcDatabaseProxy.connection.close()
+        connection = AufcDatabaseProxy.connect_to_aufc_database()
+        self.assertIsNotNone(connection)
+        connection.close()
 
 
     def test_update_overrides(self):
@@ -26,8 +26,6 @@ class TestAufcDatabaseProxy(unittest.TestCase):
 
 
     def test_update_opposition_nicknames(self):
-        AufcDatabaseProxy.connect_to_aufc_database()
-
         AufcDatabaseProxy.update_opposition_nicknames()
 
         self.assertIsNotNone(AufcDatabaseProxy.opposition_nicknames)
@@ -35,22 +33,16 @@ class TestAufcDatabaseProxy(unittest.TestCase):
         self.assertEquals(AufcDatabaseProxy.opposition_nicknames['North Haven'], 'North Haven for Hobos')
         self.assertEquals(AufcDatabaseProxy.opposition_nicknames["St Peter's OC"], 'The Silver Spooners')
         
-        AufcDatabaseProxy.connection.close()
 
     def test_update_ground_nicknames(self):
-        AufcDatabaseProxy.connect_to_aufc_database()
-
         AufcDatabaseProxy.update_ground_nicknames()
 
         self.assertIsNotNone(AufcDatabaseProxy.ground_nicknames)
         self.assertEquals(AufcDatabaseProxy.ground_nicknames['Woodville Oval'], 'The Woods')
         self.assertEquals(AufcDatabaseProxy.ground_nicknames['University Oval'], 'Bob Neil #1')
 
-        AufcDatabaseProxy.connection.close()
     
     def test_update_player_names_and_nicknames(self):
-        AufcDatabaseProxy.connect_to_aufc_database()
-
         AufcDatabaseProxy.update_player_names_and_nicknames()
 
         self.assertIsNotNone(AufcDatabaseProxy.player_names_and_nicknames)
@@ -60,14 +52,13 @@ class TestAufcDatabaseProxy(unittest.TestCase):
         self.assertEquals(player['fullname'], 'Jackson Dearing')
         self.assertEquals(player['nickname'], 'Buck Hunter')
 
-        AufcDatabaseProxy.connection.close()
 
     def test_get_player_nickname(self):
         player = AufcDatabaseProxy.get_player_nickname('J. Dearing')
         self.assertEquals(player['fullname'], 'Jackson Dearing')
         self.assertEquals(player['nickname'], 'Buck Hunter')
 
-        self.assertEquals(AufcDatabaseProxy.get_player_nickname('J. GooseInvalid'), {})
+        self.assertEquals(AufcDatabaseProxy.get_player_nickname('J. GooseInvalid'), {'fullname': '', 'nickname': '', 'name': 'J. GooseInvalid', 'memberID': 0})
 
     def test_get_opposition_nickname(self):
         self.assertEquals(AufcDatabaseProxy.get_opposition_nickname('Athelstone'), 'The Raggies')

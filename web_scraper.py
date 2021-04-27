@@ -29,10 +29,10 @@ FUTURE_GAME = False
 
 
 
-def server_failure():
+def server_failure(error_message):
     game = Game(0, 0, '')
-    game.error = 'SERVER FAILURE'
-    return json.dumps([ game.__dict__ ])
+    game.error = error_message
+    return json.dumps(game.__dict__)
 
 
 def error(message, expected=None, actual=None):
@@ -54,13 +54,14 @@ def get_match_result(score_for, score_against):
 
         score_for_total = int(score_for.split('-')[1])
         score_against_total = int(score_against.split('-')[1])
+        margin = score_for_total - score_against_total
 
-        if score_for_total > score_against_total:
-            return "WIN"
-        if score_for_total < score_against_total:
-            return "LOSS"
-        if score_for_total == score_against_total:
-            return "DRAW"
+        if margin > 0:
+            return "WIN", margin, 'defeated'
+        if margin < 0:
+            return "LOSS", margin, 'def. by'
+        if margin == 0:
+            return "DRAW", margin, 'drew against'
     except Exception as e:
         logging.error(e)
 
@@ -253,6 +254,9 @@ def get_data_and_time(game_json, game):
     game.date = time_and_date[1]
     game.date = game.date.replace('&nbsp;', ' ')
 
+def is_a_forfeit(game):
+    return game.result == 'FORFEIT' or game.result == 'OPPOSITION_FORFEIT'
+
 def populate_game_from_sportstg(game):
     try:
         if 'sportstg.com' not in game.url:
@@ -278,6 +282,7 @@ def populate_game_from_sportstg(game):
             game.error = "AUFC not present in week's matches"
             return
 
+        # Check for a special finals name associated with this game.
         if game_json['MatchName'] != u'':
             game.is_final = 'true'
             game.match_name = game_json['MatchName']
@@ -285,6 +290,11 @@ def populate_game_from_sportstg(game):
                 game.match_name = game.match_name[:-1]
 
         game.round = get_actual_round(game_json)
+
+        # Check if it was a bye.
+        if game_json['isBye'] == 1:
+            game.result = 'BYE'
+            return
 
         if game.is_past_game and game_json['PastGame'] != 1:
             # This means we want the results from this match but it's results have not been 
@@ -294,10 +304,6 @@ def populate_game_from_sportstg(game):
             error('This is not a past game.')
             game.error = 'MATCH HAS NOT BEEN PLAYED YET'
             game.is_past_game = False
-
-        if game_json['isBye'] == 1:
-            game.result = 'BYE'
-            return
 
         # Get the location and the associated location url.
         get_game_location(game_json, game)
@@ -309,7 +315,7 @@ def populate_game_from_sportstg(game):
         game.goal_kickers = ''
         game.best_players = ''
 
-        if game.is_past_game and game.result != 'FORFEIT':
+        if game.is_past_game and not is_a_forfeit(game):
             try:
                 goal_kickers_and_best_players_list = game_json['MatchResults']
             except:
@@ -321,7 +327,7 @@ def populate_game_from_sportstg(game):
             if game.is_past_game:
                 game.score_against = game_json['AwayScore']
                 game.score_for = game_json['HomeScore']
-                if game.result != 'FORFEIT':
+                if not is_a_forfeit(game):
                     if len(goal_kickers_and_best_players_list) < 1:
                         goal_kickers_and_best_players = ''
                     else:
@@ -332,24 +338,26 @@ def populate_game_from_sportstg(game):
             if game.is_past_game:
                 game.score_against = game_json['HomeScore']
                 game.score_for = game_json['AwayScore']
-                if game.result != 'FORFEIT':
+                if not is_a_forfeit(game):
                     if len(goal_kickers_and_best_players_list) != 2:
                         goal_kickers_and_best_players = ''
                     else:
                         goal_kickers_and_best_players = goal_kickers_and_best_players_list[1]
 
+        # Check if scores have been entered yet.
         if game.score_for == '&nbsp;':
             game.is_past_game = False
             game.error = 'RESULTS NOT ENTERED YET'
             return
 
-        if game.is_past_game and game.result != 'FORFEIT':
-            game.result = get_match_result(game.score_for, game.score_against)
+        if game.is_past_game and not is_a_forfeit(game):
+            game.result, game.margin, game.win_or_loss_verb = get_match_result(game.score_for, game.score_against)
             game.goal_kickers, game.best_players = extract_goal_kickers_and_best_players(
                 goal_kickers_and_best_players)
         else:
             if game.score_for == u'10.0-60':
                 game.result = 'OPPOSITION_FORFEIT'
+                game.margin = 30
 
     except Exception as e:
         logging.error(e)
@@ -376,17 +384,18 @@ def get_game_details_from_sportstg(game):
     populated_game.division = game['division']
     populated_game.gender = game['gender']
     populated_game.url_code = game['url_code']
+    populated_game.AUFC_logo = 'https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png'
     
     # Scrape details from sportstg.
     populate_game_from_sportstg(populated_game)
 
-    if populated_game.error != '':
-        return populated_game
-
     # Populate nicknames.
     populated_game.opposition_nickname = AufcDatabaseProxy.get_opposition_nickname(populated_game.opposition)
     populated_game.location_nickname = AufcDatabaseProxy.get_ground_nickname(populated_game.location)
-    
+
+    if populated_game.error != '' or populated_game.result == 'BYE':
+        return populated_game
+
     for i in range(len(populated_game.goal_kickers)):
         populated_game.goal_kickers[i] = AufcDatabaseProxy.get_player_nickname(populated_game.goal_kickers[i]['name'])
 

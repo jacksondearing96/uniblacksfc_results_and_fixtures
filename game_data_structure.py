@@ -32,5 +32,7 @@ class Game(object):
         self.score_against = None
         self.goal_kickers = []
         self.best_players = []
+        self.win_or_loss_verb = None
+        self.margin = None
 
         self.error = ''

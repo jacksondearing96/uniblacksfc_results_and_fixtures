@@ -158,72 +158,88 @@ class AufcDatabaseProxy(object):
 
     @classmethod 
     def get_player_nickname(cls, player_name):
-        AufcDatabaseProxy.update_cache()
-        if AufcDatabaseProxy.player_names_and_nicknames.has_key(player_name):
-            return AufcDatabaseProxy.player_names_and_nicknames[player_name]
-        
-        logging.warning('No match for player: {} in database.'.format(player_name))
-        return { 'name': player_name, 'nickname': '', 'fullname': '', 'memberID': 0 } 
+        try:
+            empty_player = { 'name': '', 'nickname': '', 'fullname': '', 'memberID': 0 } 
+            AufcDatabaseProxy.update_cache()
+            if AufcDatabaseProxy.player_names_and_nicknames.has_key(player_name):
+                return AufcDatabaseProxy.player_names_and_nicknames[player_name]
+            
+            logging.warning('No match for player: {} in database.'.format(player_name))
+            empty_player['name'] = player_name
+            return empty_player
+        except:
+            return empty_player
 
 
     @classmethod 
     def get_opposition_nickname(cls, opposition_name, original_name=None):
-        if original_name is None:
-            original_name = opposition_name
+        try:
+            if original_name is None:
+                original_name = opposition_name
 
-        AufcDatabaseProxy.update_cache()
+            AufcDatabaseProxy.update_cache()
 
-        inconclusives = [
-            '',
-            'Saint',
-            'North',
-            'South',
-            'East',
-            'West',
-            'The',
-            'Port',
-            'Adelaide',
-            'Mount',
-            'Old'
-        ]
+            inconclusives = [
+                '',
+                'Saint',
+                'North',
+                'South',
+                'East',
+                'West',
+                'The',
+                'Port',
+                'Adelaide',
+                'Mount',
+                'Old'
+            ]
 
-        # Inconclusive.
-        if (opposition_name == '' or opposition_name in inconclusives):
+            # Inconclusive.
+            if (opposition_name == '' or opposition_name in inconclusives):
+                logging.warning('No match for opposition name: {} in database.'.format(original_name))
+                return ''
+
+            # Exact match.
+            if AufcDatabaseProxy.opposition_nicknames.has_key(opposition_name):
+                return AufcDatabaseProxy.opposition_nicknames[opposition_name]
+
+            # Contains.
+            for actual_opposition_name in AufcDatabaseProxy.opposition_nicknames.keys():
+                if opposition_name in actual_opposition_name:
+                    return AufcDatabaseProxy.opposition_nicknames[actual_opposition_name]
+
+            # Remove the apostrophe if it is present.
+            if "'" in opposition_name:
+                return AufcDatabaseProxy.get_opposition_nickname(opposition_name.replace("'", ''), opposition_name)
+
+            # Remove the last word and try again.
+            if ' ' in opposition_name:
+                return AufcDatabaseProxy.get_opposition_nickname(opposition_name.rsplit(' ', 1)[0], opposition_name)
+
             logging.warning('No match for opposition name: {} in database.'.format(original_name))
             return ''
+        except:
+            return ''
 
-        # Exact match.
-        if AufcDatabaseProxy.opposition_nicknames.has_key(opposition_name):
-            return AufcDatabaseProxy.opposition_nicknames[opposition_name]
-
-        # Contains.
-        for actual_opposition_name in AufcDatabaseProxy.opposition_nicknames.keys():
-            if opposition_name in actual_opposition_name:
-                return AufcDatabaseProxy.opposition_nicknames[actual_opposition_name]
-
-        # Remove the apostrophe if it is present.
-        if "'" in opposition_name:
-            return AufcDatabaseProxy.get_opposition_nickname(opposition_name.replace("'", ''), opposition_name)
-
-        # Remove the last word and try again.
-        if ' ' in opposition_name:
-            return AufcDatabaseProxy.get_opposition_nickname(opposition_name.rsplit(' ', 1)[0], opposition_name)
-
-        logging.warning('No match for opposition name: {} in database.'.format(original_name))
-        return ''
 
     @classmethod
     def get_ground_nickname(cls, ground_name):
-        AufcDatabaseProxy.update_cache()
-        if AufcDatabaseProxy.ground_nicknames.has_key(ground_name):
-            return AufcDatabaseProxy.ground_nicknames[ground_name]
+        try:
+            AufcDatabaseProxy.update_cache()
+            if AufcDatabaseProxy.ground_nicknames.has_key(ground_name):
+                return AufcDatabaseProxy.ground_nicknames[ground_name]
 
-        logging.warning('No match for ground name: {} in database.'.format(ground_name))
-        return '' 
+            logging.warning('No match for ground name: {} in database.'.format(ground_name))
+            return '' 
+        except:
+            return ''
+
 
     @classmethod
     def get_override_image_url(cls, opposition):
-        AufcDatabaseProxy.update_cache()
-        if opposition in AufcDatabaseProxy.image_url_overrides.keys():
-            return AufcDatabaseProxy.image_url_overrides[opposition]
-        return ''
+        try:
+            AufcDatabaseProxy.update_cache()
+            if opposition in AufcDatabaseProxy.image_url_overrides.keys():
+                return AufcDatabaseProxy.image_url_overrides[opposition]
+            return ''
+        except:
+            return ''
