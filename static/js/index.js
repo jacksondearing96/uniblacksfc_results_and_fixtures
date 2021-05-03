@@ -300,11 +300,29 @@ function GetFormattedSubstandardResultsHTML(teams) {
   });
 }
 
-function GetFormattedSubstandardFixturesHTML() {
+function GetFormattedSubstandardFixturesHTML(teams) {
   let container = $("#substandard-fixtures-container");
   container.html(
     "<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>"
   );
+
+  return new Promise((resolve) => {
+    fetch("/substandard-fixtures-content.html", {
+      method: "POST",
+      "Content-Type": "application/json",
+      body: JSON.stringify(teams),
+    })
+      .then((response) => response.text())
+      .then((html) => {
+        container.append(html);
+
+        // Give the images time to load before the screenshot is taken.
+        setTimeout(function () {
+          HTMLElementToImage("#substandard-fixtures-container");
+          resolve();
+        }, 3000);
+      });
+  });
 }
 
 function FormatTeams(team_configurations_request_data, formatter_callback) {
@@ -349,8 +367,10 @@ function SubstandardResults() {
 function SubstandardFixtures() {
   $("#substandard-fixtures-container").html("");
   let team_configurations_request_data = ExtractJSONFromTable();
+
   for (let team of team_configurations_request_data)
     team["is_past_game"] = false;
+
   FormatTeams(
     team_configurations_request_data,
     GetFormattedSubstandardFixturesHTML

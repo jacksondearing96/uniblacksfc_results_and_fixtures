@@ -3,10 +3,10 @@
 }
 
 #substandard-fixtures-container {
+  max-width: 550px !important;
   background-color: white;
   font-family: "Arial", sans-serif;
   color: rgb(75, 75, 75);
-  padding: 20px;
   padding-top: 0px;
 }
 
