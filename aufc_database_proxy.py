@@ -158,17 +158,22 @@ class AufcDatabaseProxy(object):
 
     @classmethod 
     def get_player_nickname(cls, player_name):
+        empty_player = { 'name': '', 'nickname': '', 'fullname': '', 'memberID': 0 } 
         try:
-            empty_player = { 'name': '', 'nickname': '', 'fullname': '', 'memberID': 0 } 
+            empty_player['name'] = player_name
+        except:
+            pass
+
+        try:
             AufcDatabaseProxy.update_cache()
             if AufcDatabaseProxy.player_names_and_nicknames.has_key(player_name):
                 return AufcDatabaseProxy.player_names_and_nicknames[player_name]
             
             logging.warning('No match for player: {} in database.'.format(player_name))
-            empty_player['name'] = player_name
-            return empty_player
         except:
-            return empty_player
+            pass
+        
+        return empty_player
 
 
     @classmethod 

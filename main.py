@@ -27,6 +27,7 @@ def get_game():
     try:
         game = request.get_json(force=True)
         game = web_scraper.get_game_details_from_sportstg(game)
+        print(game.goal_kickers)
         return json.dumps(game.__dict__)
     except Exception as e:
         logging.error(e)
@@ -37,12 +38,16 @@ def get_game():
 def send_file(path):
     if path not in [
         'bowlies.html',
-        'bowlies-content.html'
+        'bowlies-content.html',
+        'substandard.html',
+        'substandard-results-content.html',
+        'substandard-fixtures-content.html'
     ]:
         return 'ERROR - server does not serve that url path'
 
     if request.method == 'POST':
         teams = request.get_json(force=True)
+        print(teams)
         return render_template(path, teams=teams)
     else:
         return render_template(path)

@@ -1,49 +1,18 @@
-.container-fluid {
-  background-color: lightgrey;
-}
-
-#past-games-container,
-#future-games-container,
-#bowlies-container {
-  display: none;
-}
-
-#past-games-table,
-#future-games-table {
-  display: none;
-}
-
-#test-tick {
-  height: 10px;
-  display: none;
-}
-
-#test-cross {
-  height: 10px;
-  display: none;
-}
-
-#more-options {
-  display: none;
-}
-
-button:hover {
-  cursor: pointer;
-}
-
-button {
-  margin-top: 3px !important;
-}
-
-#automate-substandard-button {
-  float: right;
-}
-
-#more-options-button {
-  float: right;
+body {
+  text-align: center;
+  background-color: lightgrey !important;
+  max-width: 1000px;
 }
 
 input[type="checkbox"] {
   width: 30px;
   height: 30px;
+}
+
+input[type="number"] {
+  width: 50px;
+}
+
+.input-data-table {
+  display: inline-block;
 }

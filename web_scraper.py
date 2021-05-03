@@ -397,7 +397,9 @@ def get_game_details_from_sportstg(game):
         return populated_game
 
     for i in range(len(populated_game.goal_kickers)):
+        goals = populated_game.goal_kickers[i]['goals']
         populated_game.goal_kickers[i] = AufcDatabaseProxy.get_player_nickname(populated_game.goal_kickers[i]['name'])
+        populated_game.goal_kickers[i]['goals'] = goals
 
     for i in range(len(populated_game.best_players)):
         populated_game.best_players[i] = AufcDatabaseProxy.get_player_nickname(populated_game.best_players[i]['name'])

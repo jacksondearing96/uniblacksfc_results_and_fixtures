@@ -8,8 +8,9 @@
     <title>Hold Your Bowlies</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/west-end-can.jpeg') }}">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bowlies.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/substandard-results.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/substandard-fixtures.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loading-animation.css') }}">
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
@@ -43,16 +44,23 @@
 
         <div class='row'>
             <div class='col-md-12'>
-                <button type='button' class='btn btn-primary' onclick="AutomateBowlies()"
-                    id="automate-bowlies-button">Get Bowlies Results</button>
-                <button style='display:none' type='button' class='btn btn-secondary' onclick="RunBowliesTests()"
-                    id="automate-bowlies-button">Test</button>
+                <button type='button' class='btn btn-primary' onclick="SubstandardResults()"
+                    id="get-substandard-results-button">Get Results</button>
+                <button type='button' class='btn btn-primary' onclick="SubstandardFixtures()"
+                    id="get-substandard-fixtures-button">Get Fixtures</button>
+                <!-- <button style='display:none' type='button' class='btn btn-secondary' onclick="RunTests()"
+                    id="automate-bowlies-button">Test</button> -->
             </div>
         </div>
 
         <div class='row'>
             <div class='col-md-12'>
-                <div id='bowlies-content-container'></div>
+                <div id='substandard-results-container'></div>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-12'>
+                <div id='substandard-fixtures-container'></div>
             </div>
         </div>
     </div>

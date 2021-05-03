@@ -1,0 +1,127 @@
+#substandard-results-container {
+  margin: 0 auto;
+}
+
+#substandard-results-container,
+#future-games-container {
+  width: 550px;
+  background-color: white;
+  font-family: "Arial", sans-serif;
+  color: rgb(75, 75, 75);
+  padding-top: 0px;
+}
+
+#substandard-results-container table,
+#substandard-results-container td,
+#substandard-results-container tr {
+  border: 0px;
+  color: rgb(75, 75, 75);
+}
+
+#substandard-results-container .past-game {
+  width: 100%;
+  background-color: transparent;
+  color: rgb(75, 75, 75);
+}
+
+#substandard-results-container #past-games-title {
+  font-size: 23px;
+  color: rgb(75, 75, 75);
+  text-align: center;
+}
+
+#substandard-results-container img {
+  max-height: 55px;
+  max-width: 60px;
+}
+
+#substandard-results-container .icons img {
+  max-height: 20px;
+  padding-right: 3px;
+}
+
+#substandard-results-container .icons img,
+#pasts-games-container .icons p {
+  display: inline;
+}
+
+#substandard-results-container .icons {
+  max-width: 110px;
+  font-size: 14px;
+}
+
+#substandard-results-container .date {
+  text-align: center;
+  color: grey;
+  font-size: 17px;
+  padding-top: 20px;
+}
+
+#substandard-results-container .date:empty {
+  padding: 0px;
+  margin: 0px;
+}
+
+#substandard-results-container .result {
+  min-width: 80px;
+}
+
+#substandard-results-container .right {
+  text-align: right;
+}
+
+#substandard-results-container .centre {
+  text-align: center;
+}
+
+#substandard-results-container .expand {
+  width: 52%;
+  padding: 4px;
+}
+
+#substandard-results-container .future-expand {
+  width: 25%;
+  padding: 4px;
+}
+
+#substandard-results-container .label {
+  padding-right: 12px;
+  padding-top: 5px;
+}
+
+#substandard-results-container .bottom-divider > td {
+  padding-bottom: 10px;
+  border-bottom: 1px solid lightgrey;
+}
+
+#substandard-results-container .top-divider td {
+  padding-top: 10px;
+}
+
+#substandard-results-container .icons td {
+  padding-bottom: 0px;
+  padding-top: 0px;
+  border: 0px;
+  padding-left: 10px;
+}
+
+#substandard-results-container #round-number {
+  width: 80px;
+  font-size: 14px;
+}
+
+#substandard-results-container .nickname {
+  font-weight: bold;
+}
+
+#substandard-results-container .match-name {
+  text-align: center;
+  color: grey;
+  font-size: 17px;
+  margin-bottom: 0px;
+}
+
+#win-loss-summary {
+  margin: 0 auto;
+  text-align: center;
+}

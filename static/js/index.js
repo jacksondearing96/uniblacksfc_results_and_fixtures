@@ -1,55 +1,11 @@
-const NUMBER_OF_TEAMS = 8;
-
-const PAST_GAME = true;
-const FUTURE_GAME = false;
-
-past_teams = [];
-past_table = null;
-
-future_teams = [];
-future_table = null;
-
-// Initialises a new default game which can be used for either a past or future game.
-function NewGame(is_past_game) {
-  return {
-    'nickname': "",
-    'round': "X",
-    'intended_round': '',
-    'date': "",
-    'year': GetCurrentYear(),
-    'landing_page': '',
-    'opposition': "",
-    'opposition_nickname': '',
-    'gender': '',
-    'division': '',
-    'time': "",
-    'location': '',
-    'location_nickname': '',
-    'result': '',
-    'score_for': "",
-    'score_against': "",
-    'goal_kickers': "",
-    'best_players': "",
-    'image_url': "",
-    'AUFC_logo': "https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png",
-    'option': 'SUBSTANDARD',
-    'date_HTML': '',
-    'error': '',
-    'is_past_game': is_past_game,
-    'is_final': 'false',
-    'is_final_checkbox': '<input type="checkbox"></input>',
-    'match_name': '',
-    'include': 'true',
-    'include_checkbox': '<input type="checkbox" checked></input>'
-  };
-}
+const ROUND_INDEX = 0;
+const SKIP_THIS_GAME_CHECKBOX_INDEX = 1;
+const IS_FINAL_CHECKBOX_INDEX = 2;
 
 // Initialises a list of winning verbs.
 // These will be used to describe uni beating another team.
-function InitialiseWinningVerbs() {
-
-  // Ensure there is at least one of these per team so that it can never run out.
-  winning_verbs = [
+function GetInitialisedWinningVerbs() {
+  return [
     "smashed",
     "crushed",
     "flogged",
@@ -62,697 +18,362 @@ function InitialiseWinningVerbs() {
     "dismantled",
     "decimated",
     "destroyed",
-    "wrecked"
+    "wrecked",
   ];
 }
 
-// Takes an array that is extacted from the data tables and applies the array values to
-// the relevant past game. This enforces the explicit ordering of the data tables columns.
-// TODO: Improve this somehow - surely some way to use destructuring to improve this.
-function UpdatePastGameWithArray(game, row_content) {
-  game.nickname = row_content[2];
-  game.round = row_content[3];
-  game.intended_round = game.round;
-  game.division = row_content[4];
-  game.gender = row_content[5];
-  game.year = row_content[6];
-  game.landing_page = row_content[7];
-  game.date = row_content[8];
-  game.opposition = row_content[9];
-  game.opposition_nickname = row_content[10];
-  game.result = row_content[11];
-  game.score_for = row_content[12];
-  game.score_against = row_content[13];
-  game.goal_kickers = row_content[14];
-  game.best_players = row_content[15];
-  game.image_url = row_content[16];
-}
-
-function UpdateFutureGameWithArray(game, row_content) {
-  game.nickname = row_content[2];
-  game.round = row_content[3];
-  game.intended_round = game.round;
-  game.division = row_content[4];
-  game.gender = row_content[5];
-  game.year = row_content[6];
-  game.landing_page = row_content[7];
-  game.date = row_content[8];
-  game.opposition = row_content[9];
-  game.opposition_nickname = row_content[10];
-  game.location = row_content[11];
-  game.location_nickname = row_content[12];
-  game.time = row_content[13];
-  game.image_url = row_content[14];
-}
-
-// Returns the current year.
-function GetCurrentYear() {
-  var date = new Date();
-  return date.getFullYear();
-}
-
-// Updates the past_teams list based on the row in the table indexed by row_index.
-function UpdatePastTeamsFromDOM(row_index) {
-  // TODO: Only update the relevant cell. This naively updates the entire row.
-  let row = document.getElementById('past-games-table').rows[row_index + 1];
-  let row_content = [];
-
-  for (let i = 0; i < row.cells.length; ++i) {
-    row_content.push(row.cells[i].innerHTML);
-  }
-
-  // Here do the conversion from checkbox to true/false
-
-  UpdatePastGameWithArray(past_teams[row_index], row_content);
-
-  past_table.rows().invalidate().draw();
-}
-
-function UpdateFutureTeamsFromDOM(row_index) {
-
-  let row = document.getElementById('future-games-table').rows[row_index + 1];
-  let row_content = [];
-
-  for (let i = 0; i < row.cells.length; ++i) {
-    row_content.push(row.cells[i].innerHTML);
-  }
-  UpdateFutureGameWithArray(future_teams[row_index], row_content);
-
-  future_table.rows().invalidate().draw();
-}
-
-function InitialisePastGamesTable() {
-
+$(document).ready(function () {
   const createdCell = function (cell) {
+    // Don't want the first 4 columns to be editable.
+    // These are nickname, division, gender and year.
+    if (cell.cellIndex < 4) return;
+
     let original;
 
-    // First two columns are checkboxes.
-    if (cell.cellIndex > 1) {
-      cell.setAttribute('contenteditable', true);
-      cell.setAttribute('spellcheck', false);
-    }
+    //cell.setAttribute("contenteditable", true);
+    cell.setAttribute("spellcheck", false);
 
-    cell.addEventListener("mousedown", function (e) {
-      original = e.target.innerHTML;
+    cell.addEventListener("focus", function (e) {
+      original = e.target.textContent;
     });
+
     cell.addEventListener("blur", function (e) {
-      if (original !== e.target.innerHTML) {
-        const row = past_table.row(e.target.parentElement);
-        UpdatePastTeamsFromDOM(row.index());
+      if (original !== e.target.textContent) {
+        const row = input_data_table.row(e.target.parentElement);
+        row.invalidate();
       }
     });
-    cell.addEventListener("mouseup", function (e) {
-      if (e.target.tagName != 'INPUT') return;
-
-      const timeForCheckboxToChangeState = 50;
-
-      setTimeout(() => {
-        let columnIndex = cell.cellIndex;
-        let rowIndex = past_table.row(e.target.parentElement).index();
-
-        const includeRow = 0;
-        const finalRow = 1;
-
-        if (columnIndex === includeRow) {
-          past_teams[rowIndex].include_checkbox = e.target.checked ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
-          past_teams[rowIndex].include = e.target.checked ? "true" : "false";
-        } else if (columnIndex === finalRow) {
-          past_teams[rowIndex].is_final_checkbox = e.target.checked ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
-          past_teams[rowIndex].is_final = e.target.checked ? "true" : "false";
-        }
-      }, timeForCheckboxToChangeState);
-    });
   };
 
-  past_table = $('#past-games-table').DataTable({
-    'paging': false,
-    'bInfo': false,
-    'bSort': false,
-    'bFilter': false,
-    'data': past_teams,
-    'columns': [
-      { title: 'Include', data: 'include_checkbox' },
-      { title: 'Final', data: 'is_final_checkbox' },
-      { title: 'Nickname', data: "nickname" },
-      { title: 'Round', data: "round" },
-      { title: 'Division', data: "division" },
-      { title: 'Gender', data: "gender" },
-      { title: 'Year', data: "year" },
-      { title: 'Landing Page', data: "landing_page" },
-      { title: 'Date', data: "date" },
-      { title: 'Opposition', data: "opposition" },
-      { title: 'Opposition Nickname', data: 'opposition_nickname' },
-      { title: 'Result', data: "result" },
-      { title: 'Score For', data: "score_for" },
-      { title: 'Score Against', data: "score_against" },
-      { title: 'Goal Kickers', data: "goal_kickers" },
-      { title: 'Best Players', data: "best_players" },
-      { title: 'Image Url', data: "image_url" }
+  input_data_table = $("#input-data-table").DataTable({
+    paging: false,
+    bInfo: false,
+    bSort: false,
+    bFilter: false,
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: "/input-table-teams-data",
+      data: { year: 2021 },
+      datatype: "JSON",
+      dataSrc: (jsonTableData) => jsonTableData,
+    },
+    columns: [
+      { title: "Round", data: "round" },
+      { title: "Include Team?", data: "skip_this_game" },
+      { title: "Is A Final?", data: "is_final" },
+      { title: "Nickname", data: "nickname" },
+      { title: "Division", data: "division" },
+      { title: "Gender", data: "gender" },
+      { title: "Year", data: "year" },
     ],
-    columnDefs: [{
-      targets: '_all',
-      createdCell: createdCell
-    }],
-  });
-}
-
-function InitialiseFutureGamesTable() {
-
-  const createdCell = function (cell) {
-    let original;
-
-    // First two columns are checkboxes.
-    if (cell.cellIndex > 1) {
-      cell.setAttribute('contenteditable', true);
-      cell.setAttribute('spellcheck', false);
-    }
-
-    cell.addEventListener("mousedown", function (e) {
-      original = e.target.innerHTML;
-    });
-    cell.addEventListener("blur", function (e) {
-      if (original !== e.target.innerHTML) {
-        const row = future_table.row(e.target.parentElement);
-        UpdateFutureTeamsFromDOM(row.index());
-      }
-    });
-    cell.addEventListener("mouseup", function (e) {
-      if (e.target.tagName != 'INPUT') return;
-
-      const timeForCheckboxToChangeState = 50;
-
-      // Set timeout to allow the state of the box to change.
-      setTimeout(() => {
-        let columnIndex = cell.cellIndex;
-        let rowIndex = future_table.row(e.target.parentElement).index();
-
-        const includeRow = 0;
-        const finalRow = 1;
-
-        if (columnIndex === includeRow) {
-          future_teams[rowIndex].include_checkbox = e.target.checked ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
-          future_teams[rowIndex].include = e.target.checked ? "true" : "false";
-        } else if (columnIndex === finalRow) {
-          future_teams[rowIndex].is_final_checkbox = e.target.checked ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
-          future_teams[rowIndex].is_final = e.target.checked ? "true" : "false";
-        }
-
-        // if (columnIndex === 0) {
-
-        //   if (future_disclude_teams.includes(rowIndex)) {
-        //     future_disclude_teams = future_disclude_teams.filter(val => val != rowIndex);
-        //   } else {
-        //     future_disclude_teams.push(rowIndex);
-        //   }
-
-        // } else if (columnIndex === 1) {
-
-        //   if (future_finals_teams.includes(rowIndex)) {
-        //     future_finals_teams = future_finals_teams.filter(val => rowIndex != val);
-        //   } else {
-        //     future_finals_teams.push(rowIndex);
-        //   }
-
-        // }
-      }, timeForCheckboxToChangeState);
-    });
-  };
-
-  future_table = $('#future-games-table').DataTable({
-    'paging': false,
-    'bInfo': false,
-    'bSort': false,
-    'bFilter': false,
-    'data': future_teams,
-    'columns': [
-      { title: 'Include', data: 'include_checkbox' },
-      { title: 'Final', data: 'is_final_checkbox' },
-      { title: 'Nickname', data: "nickname" },
-      { title: 'Round', data: "round" },
-      { title: 'Division', data: "division" },
-      { title: 'Gender', data: "gender" },
-      { title: 'Year', data: "year" },
-      { title: 'Landing Page', data: 'landing_page' },
-      { title: 'Date', data: "date" },
-      { title: 'Opposition', data: "opposition" },
-      { title: 'Opposition Nickname', data: 'opposition_nickname' },
-      { title: 'Location', data: "location" },
-      { title: 'Location Nickname', data: "location_nickname" },
-      { title: 'Time', data: "time" },
-      { title: 'Image Url', data: "image_url" }
+    columnDefs: [
+      {
+        // Editable cells.
+        targets: "_all",
+        createdCell: createdCell,
+      },
+      {
+        // Checkbox inputs.
+        targets: SKIP_THIS_GAME_CHECKBOX_INDEX,
+        searchable: false,
+        orderable: false,
+        className: "dt-body-center",
+        render: function (data, type, full, meta) {
+          return (
+            '<input type="checkbox" checked name="id[]" value="' +
+            $("<div/>").text(data).html() +
+            '">'
+          );
+        },
+      },
+      {
+        // Checkbox inputs.
+        targets: IS_FINAL_CHECKBOX_INDEX,
+        searchable: false,
+        orderable: false,
+        className: "dt-body-center",
+        render: function (data, type, full, meta) {
+          return (
+            '<input type="checkbox" name="id[]" value="' +
+            $("<div/>").text(data).html() +
+            '">'
+          );
+        },
+      },
+      {
+        // Checkbox inputs.
+        targets: ROUND_INDEX,
+        searchable: false,
+        orderable: false,
+        className: "dt-body-center",
+        render: function (data, type, full, meta) {
+          return '<input type="number" name="id[]" value="1">';
+        },
+      },
     ],
-    columnDefs: [{
-      targets: '_all',
-      createdCell: createdCell
-    }]
   });
+});
+
+function getIncludeCheckboxSelector(rowIndex) {
+  return (
+    "#input-data-table > tbody > tr:nth-child(" +
+    (rowIndex + 1) +
+    ") > td:nth-child(" +
+    (SKIP_THIS_GAME_CHECKBOX_INDEX + 1) +
+    ") > input[type=checkbox]"
+  );
 }
 
-function GetTeamsFromServer() {
-  return new Promise(resolve => {
-    fetch('/get_teams', { method: 'GET' })
-      .then(response => response.text())
-      .then(data => {
-        let teams = JSON.parse(data);
+function getIsFinalCheckboxSelector(rowIndex) {
+  return (
+    "#input-data-table > tbody > tr:nth-child(" +
+    (rowIndex + 1) +
+    ") > td:nth-child(" +
+    (IS_FINAL_CHECKBOX_INDEX + 1) +
+    ") > input[type=checkbox]"
+  );
+}
 
-        for (let team of teams) {
-          let past_team = NewGame(PAST_GAME);
-          let future_team = NewGame(FUTURE_GAME);
+function getRoundInputSelector(rowIndex) {
+  return (
+    "#input-data-table > tbody > tr:nth-child(" +
+    (rowIndex + 1) +
+    ") > td:nth-child(" +
+    (ROUND_INDEX + 1) +
+    ") > input[type=number]"
+  );
+}
 
-          Object.keys(team).forEach(key => {
-            past_team[key] = team[key];
-            future_team[key] = team[key];
-          });
+function ExtractJSONFromTable() {
+  let rows = [];
+  input_data_table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+    let row = this.data();
 
-          past_teams.push(past_team);
-          future_teams.push(future_team);
-        }
-        resolve();
-      });
+    // Get the boolean values out of the two checkboxes.
+    let include_checkbox = $(getIncludeCheckboxSelector(rowIdx));
+    let is_final_checkbox = $(getIsFinalCheckboxSelector(rowIdx));
+    let round_input = $(getRoundInputSelector(rowIdx));
+
+    row["skip_this_game"] = !include_checkbox.prop("checked");
+    row["is_final"] = is_final_checkbox.prop("checked");
+    row["round"] = round_input.val();
+
+    rows.push(row);
   });
+  return rows;
 }
 
-function GetFutureGamesFromTable(callback) {
-  future_teams = [];
-  future_table.rows().every(function () {
-    let game = UpdateFutureGameWithArray(this.data());
-    if (game.nickname === 'Nickname') return; // Skip the title row.
-    future_teams.push(game);
-    if (future_teams.length == NUMBER_OF_TEAMS) callback();
-  });
+function CalculateGrade(percentage) {
+  if (percentage >= 85) return "High Distinction";
+  if (percentage >= 75) return "Distinction";
+  if (percentage >= 65) return "Credit";
+  if (percentage >= 50) return "Pass";
+  return "Fail";
 }
 
-// Takes a date string of the form 'Sat 12 Sep' and a year and converts them into
-// a longer format eg. 'Saturday 12 September, 2020'.
-function ExpandDate(date, year) {
-  if (date == null || date == '') return '';
+function WinLossSummary(teams) {
+  // Enter the win/loss percentage.
+  let wins = 0;
+  let losses = 0;
 
-  d = new Date(date + ' ' + year);
-  const month = new Intl.DateTimeFormat('en', { month: 'long' }).format(d);
-  const day_name = new Intl.DateTimeFormat('en', { weekday: 'long' }).format(d);
-
-  return `${day_name} ${d.getDate()} ${month}, ${year}`;
-}
-
-// Takes the teams retrieved from the server that have been populated with sportstg info 
-// and inserts the fields of the server team into the given teams data structure.
-function UpdateTeamsWithTeamsFromServer(teams, server_teams, table) {
-  if (teams.length != server_teams.length) {
-    console.error('Updating teams with server teams error - different sizes.');
-  }
-
-  for (let i in server_teams) {
-
-    // Apply the updates from the server team.
-    Object.keys(server_teams[i]).forEach(key => {
-      teams[i][key] = server_teams[i][key];
-    });
-
-    // Set the checkboxes based on the include/finals info from the server.
-    teams[i].is_final_checkbox = (teams[i].is_final === 'true') ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
-    teams[i].include_checkbox = (teams[i].include === 'true') ? "<input type='checkbox' checked>" : "<input type='checkbox'>";
-
-    // Additional processing.
-    teams[i].date = ExpandDate(teams[i].date, teams[i].year);
-
-    if (teams[i].opposition in override_image_urls) {
-      teams[i].image_url = override_image_urls[teams[i].opposition];
-    }
-  }
-  table.rows().invalidate().draw();
-}
-
-function GetPastGames() {
-  return new Promise(resolve => {
-    fetch('/get_past_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(past_teams) })
-      .then(response => response.text())
-      .then(data => {
-        UpdateTeamsWithTeamsFromServer(past_teams, JSON.parse(data), past_table);
-        resolve();
-      });
-  });
-}
-
-function GetFutureGames() {
-  return new Promise(resolve => {
-    fetch('/get_future_games', { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(future_teams) })
-      .then(response => response.text())
-      .then(data => {
-        UpdateTeamsWithTeamsFromServer(future_teams, JSON.parse(data), future_table);
-        resolve();
-      });
-  });
-}
-
-// Takes a score string of the form '10.6-66' and returns the total score Eg. 66.
-// Returns -1 upon failure.
-function GetScoreTotal(score_str) {
-  if (score_str === undefined || score_str === null) return -1;
-  var dash_index = score_str.indexOf('-');
-  if (dash_index == -1) return -1;
-  var score_for = score_str.substring(dash_index + 1, score_str.length);
-  return Number(score_for);
-}
-
-// Takes a game and populates the verb describing whether uni won, lost or drew. If uni won,
-// an unique arrogant verb eg. 'smashed' or 'destroyed' is applied.
-function PopulateWinOrLossVerb(game) {
-
-  if (winning_verbs.length === 0) console.error('Winning verbs array is empty!');
-
-  if (game.result === 'BYE') return;
-
-  if (game.result === 'FORFEIT' || game.result === 'OPPOSITION_FORFEIT') {
-    game.result = 'forfeit';
-    return;
-  }
-
-  // These will come from the server.
-  // Generic results are the ones we want to replace with other
-  // text so set these empty. Other results we want keep or maintain.
-  if (game.result == 'WIN' || game.result == 'LOSS') {
-    game.result = '';
-  }
-
-  // If there is already a result present, skip.
-  if (game.result !== '') return;
-
-  // Get the scores.
-  const score_for = GetScoreTotal(game.score_for);
-  const score_against = GetScoreTotal(game.score_against);
-
-  if (score_for > score_against) {
-    // Win
-    let random_index = Math.floor(Math.random() * winning_verbs.length);
-    game.result = winning_verbs[random_index];
-
-    // Remove this verb so that it doesn't get repeated.
-    winning_verbs.splice(random_index, 1);
-  }
-  else if (score_for === score_against) {
-    // Draw
-    game.result = "drew against";
-  }
-  else {
-    // Loss
-    game.result = "def by";
-  }
-}
-
-// Takes a game and populates it with nicknames for its opposition and location.
-function PopulateNicknames(game) {
-
-  // Incase this has already been flagged an error, remove it so that they do not accumulate.
-  if (game.opposition_nickname.includes('ERROR')) game.opposition_nickname = '';
-  let opposition_nickname = FindNickname(nicknames, game.opposition);
-  game.opposition_nickname = (opposition_nickname === null) ? 'ERROR' : opposition_nickname;
-
-  if (game.location_nickname.includes('ERROR')) game.location_nickname = game.location_nickname.replace('ERROR', '');
-  let location_nickname = FindNickname(ground_names, game.location);
-  game.location_nickname = (location_nickname === null) ? game.location_nickname + 'ERROR' : location_nickname;
-}
-
-// Takes a map of options (contains name:nickname pairs) and trys to find the best match.
-// Capable of finding partial matches but returns null if no match could be found.
-function FindNickname(options, name) {
-  inconclusives = [
-    '',
-    'Saint',
-    'North',
-    'South',
-    'East',
-    'West',
-    'The'
-  ];
-
-  if (name === undefined || name === null) return null;
-
-  for (let i in inconclusives) {
-    if (name == inconclusives[i]) return null;
-  }
-
-  // Exact match.
-  for (let option in options) {
-    if (option === name) {
-      return (options[option] == '') ? option : options[option];
-    }
-
-    // Check to see if it is already a nickname.
-    if (options[option] === name) return name;
-  }
-
-  // Match that contains the given name.
-  for (let option in options) {
-    if (option.includes(name)) {
-      return (options[option] == '') ? option : options[option];
-    }
-  }
-
-  // Remove apostrophe if it exists.
-  if (name.includes("'")) {
-    name = name.replace("'", '');
-    return FindNickname(options, name);
-  }
-
-  // Remove the last word and try again.
-  if (name.includes(' ')) {
-    var lastIndex = name.lastIndexOf(" ");
-    name = name.substring(0, lastIndex);
-    if (name.length <= 3) return null;
-    return FindNickname(options, name);
-  }
-
-  return null;
-}
-
-// Loads a HTML template with the given data and appends it to the list given by destination.
-function LoadHTMLTemplate(template_selector, team) {
-  return new Promise(resolve => {
-    fetch(template_selector, { method: 'POST', 'Content-Type': 'application/json', body: JSON.stringify(team) })
-      .then(response => response.text())
-      .then(HTML => {
-        //ReOrderAndPrintTeams(final_destination);
-        resolve(HTML);
-      });
-  });
-}
-
-// Appends the given date to the past-games-container.
-function DateHTML(team) {
-  if (team.result === 'BYE') return '';
-  return team.date;
-}
-
-// Returns the week number, used to determine which team (mens/womens) should be listed first.
-Date.prototype.getWeekNumber = function () {
-  var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
-  var dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-};
-
-function Swap(list, i, j) {
-  let temp = list[i];
-  list[i] = list[j];
-  list[j] = temp;
-}
-
-// Returns the Javascript date object that represents the date contained within the given team.
-function getDateObject(team) {
-  return new Date(Date.parse(team.date + ' ' + team.year));
-}
-
-// Reorders the teams such that the mens/womens teams alternate between the top position.
-function ReOrderTeams(teams) {
-
-  // Default ordering.
-  const order = [
-    'Benny and His Jets', 'Moodog and His A Grade Vintage', 'Pup and His Young Dawgz',
-    'The Big Lez Show', 'The Chardonnay Socialists', 'The B@stards', 'The Brady Bunch', 'THE SCUM'];
-
-  // Alternate mens/womens being first every week (according to the week of div1 mens game).
-  if (getDateObject(teams[0]).getWeekNumber() % 2 == 1) {
-    Swap(order, 0, 1);
-    Swap(order, 2, 3);
-  }
-
-  // Sort teams according to hard-coded order.
-  teams.sort((a, b) => {
-    return order.indexOf(a.nickname) - order.indexOf(b.nickname);
+  teams.forEach((team) => {
+    if (isNaN(team.margin) || team.margin <= 0) ++losses;
+    if (team.margin > 0) ++wins;
   });
 
-  // Perform a stable sort according to the year -> month -> date.
-  teams.sort((a, b) => {
-    const aDate = getDateObject(a);
-    const bDate = getDateObject(b);
+  let winning_percentage = Math.round((wins / (wins + losses)) * 100);
+  let grade = CalculateGrade(winning_percentage);
 
-    const yearDifference = aDate.getFullYear() - bDate.getFullYear();
-    const monthDifference = aDate.getMonth() - bDate.getMonth();
-    const dayDifference = aDate.getDate() - bDate.getDate();
+  if (winning_percentage == Number.NaN) return;
 
-    if (yearDifference != 0) return yearDifference;
-    if (monthDifference != 0) return monthDifference;
-    return dayDifference;
-  });
+  return `<div class='row'><div class='col-md-12' id='win-loss-summary'>Uni won ${wins} out of ${
+    wins + losses
+  } = ${winning_percentage}% => ${grade}</div></div>`;
+}
 
-  // Function to determine if two dates are the same.
-  const sameDate = (a, b) => {
-    return a.getFullYear() == b.getFullYear()
-      && a.getMonth() == b.getMonth()
-      && a.getDate() == b.getDate();
-  };
+function OrderTeamsBasedOnMargins(teams) {
+  var priority_queue = new PriorityQueue();
 
-  // Include the date in the HTML for the first of each day.
-  let prev_date = null;
   for (let team of teams) {
-    if (prev_date === null || !sameDate(prev_date, getDateObject(team))) {
-      team.date_HTML = DateHTML(team);
+    if (isNaN(team.margin) || team.margin === null)
+      team.margin = -Number.MAX_VALUE;
+    priority_queue.enqueue(team, team.margin);
+  }
+
+  teams = [];
+
+  let sandy_coburn_cup_points = 1;
+
+  while (!priority_queue.isEmpty()) {
+    let team = priority_queue.dequeue().element;
+
+    if (team.margin == -Number.MAX_VALUE) {
+      team.sandy_points = 0;
+    } else {
+      team.sandy_points = sandy_coburn_cup_points;
+      ++sandy_coburn_cup_points;
     }
-    prev_date = getDateObject(team);
+
+    teams.push(team);
   }
-
-  // Place BYEs at the bottom.
-  teams.sort((a, b) => {
-    return Number(a.result === 'BYE') - Number(b.result === 'BYE');
-  });
+  return teams;
 }
 
-// Ignores the actual names of uni home grounds becuase everyone knows these already. Surrounds all
-// other ground names with parenthases so that if can be distinguished from the ground nickname in the HTML.
-function ProcessLocation(game) {
-  if (game.location === 'University Oval' || game.location === 'Fred Bloch Oval' || game.location === '') {
-    game.location = '';
-    return;
-  }
-  game.location = '(' + game.location + ')';
-}
-
-function FormatGames(container_selector, teams, title_HTML, server_path) {
-  return new Promise(async (resolve) => {
-
-    // Reveal the container.
-    $(container_selector).css('display', 'block');
-
-    // Clear current content, populate with only the title.
-    $(container_selector).html(title_HTML);
-
-    //ReOrderTeams(teams);
-
-    for (let team of teams) ProcessLocation(team);
-
-    $(container_selector).append(await LoadHTMLTemplate(server_path, teams));
-
-    resolve();
-  });
-}
-
-function ShowErrors(teams, selector) {
-
-  // Clear the current errors.
-  $(selector).html('');
-
-  let hasError = false;
-
-  // Iterate through teams and append all errors to the HTML.
+function ApplyRandomWinningVerbs(teams) {
+  let winning_verbs = GetInitialisedWinningVerbs();
   for (let team of teams) {
-    if (team.error == '') continue;
-    hasError = true;
-    $(selector).append("<span class='error-message'>" + team.nickname + ": " + team.error + "</span><br>");
-  }
-
-  // If at least one error was found, prepend the title of the error section.
-  if (hasError) {
-    $(selector).prepend("<br><br><span class='error-message'> (!) ERRORS (!) </span><br><br>");
-  }
-}
-
-function FormatPastGames() {
-  const past_games_title = '<p id="past-games-title"><b><i>"If winning is all there is, we want no part of it"</i></b></p>';
-  const past_server_path = '/past-game.html';
-
-  ShowErrors(past_teams, '#past-games-errors');
-
-  return new Promise(resolve => {
-    FormatGames('#past-games-container', past_teams, past_games_title, past_server_path)
-      .then(() => resolve());
-  });
-}
-
-function FormatFutureGames() {
-  const future_games_title = "<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>";
-  const future_server_path = '/future-game.html';
-
-  ShowErrors(future_teams, "#future-games-errors");
-
-  return new Promise(resolve => {
-    FormatGames('#future-games-container', future_teams, future_games_title, future_server_path)
-      .then(() => resolve());
-  });
-}
-
-function PopulateTablesWithNicknamesAndVerbs() {
-  return new Promise(resolve => {
-    InitialiseWinningVerbs();
-
-    for (let i in past_teams) {
-      PopulateWinOrLossVerb(past_teams[i]);
-      PopulateNicknames(past_teams[i]);
+    if (team["win_or_loss_verb"] === "defeated") {
+      // Use and remove a random verb from the list.
+      team["win_or_loss_verb"] = winning_verbs.splice(
+        Math.floor(Math.random() * winning_verbs.length),
+        1
+      )[0];
     }
+  }
+}
 
-    for (let i in future_teams) PopulateNicknames(future_teams[i]);
-
-    past_table.rows().invalidate().draw();
-    future_table.rows().invalidate().draw();
-
-    resolve();
+function GetGameDetailsFromServer(game, teams) {
+  return new Promise((resolve) => {
+    fetch("/get_game", {
+      method: "POST",
+      "Content-Type": "application/json",
+      body: JSON.stringify(game),
+    })
+      .then((response) => response.text())
+      .then((game_data) => {
+        teams.push(JSON.parse(game_data));
+        resolve();
+      });
   });
 }
 
-// Retrieves the past and future games from the server and formats the substandard sections.
-function AutomateSubstandard() {
-  StartLoading();
-  console.log(past_teams);
-  Promise.all([GetPastGames(), GetFutureGames()])
-    .then(async () => {
-      await PopulateTablesWithNicknamesAndVerbs();
-      Promise.all([FormatPastGames(), FormatFutureGames()])
-        .then(() => EndLoading());
-    });
-}
+function GetFormattedBowliesHTML(teams) {
+  // Clear current content, populate with only the title.
+  let container = $("#bowlies-content-container");
+  container.html(
+    '<div class="row"><div class="col-md-12" id="bowlies-title">Hold Your Bowlies</div></div>'
+  );
 
-// This can easily work to disclude teams outside of the desired range.
-// But this will require more work to actually find teams in the range.
-function InitialiseDateSelector() {
-  $('input[name="daterange"]').daterangepicker({
-    opens: 'left'
-  }, function (start, end, label) {
-    dateStart = start;
-    dateEnd = end;
-    console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+  container.append(WinLossSummary(teams));
+
+  return new Promise((resolve) => {
+    fetch("/bowlies-content.html", {
+      method: "POST",
+      "Content-Type": "application/json",
+      body: JSON.stringify(teams),
+    })
+      .then((response) => response.text())
+      .then((html) => {
+        container.append(html);
+        resolve();
+      });
   });
 }
 
-async function InitialisePage() {
+function GetFormattedSubstandardResultsHTML(teams) {
+  let container = $("#substandard-results-container");
+  container.html(
+    '<p id="past-games-title"><b><i>"If winning is all there is, we want no part of it"</i></b></p>'
+  );
+  container.append(WinLossSummary(teams));
+
+  ApplyRandomWinningVerbs(teams);
+  console.log(teams);
+
+  return new Promise((resolve) => {
+    fetch("/substandard-results-content.html", {
+      method: "POST",
+      "Content-Type": "application/json",
+      body: JSON.stringify(teams),
+    })
+      .then((response) => response.text())
+      .then((html) => {
+        container.append(html);
+
+        // Give the images time to load before the screenshot is taken.
+        setTimeout(function () {
+          HTMLElementToImage("#substandard-results-container");
+          resolve();
+        }, 3000);
+      });
+  });
+}
+
+function GetFormattedSubstandardFixturesHTML() {
+  let container = $("#substandard-fixtures-container");
+  container.html(
+    "<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>"
+  );
+}
+
+function FormatTeams(team_configurations_request_data, formatter_callback) {
   StartLoading();
 
-  InitialiseDateSelector();
-  await UpdateCacheFromDatabase();
+  let teams = [];
 
-  // Get all the resources we need from the cache asynchronously.
-  const resources_from_cache = [
-    GetTeamsFromServer(),
-    GetNicknamesFromCache(),
-    GetGroundNamesFromCache(),
-    GetOverrideImageUrlsFromCache()
-  ];
+  const promises = [];
+  for (let team of team_configurations_request_data) {
+    if (team["skip_this_game"]) continue;
+    promises.push(GetGameDetailsFromServer(team, teams));
+  }
 
-  // Once all the resources have been aquired, initialise the tables.
-  Promise.all(resources_from_cache).then(() => {
-    InitialisePastGamesTable();
-    InitialiseFutureGamesTable();
-    EndLoading();
+  Promise.all(promises).then(() => {
+    teams = OrderTeamsBasedOnMargins(teams);
+    console.log(teams);
+    formatter_callback(teams).then(() => EndLoading());
   });
 }
 
-$(document).ready(() => InitialisePage());
+function AutomateBowlies() {
+  $("#bowlies-content-container").html("");
+  let team_configurations_request_data = ExtractJSONFromTable();
+  for (let team of team_configurations_request_data)
+    team["is_past_game"] = true;
+  FormatTeams(team_configurations_request_data, GetFormattedBowliesHTML);
+}
+
+function SubstandardResults() {
+  $("#substandard-results-container").html("");
+  let team_configurations_request_data = ExtractJSONFromTable();
+
+  for (let team of team_configurations_request_data)
+    team["is_past_game"] = true;
+
+  FormatTeams(
+    team_configurations_request_data,
+    GetFormattedSubstandardResultsHTML
+  );
+}
+
+function SubstandardFixtures() {
+  $("#substandard-fixtures-container").html("");
+  let team_configurations_request_data = ExtractJSONFromTable();
+  for (let team of team_configurations_request_data)
+    team["is_past_game"] = false;
+  FormatTeams(
+    team_configurations_request_data,
+    GetFormattedSubstandardFixturesHTML
+  );
+}
+
+function RunBowliesTests() {
+  fetch("/test_data")
+    .then((response) => response.text())
+    .then((test_data_str) => {
+      let teams_test_data = JSON.parse(test_data_str);
+      FormatTeams(teams_test_data, GetFormattedBowliesHTML);
+    });
+}
+
+function HTMLElementToImage(selector) {
+  window.scrollTo(0, 0);
+  html2canvas(document.querySelector(selector), {
+    allowTaint: true,
+  }).then((canvas) => {
+    // Remove the HTML element.
+    $(selector).html("");
+    // Add the image.
+    $(selector).append(canvas);
+  });
+}

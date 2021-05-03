@@ -1,0 +1,72 @@
+{% for team in teams %}
+{% if team.error == '' %}
+
+
+{% if team.is_final == 'true' %}
+<div class='row'>
+    <div class='col-md-12'>
+        <p class='match-name'>({{ team.match_name }})</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Past game -->
+<table class='past-game'>
+    <tr class='top-divider'>
+        <td class='logo'><img src="{{ team.AUFC_logo }}">
+
+        <td class='expand'>
+            <span class='nickname'>{{ team.nickname }}</span>
+            {% if team.result != 'BYE' %}
+            </br>
+            {{ team.score_for }}
+            {% endif %}
+        </td>
+
+        <td class='result' class='centre'>{{ team.win_or_loss_verb }}</td>
+
+        {% if team.result != 'BYE' %}
+        <td class='right expand'>
+            {{ team.opposition_nickname }}
+            </br>
+            {{ team.score_against }}
+        </td>
+
+        <td class='logo'> <img src="{{ team.image_url }}"></td>
+        {% else %}
+        <!-- to maintain the formatting if we will skip a td above -->
+
+        <td class='right expand'></td>
+        <td class='logo'></td>
+        {% endif %}
+
+    </tr>
+
+    {% if team.result != 'FORFEIT' and team.result != 'OPPOSITION_FORFEIT' and team.result != 'BYE' %}
+    <tr class='indent'>
+        <td colspan="5">
+            <span class='label'>Goal Kickers:</span>
+            {% for goal_kicker in team.goal_kickers %}
+            {{ goal_kicker['name'] }}
+            <span class='goals'>{{ goal_kicker['goals'] }}</span>{% if loop.index != (team.goal_kickers|length - 1)
+            %},{% endif %}
+            {% endfor %}
+        </td>
+    </tr>
+
+    <tr class='bottom-divider indent'>
+        <td colspan="5">
+            <span class='label'>Best Players:</span>
+            {% for best_player in team.best_players %}
+            {{ best_player['name'] }}{% if loop.index != (team.best_players|length - 1)
+            %},{% endif %}
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
+    <!-- end if not forfeit or BYE -->
+</table>
+{% endif %}
+<!-- end if team in error -->
+{% endfor %}
+<!-- end for teams loop -->

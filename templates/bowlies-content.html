@@ -107,11 +107,12 @@
 
     {% for best_player in team.best_players %}
     <p class='best-player'>
+      {% set i = team.best_players|length - loop.index %}
       <span class='bp-position'>
         {{ team.best_players|length - loop.index + 1}}th:
       </span>
-      {{ best_player['nickname'] }}
-      ({{ best_player['name'] }})
+      {{ team.best_players[i]['nickname'] }}
+      ({{ team.best_players[i]['name'] }})
     </p>
     {% endfor %}
 
