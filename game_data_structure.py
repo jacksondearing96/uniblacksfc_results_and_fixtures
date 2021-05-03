@@ -28,9 +28,10 @@ class Game(object):
         self.is_home_game = None
         self.priority = None
 
+        self.has_been_played = None
         self.result = None
-        self.score_for = None
-        self.score_against = None
+        self.score_for = '' 
+        self.score_against = ''
         self.goal_kickers = []
         self.best_players = []
         self.win_or_loss_verb = None

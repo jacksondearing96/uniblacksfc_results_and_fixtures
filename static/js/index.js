@@ -187,9 +187,9 @@ function WinLossSummary(teams) {
 
   if (winning_percentage == Number.NaN) return;
 
-  return `<div class='row'><div class='col-md-12' id='win-loss-summary'>Uni won ${wins} out of ${
+  return `<div id='win-loss-summary'>Uni won ${wins} out of ${
     wins + losses
-  } = ${winning_percentage}% => ${grade}</div></div>`;
+  } = ${winning_percentage}% => ${grade}</div>`;
 }
 
 function OrderTeamsBasedOnMargins(teams) {
@@ -326,10 +326,29 @@ function GetFormattedBowliesHTML(teams) {
   });
 }
 
+function ShowErrors(teams) {
+  let errors_container = $("#errors");
+  errors_container.html("");
+
+  for (let team of teams) {
+    if (team.error != "") {
+      errors_container.append(
+        `<div class="substandard-error">ERROR found for ${team.nickname}: ${team.error}</div>`
+      );
+    }
+  }
+
+  if (errors_container.html() == "") {
+    errors_container.append(
+      '<div class="no-errors-found">All teams and results were found without errors</div>'
+    );
+  }
+}
+
 function GetFormattedSubstandardResultsHTML(teams) {
   let container = $("#substandard-results-container");
   container.html(
-    '<p id="past-games-title"><b><i>"If winning is all there is, we want no part of it"</i></b></p>'
+    '<div id="substandard-results-title">"If winning is all there is, we want no part of it"</div>'
   );
   container.append(WinLossSummary(teams));
 
@@ -347,10 +366,11 @@ function GetFormattedSubstandardResultsHTML(teams) {
         container.append(html);
 
         // Give the images time to load before the screenshot is taken.
-        setTimeout(function () {
-          HTMLElementToImage("#substandard-results-container");
-          resolve();
-        }, 3000);
+        // setTimeout(function () {
+        //   HTMLElementToImage("#substandard-results-container");
+        //   resolve();
+        // }, 3000);
+        resolve();
       });
   });
 }
@@ -397,16 +417,26 @@ function FormatTeams(
 
   Promise.all(promises).then(() => {
     teams = ordering_callback(teams);
-    console.log(teams);
+    ShowErrors(teams);
     formatter_callback(teams).then(() => EndLoading());
   });
 }
 
-function AutomateBowlies() {
+function ClearAllFormattedResults() {
   $("#bowlies-content-container").html("");
+  $("#substandard-results-container").html("");
+  $("#substandard-fixtures-container").html("");
+  $("#errors").html("");
+}
+
+function AutomateBowlies() {
+  ClearAllFormattedResults();
+
   let team_configurations_request_data = ExtractJSONFromTable();
+
   for (let team of team_configurations_request_data)
     team["is_past_game"] = true;
+
   FormatTeams(
     team_configurations_request_data,
     GetFormattedBowliesHTML,
@@ -415,7 +445,8 @@ function AutomateBowlies() {
 }
 
 function SubstandardResults() {
-  $("#substandard-results-container").html("");
+  ClearAllFormattedResults();
+
   let team_configurations_request_data = ExtractJSONFromTable();
 
   for (let team of team_configurations_request_data)
@@ -428,9 +459,13 @@ function SubstandardResults() {
 }
 
 function SubstandardFixtures() {
-  $("#substandard-fixtures-container").html("");
+  ClearAllFormattedResults();
+
   let team_configurations_request_data = ExtractJSONFromTable();
 
+  // TODO: would like to remove the need to specify this - if it is a past game, extract the data. If not,
+  // don't extract the data and reflect that in the return value of this flag.
+  // This will allow these three similar functions to be greatly simplified.
   for (let team of team_configurations_request_data)
     team["is_past_game"] = false;
 

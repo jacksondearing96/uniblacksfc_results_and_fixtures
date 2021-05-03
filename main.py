@@ -17,6 +17,10 @@ bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_
 app = Flask(__name__, template_folder='templates')
 
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 @app.route('/test_data', methods=['GET'])
 def test_data():
     return util.read_file_to_string('database/interesting_games_to_test.json')
@@ -37,6 +41,7 @@ def get_game():
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def send_file(path):
     if path not in [
+        'index.html',
         'bowlies.html',
         'bowlies-content.html',
         'substandard.html',

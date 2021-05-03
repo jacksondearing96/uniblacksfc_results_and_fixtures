@@ -19,11 +19,11 @@ b {
   max-width: 300px;
 }
 
-#win-loss-summary {
+#bowlies-content-container #win-loss-summary {
   color: dodgerblue;
 }
 
-#win-loss-summary,
+#bowlies-content-container #win-loss-summary,
 #bowlies-title,
 #bowlies-content-container .date {
   margin: 0 auto;

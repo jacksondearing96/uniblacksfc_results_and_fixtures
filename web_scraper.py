@@ -368,7 +368,9 @@ def populate_game_from_sportstg(game):
                         goal_kickers_and_best_players = goal_kickers_and_best_players_list[1]
 
         # Check if scores have been entered yet.
-        if game.score_for == '&nbsp;':
+        if game.score_for == '&nbsp;' or game.score_against == '&nbsp;':
+            game.score_for = ''
+            game.score_against = ''
             game.is_past_game = False
             game.error = 'RESULTS NOT ENTERED YET'
             return
@@ -413,6 +415,12 @@ def get_game_details_from_sportstg(game):
     # Scrape details from sportstg.
     populate_game_from_sportstg(populated_game)
 
+    result = populated_game.result
+    if result == 'WIN' or result == 'LOSS' or result == 'DRAW':
+        populated_game.has_been_played = True
+    else:
+        populated_game.has_been_played = False
+
     # Populate nicknames.
     populated_game.opposition_nickname = AufcDatabaseProxy.get_opposition_nickname(populated_game.opposition)
     populated_game.location_nickname = AufcDatabaseProxy.get_ground_nickname(populated_game.location)
@@ -428,9 +436,6 @@ def get_game_details_from_sportstg(game):
     for i in range(len(populated_game.best_players)):
         populated_game.best_players[i] = AufcDatabaseProxy.get_player_nickname(populated_game.best_players[i]['name'])
         populated_game.best_players[i].pop('goals', None)
-
-    print('BEST PLAYERS')
-    print(populated_game.best_players)
 
     # Get the correct image url (may need to be overridden).
     override_image_url = AufcDatabaseProxy.get_override_image_url(populated_game.opposition)

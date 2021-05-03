@@ -212,6 +212,7 @@ class GetPastResults(unittest.TestCase):
             "win_or_loss_verb": "def. by",
             "margin": -19,
             "priority": 1,
+            "has_been_played": True,
             "error": "",
             "nickname": "Benny and the Jets",
             "division": "1",

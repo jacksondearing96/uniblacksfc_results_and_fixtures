@@ -16,3 +16,20 @@ input[type="number"] {
 .input-data-table {
   display: inline-block;
 }
+
+.substandard-error {
+  background-color: red;
+}
+
+.no-errors-found {
+  background-color: limegreen;
+}
+
+.substandard-error, .no-errors-found {
+  margin: 5px;
+  display: block;
+  width:fit-content;
+  margin: 5px auto;
+  color: white;
+  padding: 3px
+}
