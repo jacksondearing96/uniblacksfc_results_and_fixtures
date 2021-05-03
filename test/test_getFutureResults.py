@@ -9,6 +9,23 @@ DONT_SKIP_THIS_GAME = False
 
 class GetFutureGameDetails(unittest.TestCase):
 
+    def test_get_div_priority(self):
+        self.assertEqual(web_scraper.get_div_priority('Div 1'), 1)
+        self.assertEqual(web_scraper.get_div_priority('1'), 1)
+        self.assertEqual(web_scraper.get_div_priority('D1'), 1)
+        self.assertEqual(web_scraper.get_div_priority('Div 1R'), 1.5)
+        self.assertEqual(web_scraper.get_div_priority('Div 1 res'), 1.5)
+        self.assertEqual(web_scraper.get_div_priority('Div 1Res'), 1.5)
+        self.assertEqual(web_scraper.get_div_priority('1R'), 1.5)
+        self.assertEqual(web_scraper.get_div_priority('1res'), 1.5)
+        self.assertEqual(web_scraper.get_div_priority('Div 2'), 2)
+        self.assertEqual(web_scraper.get_div_priority('2'), 2)
+        self.assertEqual(web_scraper.get_div_priority('C1'), 101)
+        self.assertEqual(web_scraper.get_div_priority('C7'), 107)
+        self.assertEqual(web_scraper.get_div_priority('AB1DEF'), 1)
+        self.assertEqual(web_scraper.get_div_priority('invalid'), 1000)
+
+
     def test_get_future_game_details(self):
         round = 1
         year = 2018
@@ -128,6 +145,7 @@ class GetFutureGameDetails(unittest.TestCase):
             "location": "Caterer Oval",
             "location_nickname": "Hackney High",
             "score_for": None,
+            "priority": 1,
             "nickname": "Benny and the Jets",
             "division": "1",
             "gender": "Mens",

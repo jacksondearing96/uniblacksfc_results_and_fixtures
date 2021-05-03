@@ -220,6 +220,61 @@ function OrderTeamsBasedOnMargins(teams) {
   return teams;
 }
 
+function OrderTeamsBasedOnDivision(teams) {
+  var priority_queue = new PriorityQueue();
+  for (let team of teams) priority_queue.enqueue(team, team.priority);
+  teams = [];
+  while (!priority_queue.isEmpty()) {
+    let team = priority_queue.dequeue().element;
+    teams.push(team);
+  }
+  return teams;
+}
+
+// Returns the Javascript date object that represents the date contained within the given team.
+function getDateObject(team) {
+  return new Date(Date.parse(team.date + " " + team.year));
+}
+
+// Returns the week number, used to determine which team (mens/womens) should be listed first.
+Date.prototype.getWeekNumber = function () {
+  var d = new Date(
+    Date.UTC(this.getFullYear(), this.getMonth(), this.getDate())
+  );
+  var dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+};
+
+function OrderTeamsForFixtures(teams) {
+  let mens_teams = [];
+  let womens_teams = [];
+
+  for (let team of teams) {
+    if (team["gender"] === "Mens") {
+      mens_teams.push(team);
+    } else {
+      womens_teams.push(team);
+    }
+  }
+
+  mens_teams = OrderTeamsBasedOnDivision(mens_teams);
+  womens_teams = OrderTeamsBasedOnDivision(womens_teams);
+
+  teams = [];
+  // Alternate mens/womens being first every week (according to the week of div1 mens game).
+  if (new Date().getWeekNumber() % 2 == 1) {
+    teams.push(...mens_teams);
+    teams.push(...womens_teams);
+  } else {
+    teams.push(...womens_teams);
+    teams.push(...mens_teams);
+  }
+
+  return teams;
+}
+
 function ApplyRandomWinningVerbs(teams) {
   let winning_verbs = GetInitialisedWinningVerbs();
   for (let team of teams) {
@@ -325,7 +380,11 @@ function GetFormattedSubstandardFixturesHTML(teams) {
   });
 }
 
-function FormatTeams(team_configurations_request_data, formatter_callback) {
+function FormatTeams(
+  team_configurations_request_data,
+  formatter_callback,
+  ordering_callback = OrderTeamsForFixtures
+) {
   StartLoading();
 
   let teams = [];
@@ -337,7 +396,7 @@ function FormatTeams(team_configurations_request_data, formatter_callback) {
   }
 
   Promise.all(promises).then(() => {
-    teams = OrderTeamsBasedOnMargins(teams);
+    teams = ordering_callback(teams);
     console.log(teams);
     formatter_callback(teams).then(() => EndLoading());
   });
@@ -348,7 +407,11 @@ function AutomateBowlies() {
   let team_configurations_request_data = ExtractJSONFromTable();
   for (let team of team_configurations_request_data)
     team["is_past_game"] = true;
-  FormatTeams(team_configurations_request_data, GetFormattedBowliesHTML);
+  FormatTeams(
+    team_configurations_request_data,
+    GetFormattedBowliesHTML,
+    OrderTeamsBasedOnMargins
+  );
 }
 
 function SubstandardResults() {
@@ -382,7 +445,29 @@ function RunBowliesTests() {
     .then((response) => response.text())
     .then((test_data_str) => {
       let teams_test_data = JSON.parse(test_data_str);
-      FormatTeams(teams_test_data, GetFormattedBowliesHTML);
+      FormatTeams(
+        teams_test_data,
+        GetFormattedBowliesHTML,
+        OrderTeamsBasedOnMargins
+      );
+    });
+}
+
+function RunSubstandardResultsTests() {
+  fetch("/test_data")
+    .then((response) => response.text())
+    .then((test_data_str) => {
+      let teams_test_data = JSON.parse(test_data_str);
+      FormatTeams(teams_test_data, GetFormattedSubstandardResultsHTML);
+    });
+}
+
+function RunSubstandardFixturesTests() {
+  fetch("/test_data")
+    .then((response) => response.text())
+    .then((test_data_str) => {
+      let teams_test_data = JSON.parse(test_data_str);
+      FormatTeams(teams_test_data, GetFormattedSubstandardFixturesHTML);
     });
 }
 

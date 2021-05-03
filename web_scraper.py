@@ -9,6 +9,8 @@ import urllib
 from selenium import webdriver
 import time
 import logging
+import re
+import copy
 from game_data_structure import Game
 from aufc_database_proxy import AufcDatabaseProxy
 
@@ -257,6 +259,27 @@ def get_data_and_time(game_json, game):
 def is_a_forfeit(game):
     return game.result == 'FORFEIT' or game.result == 'OPPOSITION_FORFEIT'
 
+def get_div_number(div_str):
+    try:
+        return int(re.sub('[^0-9]','', div_str))
+    except:
+        return 1000
+
+def get_div_priority(div_str):
+    priority = 0
+    div = div_str.lower()
+    
+    if 'c' in div:
+        # C grade divisions.
+        priority += 100
+    elif 'r' in div:
+        # Reserves.
+        priority += 0.5
+    
+    priority += get_div_number(div)
+
+    return priority
+
 def populate_game_from_sportstg(game):
     try:
         if 'sportstg.com' not in game.url:
@@ -385,6 +408,7 @@ def get_game_details_from_sportstg(game):
     populated_game.gender = game['gender']
     populated_game.url_code = game['url_code']
     populated_game.AUFC_logo = 'https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png'
+    populated_game.priority = get_div_priority(game['division'])
     
     # Scrape details from sportstg.
     populate_game_from_sportstg(populated_game)
@@ -398,11 +422,15 @@ def get_game_details_from_sportstg(game):
 
     for i in range(len(populated_game.goal_kickers)):
         goals = populated_game.goal_kickers[i]['goals']
-        populated_game.goal_kickers[i] = AufcDatabaseProxy.get_player_nickname(populated_game.goal_kickers[i]['name'])
+        populated_game.goal_kickers[i] = copy.deepcopy(AufcDatabaseProxy.get_player_nickname(populated_game.goal_kickers[i]['name']))
         populated_game.goal_kickers[i]['goals'] = goals
 
     for i in range(len(populated_game.best_players)):
         populated_game.best_players[i] = AufcDatabaseProxy.get_player_nickname(populated_game.best_players[i]['name'])
+        populated_game.best_players[i].pop('goals', None)
+
+    print('BEST PLAYERS')
+    print(populated_game.best_players)
 
     # Get the correct image url (may need to be overridden).
     override_image_url = AufcDatabaseProxy.get_override_image_url(populated_game.opposition)

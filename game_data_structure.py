@@ -26,6 +26,7 @@ class Game(object):
         self.location_nickname = None
         self.location_url = None
         self.is_home_game = None
+        self.priority = None
 
         self.result = None
         self.score_for = None
