@@ -47,6 +47,17 @@
     "is_final": false,
     "year": 2020,
     "gender": "Mens",
+    "round": "4",
+    "nickname": "THE SCUM",
+    "url_code": "557892",
+    "skip_this_game": false,
+    "division": "C6",
+    "is_past_game": true
+  },
+  {
+    "is_final": false,
+    "year": 2020,
+    "gender": "Mens",
     "round": 6,
     "nickname": "The B@stards",
     "url_code": "547212",

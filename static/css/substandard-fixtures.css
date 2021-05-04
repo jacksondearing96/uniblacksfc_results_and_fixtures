@@ -9,6 +9,18 @@
   color: rgb(75, 75, 75);
   padding-top: 0px;
   margin: 0 auto;
+  line-height: 1.3;
+}
+
+#substandard-fixtures-container .dull {
+  font-size: 14px;
+  color: rgb(150,150,150);
+  font-style: italic
+}
+
+#substandard-fixtures-container .highlight {
+  background-color: rgba(255,255,0, 0.6);
+  padding: 2px;
 }
 
 #substandard-fixtures-container table,
@@ -28,16 +40,23 @@
   font-size: 25px;
   color: rgb(75, 75, 75);
   text-align: center;
+  font-weight: bold;
 }
 
 #substandard-fixtures-container img {
-  max-height: 55px;
+  max-height: 60px;
   max-width: 60px;
+  padding-bottom: 5px;
+}
+
+#substandard-fixtures-container .real_location {
+  color: rgb(150,150,150);
 }
 
 #substandard-fixtures-container .icons img {
-  max-height: 20px;
-  padding-right: 3px;
+  max-height: 25px;
+  padding: 3px;
+  opacity: 0.8;
 }
 
 #substandard-fixtures-container .icons img,
@@ -54,7 +73,8 @@
   text-align: center;
   color: grey;
   font-size: 17px;
-  padding-top: 20px;
+  padding-top: 15px;
+  font-style: italic;
 }
 
 #substandard-fixtures-container .date:empty {

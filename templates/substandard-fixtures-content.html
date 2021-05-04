@@ -1,5 +1,5 @@
 {% for team in teams %}
-{% if team.error == '' %}
+{% if (team.error == '') or (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
 <table class='future-game'>
 
     <div class='row'>
@@ -17,15 +17,15 @@
 
         <td id='round-number' class='centre'>
             {% if team.is_final == 'true' %}
-            {{ team.match_name }}
+            <span class='highlight'>{{ team.match_name }}</span>
             {% else %}
-            Round {{ team.round }}
+            <span class='dull'>Round {{ team.round }}</span>
             {% endif %}
             </br>
             {% if (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
-            {{ team.result }}
+            Forfeit
             {% else %}
-            vs
+            <span class='dull'>vs</span>
             {% endif %}
         </td>
 
@@ -44,14 +44,21 @@
         </td>
 
         <td class='icons'>
-            {% if team.location != '(Forfeit)' %}
+            {% if (team.result != 'FORFEIT') and (team.result != 'OPPOSITION_FORFEIT') %}
             <table>
                 <tr>
                     <td>
                         <img src='https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'>
                     </td>
                     <td>
-                        {{ team.location_nickname }} ({{ team.location }})
+                        {{ team.location_nickname }}
+                        {% if (team.location != 'University Oval') and (team.location != 'Fred Bloch Oval') %}
+                        {% if team.location_nickname == '' %}
+                        {{ team.location }}
+                        {% else %}
+                        <span class='real_location'>({{ team.location }})</span>
+                        {% endif %}
+                        {% endif %}
                     </td>
                 </tr>
 
@@ -72,8 +79,8 @@
             </table>
             {% endif %}
             <!-- End if forfeit -->
-
         </td>
+
         {% endif %}
         <!-- End if BYE -->
 

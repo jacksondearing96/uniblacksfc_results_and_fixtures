@@ -302,7 +302,7 @@ def populate_game_from_sportstg(game):
 
         game_json = get_game_json_for_adelaide_uni(matches_json)
         if game_json == None:
-            game.error = "AUFC not present in week's matches"
+            game.error = "AUFC was not present in week's matches (looking at this round: " + game.url + ")"
             return
 
         # Check for a special finals name associated with this game.
@@ -325,7 +325,7 @@ def populate_game_from_sportstg(game):
             # If we detect this error, simply proceed as if it is a future game and
             # flag inside the content that the results had not been finalised.
             error('This is not a past game.')
-            game.error = 'MATCH HAS NOT BEEN PLAYED YET'
+            game.error = 'This match has not been played yet'
             game.is_past_game = False
 
         # Get the location and the associated location url.
@@ -372,7 +372,7 @@ def populate_game_from_sportstg(game):
             game.score_for = ''
             game.score_against = ''
             game.is_past_game = False
-            game.error = 'RESULTS NOT ENTERED YET'
+            game.error = 'Scores have not been entered into SportsTG yet'
             return
 
         if game.is_past_game and not is_a_forfeit(game):

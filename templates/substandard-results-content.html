@@ -10,7 +10,7 @@
             <span class='nickname'>{{ team.nickname }}</span>
             {% if team.score_for != '' %}
             </br>
-            {{ team.score_for }}
+            <span class='score'>{{ team.score_for }}</span>
             {% endif %}
         </td>
 
@@ -20,9 +20,11 @@
             {% endif %}
 
             {% if team.has_been_played %}
-            {{ team.win_or_loss_verb }}
+            <span class='dull'>{{ team.win_or_loss_verb }}</span>
+            {% elif (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
+            <span class='dull'>Forfeit</span>
             {% else %}
-            {{ team.result }}
+            <span class='dull'>{{ team.result }}</span>
             {% endif %}
         </td>
 
@@ -33,7 +35,7 @@
 
             {% if team.score_against != '' %}
             </br>
-            {{ team.score_against }}
+            <span class='score'>{{ team.score_against }}</span>
             {% endif %}
         </td>
 
@@ -48,12 +50,14 @@
     {% if team['goal_kickers']|length > 0 %}
     <tr class='indent'>
         <td colspan="5">
-            <span class='label'>Goal Kickers:</span>
-            {% for goal_kicker in team.goal_kickers %}
-            {{ goal_kicker['name'] }}
-            <span class='goals'>{{ goal_kicker['goals'] }}</span>{% if loop.index != (team.goal_kickers|length)
-            %},{% endif %}
-            {% endfor %}
+            <span class='goal-kickers'>
+                <span class='label'>Goal Kickers:</span>
+                {% for goal_kicker in team.goal_kickers %}
+                {{ goal_kicker['name'] }}
+                <span class='goals'>{{ goal_kicker['goals'] }}</span>{% if loop.index != (team.goal_kickers|length)
+                %},{% endif %}
+                {% endfor %}
+            </span>
         </td>
     </tr>
     {% endif %}
@@ -61,11 +65,13 @@
     {% if team['best_players']|length > 0 %}
     <tr class='indent'>
         <td colspan="5">
-            <span class='label'>Best Players:</span>
-            {% for best_player in team.best_players %}
-            {{ best_player['name'] }}{% if loop.index != (team.best_players|length)
-            %},{% endif %}
-            {% endfor %}
+            <span class='best-players'>
+                <span class='label'>Best Players:</span>
+                {% for best_player in team.best_players %}
+                {{ best_player['name'] }}{% if loop.index != (team.best_players|length)
+                %},{% endif %}
+                {% endfor %}
+            </span>
         </td>
     </tr>
     {% endif %}

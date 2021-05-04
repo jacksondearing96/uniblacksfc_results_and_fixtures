@@ -326,6 +326,22 @@ function GetFormattedBowliesHTML(teams) {
   });
 }
 
+function ShowDates(teams) {
+  let dates_container = $("#dates-found");
+  dates_container.append(
+    "<p>Found matches from the following dates (check that this looks correct):</p>"
+  );
+
+  let unique_dates = {};
+  for (let team of teams) {
+    if (team.date == null) continue;
+    unique_dates[team.date] = 1;
+  }
+  for (const [key, value] of Object.entries(unique_dates)) {
+    dates_container.append('<div class="date-found">' + key + "</div>");
+  }
+}
+
 function ShowErrors(teams) {
   let errors_container = $("#errors");
   errors_container.html("");
@@ -366,20 +382,30 @@ function GetFormattedSubstandardResultsHTML(teams) {
         container.append(html);
 
         // Give the images time to load before the screenshot is taken.
-        // setTimeout(function () {
-        //   HTMLElementToImage("#substandard-results-container");
-        //   resolve();
-        // }, 3000);
-        resolve();
+        setTimeout(function () {
+          HTMLElementToImage("#substandard-results-container");
+          resolve();
+        }, 3000);
       });
   });
 }
 
 function GetFormattedSubstandardFixturesHTML(teams) {
   let container = $("#substandard-fixtures-container");
-  container.html(
-    "<p id='future-games-title'><b>WHAT'S ON THIS WEEKEND</b></p>"
-  );
+  container.html("<p id='future-games-title'>WHAT'S ON THIS WEEKEND</p>");
+
+  // Include dates.
+  for (let i = 0; i < teams.length; ++i) {
+    let team = teams[i];
+    if (
+      i == 0 ||
+      (team["date"] != teams[i - 1]["date"] &&
+        teams[i - 1]["date"] != null &&
+        team["date"] != null)
+    ) {
+      team["date_HTML"] = ExpandDate(team.date, team.year);
+    }
+  }
 
   return new Promise((resolve) => {
     fetch("/substandard-fixtures-content.html", {
@@ -418,6 +444,7 @@ function FormatTeams(
   Promise.all(promises).then(() => {
     teams = ordering_callback(teams);
     ShowErrors(teams);
+    ShowDates(teams);
     formatter_callback(teams).then(() => EndLoading());
   });
 }
@@ -427,6 +454,7 @@ function ClearAllFormattedResults() {
   $("#substandard-results-container").html("");
   $("#substandard-fixtures-container").html("");
   $("#errors").html("");
+  $("#dates-found").html("");
 }
 
 function AutomateBowlies() {
@@ -516,4 +544,16 @@ function HTMLElementToImage(selector) {
     // Add the image.
     $(selector).append(canvas);
   });
+}
+
+// Takes a date string of the form 'Sat 12 Sep' and a year and converts them into
+// a longer format eg. 'Saturday 12 September, 2020'.
+function ExpandDate(date, year) {
+  if (date == null || date == "") return "";
+
+  let d = new Date(date + " " + year);
+  const month = new Intl.DateTimeFormat("en", { month: "long" }).format(d);
+  const day_name = new Intl.DateTimeFormat("en", { weekday: "long" }).format(d);
+
+  return `${day_name} ${d.getDate()} ${month}, ${year}`;
 }

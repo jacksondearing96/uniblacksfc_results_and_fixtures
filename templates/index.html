@@ -8,6 +8,7 @@
     <title>Hold Your Bowlies</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/west-end-can.jpeg') }}">
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bowlies.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/substandard-results.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/substandard-fixtures.css') }}">
@@ -53,18 +54,23 @@
                 <button type='button' class='btn btn-primary' onclick="SubstandardFixtures()"
                     id="get-substandard-fixtures-button">Get Substandard Fixtures</button>
 
-                <button type='button' class='btn btn-secondary' onclick="RunBowliesTests()"
+                <!-- <button type='button' class='btn btn-secondary' onclick="RunBowliesTests()"
                     id="automate-bowlies-button">Test Bowlies</button>
                 <button type='button' class='btn btn-secondary' onclick="RunSubstandardResultsTests()"
                     id="automate-bowlies-button">Test Substandard Results</button>
                 <button type='button' class='btn btn-secondary' onclick="RunSubstandardFixturesTests()"
-                    id="automate-bowlies-button">Test Substandard Fixtures</button>
+                    id="automate-bowlies-button">Test Substandard Fixtures</button> -->
             </div>
         </div>
 
         <div class='row'>
             <div class='col-md-12'>
                 <div id='errors'></div>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-12'>
+                <div id='dates-found'></div>
             </div>
         </div>
 

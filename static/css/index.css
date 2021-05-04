@@ -17,12 +17,25 @@ input[type="number"] {
   display: inline-block;
 }
 
+#errors, #dates-found {
+  margin-top: 50px;
+}
+
 .substandard-error {
   background-color: red;
 }
 
 .no-errors-found {
   background-color: limegreen;
+}
+
+.date-found, #dates-found p {
+  background-color: dodgerblue;
+  color: white;
+  padding: 3px;
+  margin: 5px;
+  width:fit-content;
+  margin: 5px auto;
 }
 
 .substandard-error, .no-errors-found {
@@ -32,4 +45,8 @@ input[type="number"] {
   margin: 5px auto;
   color: white;
   padding: 3px
+}
+
+button {
+  margin: 5px !important;
 }
