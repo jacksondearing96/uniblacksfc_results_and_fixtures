@@ -9,6 +9,9 @@ DONT_SKIP_THIS_GAME = False
 
 class GetFutureGameDetails(unittest.TestCase):
 
+    def setUp(self):
+        self.maxDiff = None
+
     def test_get_div_priority(self):
         self.assertEqual(web_scraper.get_div_priority('Div 1'), 1)
         self.assertEqual(web_scraper.get_div_priority('1'), 1)
@@ -57,7 +60,7 @@ class GetFutureGameDetails(unittest.TestCase):
         self.assertEqual(game.location, 'Kingswood Oval')
         self.assertEqual(game.time, '2:15 PM')
         self.assertEqual(game.date, u'Sat 4 Jul')
-        self.assertEqual(game.image_url, u'http://websites.sportstg.com/pics/00/36/74/33/36743304_1_T.jpg')
+        self.assertEqual(game.image_url, u'http://www-static.spulsecdn.net/pics/00/36/74/33/36743304_1_T.jpg')
         self.assertEqual(game.location_url, u'https://websites.sportstg.com/comp_info.cgi?round=1&a=VENUE&venueid=19057075&c=1-114-0-547208-0&fID=125559628')
         self.assertEqual(game.is_home_game, False)
 
@@ -156,7 +159,7 @@ class GetFutureGameDetails(unittest.TestCase):
             "win_or_loss_verb": None,
             "error": "",
             "is_past_game": False,
-            "image_url": "http://websites.sportstg.com/pics/00/01/76/43/1764333_1_T.jpg",
+            "image_url": "http://www-static.spulsecdn.net/pics/00/01/76/43/1764333_1_T.jpg",
             "is_final": False,
             "opposition": "St Peter's OC",
             "year": 2021,

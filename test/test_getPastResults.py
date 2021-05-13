@@ -22,7 +22,7 @@ class GetPastResults(unittest.TestCase):
 
         self.assertEqual(game.opposition, 'Brighton Bombers')
         self.assertEqual(game.image_url,
-                         u'http://websites.sportstg.com/pics/00/36/07/46/36074646_1_T.jpg')
+                         u'http://www-static.spulsecdn.net/pics/00/36/07/46/36074646_1_T.jpg')
         self.assertEqual(game.is_home_game, False)
         self.assertEqual(game.location, 'Brighton Oval')
         self.assertEqual(
@@ -61,7 +61,7 @@ class GetPastResults(unittest.TestCase):
         web_scraper.populate_game_from_sportstg(game)
         self.assertEqual(game.opposition, u'Goodwood Saints')
         self.assertEqual(game.image_url,
-                         u'http://websites.sportstg.com/pics/00/02/20/16/2201604_1_T.jpg')
+                         u'http://www-static.spulsecdn.net/pics/00/02/20/16/2201604_1_T.jpg')
         self.assertEqual(game.is_home_game, True)
         self.assertEqual(game.location, 'University Oval')
         self.assertEqual(
@@ -220,7 +220,7 @@ class GetPastResults(unittest.TestCase):
             "AUFC_logo": 'https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png',
             "url_code": "573817",
             "is_past_game": True,
-            "image_url": "http://websites.sportstg.com/pics/00/01/76/43/1764333_1_T.jpg",
+            "image_url": "http://www-static.spulsecdn.net/pics/00/01/76/43/1764333_1_T.jpg",
             "is_final": False,
             "opposition": "St Peter's OC",
             "opposition_nickname": "The Silver Spooners",
