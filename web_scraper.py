@@ -104,8 +104,8 @@ def get_game_json_for_adelaide_uni(matches):
 
     try:
         for match in matches:
-            home_club = urllib.unquote(match['HomeClubName'])
-            away_club = urllib.unquote(match['AwayClubName'])
+            home_club = urllib.parse.unquote(match['HomeClubName'])
+            away_club = urllib.parse.unquote(match['AwayClubName'])
             if home_club == adelaide_uni or away_club == adelaide_uni:
                 return match
     except Exception as e:
@@ -237,7 +237,7 @@ def get_actual_round(game_json):
 
 def get_game_location(game_json, game):
     # Extracts and returns the game location from the json.
-    game.location = urllib.unquote(game_json['VenueName'])
+    game.location = urllib.parse.unquote(game_json['VenueName'])
     if game.location == 'Forfeit':
         game.result = 'FORFEIT'
     game.location_url = 'https://websites.sportstg.com/' + game_json['VenueURL']
@@ -246,7 +246,7 @@ def get_game_location(game_json, game):
 
 def get_data_and_time(game_json, game):
     # Extracts and populates the match date and time.
-    time_and_date = urllib.unquote(game_json['DateTime'])
+    time_and_date = urllib.parse.unquote(game_json['DateTime'])
     time_and_date = time_and_date.split('<br>')
     game.time = time_and_date[0]
     game.time = game.time.replace('&nbsp;', ' ')
@@ -329,7 +329,7 @@ def populate_game_from_sportstg(game):
         get_game_location(game_json, game)
         get_data_and_time(game_json, game)
 
-        game.is_home_game = urllib.unquote(
+        game.is_home_game = urllib.parse.unquote(
             game_json['HomeClubName']) == u'Adelaide University'
 
         game.goal_kickers = ''
@@ -342,7 +342,7 @@ def populate_game_from_sportstg(game):
                 goal_kickers_and_best_players_list = ['', '']
 
         if game.is_home_game:
-            game.opposition = urllib.unquote(game_json['AwayClubName'])
+            game.opposition = urllib.parse.unquote(game_json['AwayClubName'])
             game.image_url = 'http:' + game_json['AwayClubLogo']
             if game.is_past_game:
                 game.score_against = game_json['AwayScore']
@@ -353,7 +353,7 @@ def populate_game_from_sportstg(game):
                     else:
                         goal_kickers_and_best_players = goal_kickers_and_best_players_list[0]
         else:
-            game.opposition = urllib.unquote(game_json['HomeClubName'])
+            game.opposition = urllib.parse.unquote(game_json['HomeClubName'])
             game.image_url = 'http:' + game_json['HomeClubLogo']
             if game.is_past_game:
                 game.score_against = game_json['HomeScore']

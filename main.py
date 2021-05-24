@@ -25,7 +25,6 @@ def get_game():
     try:
         game = request.get_json(force=True)
         game = web_scraper.get_game_details_from_sportstg(game)
-        print(game.goal_kickers)
         resp = make_response(json.dumps(game.__dict__))
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
@@ -48,7 +47,6 @@ def send_file(path):
 
     if request.method == 'POST':
         teams = request.get_json(force=True)
-        print(teams)
         resp = make_response(render_template(path, teams=teams))
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp

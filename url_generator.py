@@ -38,22 +38,22 @@ def get_url_code(year, gender, division):
     year = str(year)
     global team_configurations
 
-    if not team_configurations.has_key(year):
+    if not year in team_configurations:
         logging.error('Failed to get_url_code year: ' + year + ' was invalid.')
         return None
     year = team_configurations[year]
 
-    if not year.has_key(gender):
+    if not gender in year:
         logging.error('Failed to get_url_code, gender: ' + gender + ' was not present under year: ' + year)
         return None
     gender = year[gender]
 
-    if not gender.has_key(division):
+    if not division in gender:
         logging.error('Failed to get_url_code, division: ' + division + ' was not present under year: ' + year + ' and gender: ' + gender)
         return None
     team = gender[division]
 
-    if not team.has_key('url_code'):
+    if not 'url_code' in team:
         logging.error('Failed to get_url_code, url_code was not present for division: ' + division + ' year: ' + year + ' and gender: ' + gender)
 
     return team['url_code'] 

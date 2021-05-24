@@ -32,18 +32,21 @@ class AufcDatabaseProxy(object):
 
     @classmethod 
     def update_cache(cls):
-        if not AufcDatabaseProxy.update_is_required(): 
-            return
-        
-        logging.info('Updating database cache.')
-        
-        AufcDatabaseProxy.last_update_time = datetime.today()
+        try:
+            if not AufcDatabaseProxy.update_is_required(): 
+                return
+            
+            logging.info('Updating database cache.')
+            
+            AufcDatabaseProxy.last_update_time = datetime.today()
 
-        AufcDatabaseProxy.update_player_names_and_nicknames()
-        AufcDatabaseProxy.update_ground_nicknames()
-        AufcDatabaseProxy.update_opposition_nicknames()
+            AufcDatabaseProxy.update_player_names_and_nicknames()
+            AufcDatabaseProxy.update_ground_nicknames()
+            AufcDatabaseProxy.update_opposition_nicknames()
 
-        AufcDatabaseProxy.update_image_url_overrides()
+            AufcDatabaseProxy.update_image_url_overrides()
+        except Exception as e:
+            logging.error(e)
 
 
     @classmethod 
@@ -97,7 +100,7 @@ class AufcDatabaseProxy(object):
 
             # Skip this entry if we find a duplicate key (first name initial and last name).
             # Use memberID to keep only the most recently created member by default.
-            if AufcDatabaseProxy.player_names_and_nicknames.has_key(key) and AufcDatabaseProxy.player_names_and_nicknames[key]['memberID'] > member_id:
+            if key in AufcDatabaseProxy.player_names_and_nicknames and AufcDatabaseProxy.player_names_and_nicknames[key]['memberID'] > member_id:
                 logging.info('Duplicate player key found: ' + key)
                 continue
 
@@ -166,7 +169,7 @@ class AufcDatabaseProxy(object):
 
         try:
             AufcDatabaseProxy.update_cache()
-            if AufcDatabaseProxy.player_names_and_nicknames.has_key(player_name):
+            if player_name in AufcDatabaseProxy.player_names_and_nicknames:
                 return AufcDatabaseProxy.player_names_and_nicknames[player_name]
             
             logging.warning('No match for player: {} in database.'.format(player_name))
@@ -204,7 +207,7 @@ class AufcDatabaseProxy(object):
                 return ''
 
             # Exact match.
-            if AufcDatabaseProxy.opposition_nicknames.has_key(opposition_name):
+            if opposition_name in AufcDatabaseProxy.opposition_nicknames:
                 return AufcDatabaseProxy.opposition_nicknames[opposition_name]
 
             # Contains.
@@ -230,7 +233,7 @@ class AufcDatabaseProxy(object):
     def get_ground_nickname(cls, ground_name):
         try:
             AufcDatabaseProxy.update_cache()
-            if AufcDatabaseProxy.ground_nicknames.has_key(ground_name):
+            if ground_name in AufcDatabaseProxy.ground_nicknames:
                 return AufcDatabaseProxy.ground_nicknames[ground_name]
 
             logging.warning('No match for ground name: {} in database.'.format(ground_name))
