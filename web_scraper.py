@@ -1,12 +1,9 @@
 import url_generator
-import urllib2
-import cookielib
 import requests
 from enum import Enum
 from bs4 import BeautifulSoup
 import json
 import urllib
-from selenium import webdriver
 import time
 import logging
 import re
@@ -14,9 +11,9 @@ import copy
 from game_data_structure import Game
 from aufc_database_proxy import AufcDatabaseProxy
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+# import sys
+# reload(sys)
+# sys.setdefaultencoding('utf8')
 
 logging.basicConfig(level=logging.INFO)
 

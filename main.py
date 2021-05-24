@@ -4,15 +4,9 @@ import web_scraper
 import logging
 import os
 import json
-import cloudstorage as gcs
 import util
-import webapp2
-
-from google.appengine.api import app_identity
 
 logging.basicConfig(level=logging.INFO)
-
-bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
 
 app = Flask(__name__, template_folder='templates')
 
