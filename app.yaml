@@ -8,7 +8,22 @@ handlers:
     static_dir: static
     application_readable: true
     http_headers:
-      Access-Control-Allow-Origin: '*'
+      Access-Control-Allow-Origin: "*"
+
+  - url: /input-table-teams-data
+    static_dir: static
+    http_headers:
+      Access-Control-Allow-Origin: "*"
+
+  - url: /get_game
+    static_dir: static
+    http_headers:
+      Access-Control-Allow-Origin: "*"
+
+  - url: /substandard-fixtures-content.html
+    static_dir: static
+    http_headers:
+      Access-Control-Allow-Origin: "*"
 
   - url: /.*
     script: main.app

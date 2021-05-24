@@ -16,4 +16,4 @@ requests==2.25.1
 bs4==0.0.1
 mysql-connector==2.2.9
 Jinja2==2.11.3
-Werkzeug===0.7,
+Werkzeug==0.7

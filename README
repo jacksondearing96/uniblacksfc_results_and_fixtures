@@ -5,7 +5,7 @@ python2.7 -m virtualenv ~/venvs/subAuto
 source ~/venvs/subAuto/bin/activate
 
 # Install all requirements.
-pip install -t lib -r requirements.txt
+pip2 install -t lib -r requirements.txt
 
 # Run the test server.
 ./test_server
@@ -23,3 +23,6 @@ https://realpython.com/intro-to-pyenv/
 # Solution to jinja2 template rendering in Flask not working for local
 development server:
 https://stackoverflow.com/questions/60533259/devappserver-py-for-app-engine-std-on-localhost-is-clearing-os-uname-crashing
+
+# Switch to the correct project.
+gcloud config set project sub-auto

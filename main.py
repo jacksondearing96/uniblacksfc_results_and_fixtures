@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 from datetime import datetime
 import web_scraper
 import logging
@@ -32,7 +32,9 @@ def get_game():
         game = request.get_json(force=True)
         game = web_scraper.get_game_details_from_sportstg(game)
         print(game.goal_kickers)
-        return json.dumps(game.__dict__)
+        resp = make_response(json.dumps(game.__dict__))
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
     except Exception as e:
         logging.error(e)
         return web_scraper.server_failure('SERVER FAILURE')
@@ -53,7 +55,9 @@ def send_file(path):
     if request.method == 'POST':
         teams = request.get_json(force=True)
         print(teams)
-        return render_template(path, teams=teams)
+        resp = make_response(render_template(path, teams=teams))
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
     else:
         return render_template(path)
 
@@ -78,6 +82,7 @@ def initialise_teams_input_data_from_configuration(requested_year):
                     'nickname': nickname,
                     'skip_this_game': False,
                     'is_final': False,
+                    'is_past_game': True,
                     'round': False
                 }
                 teams.append(team)
@@ -87,7 +92,10 @@ def initialise_teams_input_data_from_configuration(requested_year):
 @app.route('/input-table-teams-data', methods=['GET'])
 def input_table_teams_data():
     year = request.args.get('year')
-    return json.dumps(initialise_teams_input_data_from_configuration(year)) 
+    response_data = json.dumps(initialise_teams_input_data_from_configuration(year)) 
+    resp = make_response(response_data)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 if __name__ == '__main__':
