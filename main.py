@@ -49,7 +49,8 @@ def fixtures():
     - Order teams
     - Include error messages 
     - include date info warning
-
+    - Win/loss verbs
+    
 '''
 
 
