@@ -1,92 +1,101 @@
-{% for team in teams %}
-{% if (team.error == '') or (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
-<table class='future-game'>
+<div id='substandard-fixtures-container'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/substandard-fixtures.css') }}">
 
-    <div class='row'>
-        <div class='col-md-12'>
-            <p class='date'>{{ team.date_HTML }}</p>
+    {% for team in teams %}
+    {% if (team.error == '') or (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
+    <table class='future-game'>
+
+        <div class='row'>
+            <div class='col-md-12'>
+                <p class='date'>{{ team.date_HTML }}</p>
+            </div>
         </div>
-    </div>
 
-    <tr class='top-divider bottom-divider'>
-        <td class='centre future-expand'>
-            <img src="{{ team.AUFC_logo }}">
-            </br>
-            <span class='nickname'>{{ team.nickname }}</span>
-        </td>
+        <tr class='top-divider bottom-divider'>
+            <td class='centre future-expand'>
+                <img src="{{ team.AUFC_logo }}">
+                </br>
+                <span class='nickname'>{{ team.nickname }}</span>
+            </td>
 
-        <td id='round-number' class='centre'>
-            {% if team.is_final == 'true' %}
-            <span class='highlight'>{{ team.match_name }}</span>
+            <td id='round-number' class='centre'>
+                {% if team.is_final == 'true' %}
+                <span class='highlight'>{{ team.match_name }}</span>
+                {% else %}
+                <span class='dull'>Round {{ team.round }}</span>
+                {% endif %}
+                </br>
+                {% if (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
+                Forfeit
+                {% else %}
+                <span class='dull'>vs</span>
+                {% endif %}
+            </td>
+
+            {% if team.result == 'BYE' %}
+
+            <td class='bye' colspan='2'>
+                <i>The Bye</i>
+            </td>
+
             {% else %}
-            <span class='dull'>Round {{ team.round }}</span>
+
+            <td class='centre future-expand'>
+                <img src="{{ team.image_url }}">
+                </br>
+                {% if team.opposition_nickname == '' %}
+                {{ team.opposition }}</br>
+                {% else %}
+                {{ team.opposition_nickname }}</br>
+                {% endif %}
+            </td>
+
+            <td class='icons'>
+                {% if (team.result != 'FORFEIT') and (team.result != 'OPPOSITION_FORFEIT') %}
+                <table>
+                    <tr>
+                        <td>
+                            <img src='https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'>
+                        </td>
+                        <td>
+                            {{ team.location_nickname }}
+                            {% if (team.location != 'University Oval') and (team.location != 'Fred Bloch Oval') %}
+                            {% if team.location_nickname == '' %}
+                            {{ team.location }}
+                            {% else %}
+                            <span class='real_location'>({{ team.location }})</span>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <img src='https://cdn2.iconfinder.com/data/icons/pittogrammi/142/10-512.png'>
+                        </td>
+                        <td>{{ team.time }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <img
+                                src='https://cdns.iconmonstr.com/wp-content/assets/preview/2013/240/iconmonstr-trophy-6.png'>
+                        </td>
+                        <td>{{ team.gender }} Div {{ team.division }}</td>
+                    </tr>
+                </table>
+                {% endif %}
+                <!-- End if forfeit -->
+            </td>
+
             {% endif %}
-            </br>
-            {% if (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
-            Forfeit
-            {% else %}
-            <span class='dull'>vs</span>
-            {% endif %}
-        </td>
+            <!-- End if BYE -->
 
-        {% if team.result == 'BYE' %}
-
-        <td class='bye' colspan='2'>
-            <i>The Bye</i>
-        </td>
-
-        {% else %}
-
-        <td class='centre future-expand'>
-            <img src="{{ team.image_url }}">
-            </br>
-            {{ team.opposition_nickname }}</br>
-        </td>
-
-        <td class='icons'>
-            {% if (team.result != 'FORFEIT') and (team.result != 'OPPOSITION_FORFEIT') %}
-            <table>
-                <tr>
-                    <td>
-                        <img src='https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'>
-                    </td>
-                    <td>
-                        {{ team.location_nickname }}
-                        {% if (team.location != 'University Oval') and (team.location != 'Fred Bloch Oval') %}
-                        {% if team.location_nickname == '' %}
-                        {{ team.location }}
-                        {% else %}
-                        <span class='real_location'>({{ team.location }})</span>
-                        {% endif %}
-                        {% endif %}
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <img src='https://cdn2.iconfinder.com/data/icons/pittogrammi/142/10-512.png'>
-                    </td>
-                    <td>{{ team.time }}</td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <img
-                            src='https://cdns.iconmonstr.com/wp-content/assets/preview/2013/240/iconmonstr-trophy-6.png'>
-                    </td>
-                    <td>{{ team.gender }} Div {{ team.division }}</td>
-                </tr>
-            </table>
-            {% endif %}
-            <!-- End if forfeit -->
-        </td>
-
-        {% endif %}
-        <!-- End if BYE -->
-
-    </tr>
-</table>
-{% endif %}
-<!-- if team is in error  -->
-{% endfor %}
-<!-- teams loop -->
+        </tr>
+    </table>
+    {% endif %}
+    <!-- if team is in error  -->
+    {% endfor %}
+    <!-- teams loop -->
+</div>
+<!-- substandard-fixtures-container -->
