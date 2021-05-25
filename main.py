@@ -22,6 +22,7 @@ def test_data():
     return util.read_file_to_string('database/interesting_games_to_test.json')
 
 
+# Deprecated.
 @app.route('/get_game', methods=['POST'])
 def get_game():
     try:
@@ -31,6 +32,35 @@ def get_game():
     except Exception as e:
         logging.error(e)
         return web_scraper.server_failure('SERVER FAILURE')
+
+
+@app.route('/results', methods=['POST'])
+def results():
+    return 'unimplemented'
+
+
+@app.route('/fixtures', methods=['POST'])
+def fixtures():
+    return 'unimplemented'
+
+
+'''
+    - Include dates
+    - Order teams
+    - Include error messages 
+    - include date info warning
+
+'''
+
+
+@app.route('/last_weekend_results', methods=['GET'])
+async def last_weekend_results():
+    year = datetime.today().year
+    teams = initialise_teams_input_data_from_configuration(year)
+
+    populated_teams = await web_scraper.populate_teams(teams)
+    response_content = render_template('substandard-results-content.html', teams=populated_teams)
+    return allow_cors(response_content)
 
 
 @app.route('/this_weekend_fixtures', methods=['GET'])

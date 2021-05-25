@@ -1,88 +1,92 @@
-{% for team in teams %}
-{% if (team.error == '') or (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/substandard-results.css') }}">
 
-<!-- Past game -->
-<table class='past-game'>
-    <tr class='top-divider'>
-        <td class='logo'><img src="{{ team.AUFC_logo }}">
+<div id='substandard-results-container'>
+    {% for team in teams %}
+    {% if (team.error == '') or (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
 
-        <td class='expand'>
-            <span class='nickname'>{{ team.nickname }}</span>
-            {% if team.score_for != '' %}
-            </br>
-            <span class='score'>{{ team.score_for }}</span>
-            {% endif %}
-        </td>
+    <!-- Past game -->
+    <table class='past-game'>
+        <tr class='top-divider'>
+            <td class='logo'><img src="{{ team.AUFC_logo }}">
 
-        <td class='result' class='centre'>
-            {% if team.is_final %}
-            <span class='match-name'>{{ team.match_name }}</span><br>
-            {% endif %}
+            <td class='expand'>
+                <span class='nickname'>{{ team.nickname }}</span>
+                {% if team.score_for != '' %}
+                </br>
+                <span class='score'>{{ team.score_for }}</span>
+                {% endif %}
+            </td>
 
-            {% if team.has_been_played %}
-            <span class='dull'>{{ team.win_or_loss_verb }}</span>
-            {% elif (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
-            <span class='dull'>Forfeit</span>
-            {% else %}
-            <span class='dull'>{{ team.result }}</span>
-            {% endif %}
-        </td>
+            <td class='result' class='centre'>
+                {% if team.is_final %}
+                <span class='match-name'>{{ team.match_name }}</span><br>
+                {% endif %}
 
-        <td class='right expand'>
-            {% if team.result != 'BYE' %}
-            {{ team.opposition_nickname }}
-            {% endif %}
+                {% if team.has_been_played %}
+                <span class='dull'>{{ team.win_or_loss_verb }}</span>
+                {% elif (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
+                <span class='dull'>Forfeit</span>
+                {% else %}
+                <span class='dull'>{{ team.result }}</span>
+                {% endif %}
+            </td>
 
-            {% if team.score_against != '' %}
-            </br>
-            <span class='score'>{{ team.score_against }}</span>
-            {% endif %}
-        </td>
+            <td class='right expand'>
+                {% if team.result != 'BYE' %}
+                {{ team.opposition_nickname }}
+                {% endif %}
 
-        <td class='logo'>
-            {% if team.result != 'BYE' %}
-            <img src="{{ team.image_url }}">
-            {% endif %}
-        </td>
+                {% if team.score_against != '' %}
+                </br>
+                <span class='score'>{{ team.score_against }}</span>
+                {% endif %}
+            </td>
 
-    </tr>
+            <td class='logo'>
+                {% if team.result != 'BYE' %}
+                <img src="{{ team.image_url }}">
+                {% endif %}
+            </td>
 
-    {% if team['goal_kickers']|length > 0 %}
-    <tr class='indent'>
-        <td colspan="5">
-            <span class='goal-kickers'>
-                <span class='label'>Goal Kickers:</span>
-                {% for goal_kicker in team.goal_kickers %}
-                {{ goal_kicker['name'] }}
-                <span class='goals'>{{ goal_kicker['goals'] }}</span>{% if loop.index != (team.goal_kickers|length)
-                %},{% endif %}
-                {% endfor %}
-            </span>
-        </td>
-    </tr>
+        </tr>
+
+        {% if team['goal_kickers']|length > 0 %}
+        <tr class='indent'>
+            <td colspan="5">
+                <span class='goal-kickers'>
+                    <span class='label'>Goal Kickers:</span>
+                    {% for goal_kicker in team.goal_kickers %}
+                    {{ goal_kicker['name'] }}
+                    <span class='goals'>{{ goal_kicker['goals'] }}</span>{% if loop.index != (team.goal_kickers|length)
+                    %},{% endif %}
+                    {% endfor %}
+                </span>
+            </td>
+        </tr>
+        {% endif %}
+
+        {% if team['best_players']|length > 0 %}
+        <tr class='indent'>
+            <td colspan="5">
+                <span class='best-players'>
+                    <span class='label'>Best Players:</span>
+                    {% for best_player in team.best_players %}
+                    {{ best_player['name'] }}{% if loop.index != (team.best_players|length)
+                    %},{% endif %}
+                    {% endfor %}
+                </span>
+            </td>
+        </tr>
+        {% endif %}
+
+        <tr class='bottom-divider'>
+            <td colspan='5'></td>
+        </tr>
+        <!-- end if not forfeit or BYE -->
+    </table>
     {% endif %}
 
-    {% if team['best_players']|length > 0 %}
-    <tr class='indent'>
-        <td colspan="5">
-            <span class='best-players'>
-                <span class='label'>Best Players:</span>
-                {% for best_player in team.best_players %}
-                {{ best_player['name'] }}{% if loop.index != (team.best_players|length)
-                %},{% endif %}
-                {% endfor %}
-            </span>
-        </td>
-    </tr>
-    {% endif %}
-
-    <tr class='bottom-divider'>
-        <td colspan='5'></td>
-    </tr>
-    <!-- end if not forfeit or BYE -->
-</table>
-{% endif %}
-
-<!-- end if team in error -->
-{% endfor %}
-<!-- end for teams loop -->
+    <!-- end if team in error -->
+    {% endfor %}
+    <!-- end for teams loop -->
+</div>
