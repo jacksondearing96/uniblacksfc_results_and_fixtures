@@ -1,4 +1,5 @@
 import unittest
+import sys
 
 import aufc_teams_util
 
@@ -103,3 +104,46 @@ class TestAufcTeamsUtil(unittest.TestCase):
         self.assertEqual(teams[1]['priority'], 4)
         self.assertEqual(teams[2]['priority'], 20)
         self.assertEqual(teams[3]['priority'], 50)
+
+
+    def test_sort_teams_based_on_margins(self):
+        teams = [
+            {'margin': 20},
+            {'margin': 50},
+            {'margin': -2},
+            {'margin': 4},
+            {'margin': None}
+        ]
+
+        teams = aufc_teams_util.sort_teams_based_on_margin(teams)
+
+        self.assertEqual(teams[0]['margin'], -sys.maxsize -  1)
+        self.assertEqual(teams[1]['margin'], -2)
+        self.assertEqual(teams[2]['margin'], 4)
+        self.assertEqual(teams[3]['margin'], 20)
+        self.assertEqual(teams[4]['margin'], 50)
+
+
+    def test_assign_sandy_coburn_cup_points(self):
+        teams = [
+            {'margin': 20},
+            {'margin': 50},
+            {'margin': -2},
+            {'margin': 4},
+            {'margin': None}
+        ]
+
+        teams = aufc_teams_util.assign_sandy_coburn_cup_points(teams)
+
+        self.assertEqual(teams[0]['sandy_points'], 0)
+        self.assertEqual(teams[1]['sandy_points'], 1)
+        self.assertEqual(teams[2]['sandy_points'], 2)
+        self.assertEqual(teams[3]['sandy_points'], 3)
+        self.assertEqual(teams[4]['sandy_points'], 4)
+
+        # Need to check that the teams have been sorted correctly too.
+        self.assertEqual(teams[0]['margin'], -sys.maxsize -  1)
+        self.assertEqual(teams[1]['margin'], -2)
+        self.assertEqual(teams[2]['margin'], 4)
+        self.assertEqual(teams[3]['margin'], 20)
+        self.assertEqual(teams[4]['margin'], 50)

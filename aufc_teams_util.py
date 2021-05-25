@@ -1,4 +1,5 @@
 import random
+import sys
 
 def get_winning_verbs():
     return [
@@ -62,3 +63,48 @@ def get_win_loss_summary_html(teams):
 
 def sort_teams_based_on_division(teams):
     return sorted(teams, key=lambda k: k['priority']) 
+
+
+def sort_teams_based_on_margin(teams):
+    for team in teams:
+        if not isinstance(team['margin'], int):
+            team['margin'] = -sys.maxsize - 1
+    return sorted(teams, key=lambda k: k['margin'])
+
+
+def sort_teams_for_fixtures(teams):
+    mens_teams = []
+    womens_teams = []
+
+    for team in teams:
+        if teams['gender'] == 'Mens':
+            mens_teams.append(team)
+        else:
+            womens_teams.append(team)
+    
+    mens_teams = sort_teams_based_on_division(mens_teams)
+    womens_teams = sort_teams_based_on_division(womens_teams)
+
+    teams = []
+    mens_first = datetime.now().isocalendar()[1] % 2 == 1
+
+    if mens_first:
+        teams.extend(mens_teams)
+        teams.extend(womens_teams)
+    else:
+        teams.extend(womens_teams)
+        teams.extend(mens_teams)
+
+
+def assign_sandy_coburn_cup_points(teams):
+    teams = sort_teams_based_on_margin(teams)
+
+    sandy_coburn_cup_points = 1
+    for team in teams:
+        if team['margin'] == -sys.maxsize - 1:
+            team['sandy_points'] = 0
+        else:
+            team['sandy_points'] = sandy_coburn_cup_points
+            sandy_coburn_cup_points += 1
+    return teams
+
