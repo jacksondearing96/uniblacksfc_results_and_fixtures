@@ -46,15 +46,19 @@ def get_win_loss_summary_stats(teams):
         else:
             wins += 1
 
+    # Invalid state.
     if wins + losses == 0:
         return 0, 0, 0, ''
     
     winning_percentage = round((wins / (wins + losses)) * 100)
     grade = calculate_grade(winning_percentage)
-
     return wins, losses, winning_percentage, grade
 
 
 def get_win_loss_summary_html(teams):
     wins, losses, winning_percentage, grade = get_win_loss_summary_stats(teams)
     return "<div id='win-loss-summary'>Uni won {} out of {} = {}% => {}</div>".format(wins, wins + losses, winning_percentage, grade)
+
+
+def sort_teams_based_on_division(teams):
+    return sorted(teams, key=lambda k: k['priority']) 
