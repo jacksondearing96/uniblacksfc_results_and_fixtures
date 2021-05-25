@@ -5,6 +5,8 @@ import logging
 import os
 import json
 import util
+import asyncio
+import time
 
 logging.basicConfig(level=logging.INFO)
 
@@ -25,21 +27,30 @@ def get_game():
     try:
         game = request.get_json(force=True)
         game = web_scraper.get_game_details_from_sportstg(game)
-        resp = make_response(json.dumps(game.__dict__))
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp
+        return allow_cors(json.dumps(game.__dict__))
     except Exception as e:
         logging.error(e)
         return web_scraper.server_failure('SERVER FAILURE')
+
+
+@app.route('/this_weekend_fixtures', methods=['GET'])
+async def this_weekend_fixtures():
+    year = datetime.today().year
+    teams = initialise_teams_input_data_from_configuration(year)
+
+    for team in teams:
+        team['is_past_game'] = False
+
+    populated_teams = await web_scraper.populate_teams(teams)
+    response_content = render_template('substandard-fixtures-content.html', teams=populated_teams)
+    return allow_cors(response_content)
 
 
 @app.route('/<path:path>', methods=['GET', 'POST'])
 def send_file(path):
     if path not in [
         'index.html',
-        'bowlies.html',
         'bowlies-content.html',
-        'substandard.html',
         'substandard-results-content.html',
         'substandard-fixtures-content.html'
     ]:
@@ -47,11 +58,16 @@ def send_file(path):
 
     if request.method == 'POST':
         teams = request.get_json(force=True)
-        resp = make_response(render_template(path, teams=teams))
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        return resp
+        return allow_cors(render_template(path, teams=teams))
     else:
         return render_template(path)
+
+# Sending a response with this header set will allow the resource
+# to be utilised by an external app.
+def allow_cors(content):
+    response = make_response(content)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 
 def initialise_teams_input_data_from_configuration(requested_year):
@@ -85,9 +101,7 @@ def initialise_teams_input_data_from_configuration(requested_year):
 def input_table_teams_data():
     year = request.args.get('year')
     response_data = json.dumps(initialise_teams_input_data_from_configuration(year)) 
-    resp = make_response(response_data)
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+    return allow_cors(response_data)
 
 
 if __name__ == '__main__':
