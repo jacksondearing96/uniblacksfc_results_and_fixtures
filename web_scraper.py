@@ -8,6 +8,8 @@ import time
 import logging
 import re
 import copy
+import asyncio
+
 from game_data_structure import Game
 from aufc_database_proxy import AufcDatabaseProxy
 
@@ -440,3 +442,20 @@ def get_game_details_from_sportstg(game):
         populated_game.image_url = override_image_url
 
     return populated_game
+
+
+async def populate_team(team, populated_teams):
+    populated_teams.append(get_game_details_from_sportstg(team).__dict__)
+
+
+async def populate_teams(teams):
+    populated_teams = []
+
+    tasks = []
+    for team in teams:
+        tasks.append(asyncio.create_task(populate_team(team, populated_teams)))
+
+    for task in tasks:
+        await task
+
+    return populated_teams
