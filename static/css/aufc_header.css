@@ -1,0 +1,15 @@
+.aufc-header {
+  background-color: black;
+  text-align: center;
+  padding: 20px;
+}
+
+.aufc-header img {
+  width: 50%;
+  max-width: 300px;
+}
+
+.aufc-header h1 {
+  margin: 20px;
+  color: grey;
+}

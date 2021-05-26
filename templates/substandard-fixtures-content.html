@@ -1,5 +1,7 @@
-<div id='substandard-fixtures-container'>
+<div id='substandard-fixtures-container' class='screenshot-content'>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/substandard-fixtures.css') }}">
+
+    <p id='future-games-title'>{{ title }}</p>
 
     {% for team in teams %}
     {% if (team.error == '') or (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}

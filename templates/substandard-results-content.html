@@ -1,8 +1,8 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/substandard-results.css') }}">
 
-<div id='substandard-results-container'>
+<div id='substandard-results-container' class='screenshot-content'>
 
-    {{ title }}
+    <div id="substandard-results-title">{{ title }}</div>
     {{ win_or_loss_summary }}
 
     {% for team in teams %}

@@ -169,8 +169,8 @@ def include_dates_html_for_appropriate_teams(teams):
 
         
 def get_results_title():
-    return '<div id="substandard-results-title">"If winning is all there is, we want no part of it"</div>'
+    return '"If winning is all there is, we want no part of it"'
 
 
 def get_fixtures_title():
-    return "<p id='future-games-title'>WHAT'S ON THIS WEEKEND</p>"
+    return "WHAT'S ON THIS WEEKEND"

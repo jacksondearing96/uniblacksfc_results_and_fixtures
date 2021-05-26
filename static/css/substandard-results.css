@@ -1,14 +1,11 @@
 #substandard-results-container {
   margin: 0 auto;
-}
-
-#substandard-results-container {
+  padding: 27px;
+  padding-left:15px;
   width: 550px;
   background-color: white;
   font-family: "Arial", sans-serif;
   color: rgb(75, 75, 75);
-  padding-left: 5px;
-  padding-right: 5px;
   line-height: 1.4
 }
 

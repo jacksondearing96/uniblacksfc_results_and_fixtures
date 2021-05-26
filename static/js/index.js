@@ -132,7 +132,7 @@ function getRoundInputSelector(rowIndex) {
   );
 }
 
-function ExtractJSONFromTable() {
+function ExtractTeamsJsonFromTable() {
   let rows = [];
   input_data_table.rows().every(function (rowIdx, tableLoop, rowLoop) {
     let row = this.data();
@@ -142,7 +142,7 @@ function ExtractJSONFromTable() {
     let is_final_checkbox = $(getIsFinalCheckboxSelector(rowIdx));
     let round_input = $(getRoundInputSelector(rowIdx));
 
-    row["skip_this_game"] = !include_checkbox.prop("checked");
+    if (!include_checkbox.prop("checked")) return;
     row["is_final"] = is_final_checkbox.prop("checked");
     row["round"] = round_input.val();
 
@@ -156,7 +156,7 @@ function AutomateBowlies() {}
 function SubstandardResults() {
   StartLoading();
 
-  let teams = ExtractJSONFromTable();
+  let teams = ExtractTeamsJsonFromTable();
 
   fetch("/results", {
     method: "POST",
@@ -168,10 +168,9 @@ function SubstandardResults() {
       $("#content-from-server").html(html);
       EndLoading();
       // Give the images time to load before the screenshot is taken.
-      // setTimeout(function () {
-      //   HTMLElementToImage("#substandard-fixtures-container");
-      //   resolve();
-      // }, 3000);
+      setTimeout(function () {
+        HTMLElementToImage(".screenshot-content");
+      }, 3000);
     });
 }
 
@@ -213,5 +212,6 @@ function HTMLElementToImage(selector) {
     $(selector).html("");
     // Add the image.
     $(selector).append(canvas);
+    $(selector).css("background-color", "grey");
   });
 }
