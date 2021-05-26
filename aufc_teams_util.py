@@ -1,5 +1,8 @@
 import random
 import sys
+from datetime import datetime
+from dateutil import parser as date_parser
+import calendar
 
 def get_winning_verbs():
     return [
@@ -77,7 +80,7 @@ def sort_teams_for_fixtures(teams):
     womens_teams = []
 
     for team in teams:
-        if teams['gender'] == 'Mens':
+        if team['gender'] == 'Mens':
             mens_teams.append(team)
         else:
             womens_teams.append(team)
@@ -95,6 +98,8 @@ def sort_teams_for_fixtures(teams):
         teams.extend(womens_teams)
         teams.extend(mens_teams)
 
+    return teams
+
 
 def assign_sandy_coburn_cup_points(teams):
     teams = sort_teams_based_on_margin(teams)
@@ -108,3 +113,64 @@ def assign_sandy_coburn_cup_points(teams):
             sandy_coburn_cup_points += 1
     return teams
 
+
+def get_errors_html(teams):
+    errors = ''
+    for team in teams:
+        if team['error'] != '':
+            errors += '<div class="substandard-error">ERROR found for {}: {}</div>'.format(team['nickname'], team['error'])
+
+    if errors == '':
+        errors = '<div class="no-errors-found">All teams and results were found without errors</div>'
+    
+    return errors
+
+
+def get_dates_info_html(teams):
+    dates_html = "<p>Found matches from the following dates (check that this looks correct):</p>"
+
+    dates = []
+    for team in teams:
+        if isinstance(team['date'], str):
+            dates.append(team['date'])
+
+    unique_dates = set(dates)
+
+    for date in unique_dates:
+        dates_html += '<div class="date-found">' + date + '</div>'
+
+    return dates_html
+
+
+def expand_date(date, year):
+    if date == None or date == '':
+        return ''
+
+    date_object = date_parser.parse(date + ' ' + str(year))
+    return ' '.join([
+            calendar.day_name[date_object.weekday()],
+            str(date_object.day),
+            calendar.month_name[date_object.month], 
+            str(date_object.year)
+        ])
+
+
+def include_dates_html_for_appropriate_teams(teams):
+    for i in range(0, len(teams)):
+        date = teams[i]['date']
+        previous_date = teams[i - 1]['date']
+
+        if i == 0 or (date != previous_date and date != None and previous_date != None):
+            teams[i]['date_HTML'] = expand_date(date, teams[i]['year'])
+        else:
+            teams[i]['date_HTML'] = ''
+
+    return teams
+
+        
+def get_results_title():
+    return '<div id="substandard-results-title">"If winning is all there is, we want no part of it"</div>'
+
+
+def get_fixtures_title():
+    return "<p id='future-games-title'>WHAT'S ON THIS WEEKEND</p>"

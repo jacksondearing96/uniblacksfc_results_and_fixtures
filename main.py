@@ -8,6 +8,8 @@ import util
 import asyncio
 import time
 
+import aufc_teams_util
+
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__, template_folder='templates')
@@ -35,23 +37,40 @@ def get_game():
 
 
 @app.route('/results', methods=['POST'])
-def results():
-    return 'unimplemented'
+async def results():
+    request_json = request.get_json(force=True)
+    teams = request_json['teams']
+
+    for team in teams:
+        team['is_past_game'] = True
+    teams = await web_scraper.populate_teams(teams)
+    teams = aufc_teams_util.sort_teams_for_fixtures(teams)
+    teams = aufc_teams_util.apply_random_winning_verbs(teams)
+
+    response_html = ''
+    title = ''
+    win_loss_summary = ''
+
+    if 'options' in request_json:
+        options = request_json['options']
+        if 'error_info' in options:
+            response_html += aufc_teams_util.get_errors_html(teams)
+        if 'dates_info' in options:
+            response_html += aufc_teams_util.get_dates_info_html(teams)
+        if 'title' in options:
+            title = aufc_teams_util.get_results_title()
+        if 'win_loss_summary' in options:
+            win_loss_summary = aufc_teams_util.get_win_loss_summary_html(teams)
+        if 'dates' in options:
+            teams = aufc_teams_util.include_dates_html_for_appropriate_teams(teams)
+
+    response_html += render_template('substandard-results-content.html', teams=teams, title=title, win_loss_summary=win_loss_summary)
+    return allow_cors(response_html)
 
 
 @app.route('/fixtures', methods=['POST'])
 def fixtures():
     return 'unimplemented'
-
-
-'''
-    - Include dates
-    - Order teams
-    - Include error messages 
-    - include date info warning
-    - Win/loss verbs
-    
-'''
 
 
 @app.route('/last_weekend_results', methods=['GET'])
@@ -81,9 +100,6 @@ async def this_weekend_fixtures():
 def send_file(path):
     if path not in [
         'index.html',
-        'bowlies-content.html',
-        'substandard-results-content.html',
-        'substandard-fixtures-content.html'
     ]:
         return 'ERROR - server does not serve that url path'
 

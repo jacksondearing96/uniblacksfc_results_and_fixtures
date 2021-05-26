@@ -147,3 +147,35 @@ class TestAufcTeamsUtil(unittest.TestCase):
         self.assertEqual(teams[2]['margin'], 4)
         self.assertEqual(teams[3]['margin'], 20)
         self.assertEqual(teams[4]['margin'], 50)
+
+
+    def test_expand_date(self):
+        self.assertEqual(aufc_teams_util.expand_date('Wed 26 May', 2021), 'Wednesday 26 May 2021')
+        # Notice how it overrides the day name with the correct one given the date and year.
+        self.assertEqual(aufc_teams_util.expand_date('Wed 26 May', 2020), 'Tuesday 26 May 2020')
+
+
+    def test_include_dates_html(self):
+        date = '12 May'
+        different_date = '1 Jan'
+        teams = [
+            {'date': date, 'year': 2021},
+            {'date': date, 'year': 2021},
+            {'date': different_date, 'year': 2021},
+            {'date': date, 'year': 2021},
+            {'date': date, 'year': 2021}
+        ]
+        
+        teams = aufc_teams_util.include_dates_html_for_appropriate_teams(teams)
+
+        date_html = 'Wednesday 12 May 2021'
+        different_date_html = 'Friday 1 January 2021'
+
+        self.assertEqual(teams[0]['date_HTML'], date_html)
+        self.assertEqual(teams[1]['date_HTML'], '')
+        self.assertEqual(teams[2]['date_HTML'], different_date_html)
+        self.assertEqual(teams[3]['date_HTML'], date_html)
+        self.assertEqual(teams[4]['date_HTML'], '')
+        
+
+

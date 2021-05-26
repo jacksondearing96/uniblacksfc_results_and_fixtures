@@ -1,26 +1,13 @@
 const ROUND_INDEX = 0;
 const SKIP_THIS_GAME_CHECKBOX_INDEX = 1;
 const IS_FINAL_CHECKBOX_INDEX = 2;
-
-// Initialises a list of winning verbs.
-// These will be used to describe uni beating another team.
-function GetInitialisedWinningVerbs() {
-  return [
-    "smashed",
-    "crushed",
-    "flogged",
-    "conquored",
-    "obliterated",
-    "slaughtered",
-    "demolished",
-    "spanked",
-    "annihilated",
-    "dismantled",
-    "decimated",
-    "destroyed",
-    "wrecked",
-  ];
-}
+const ALL_OPTIONS = {
+  error_info: true,
+  dates_info: true,
+  title: true,
+  win_loss_summary: true,
+  dates: true,
+};
 
 $(document).ready(function () {
   const createdCell = function (cell) {
@@ -164,355 +151,38 @@ function ExtractJSONFromTable() {
   return rows;
 }
 
-function CalculateGrade(percentage) {
-  if (percentage >= 85) return "High Distinction";
-  if (percentage >= 75) return "Distinction";
-  if (percentage >= 65) return "Credit";
-  if (percentage >= 50) return "Pass";
-  return "Fail";
-}
-
-function WinLossSummary(teams) {
-  // Enter the win/loss percentage.
-  let wins = 0;
-  let losses = 0;
-
-  teams.forEach((team) => {
-    if (isNaN(team.margin) || team.margin <= 0) ++losses;
-    if (team.margin > 0) ++wins;
-  });
-
-  let winning_percentage = Math.round((wins / (wins + losses)) * 100);
-  let grade = CalculateGrade(winning_percentage);
-
-  if (winning_percentage == Number.NaN) return;
-
-  return `<div id='win-loss-summary'>Uni won ${wins} out of ${
-    wins + losses
-  } = ${winning_percentage}% => ${grade}</div>`;
-}
-
-function OrderTeamsBasedOnMargins(teams) {
-  var priority_queue = new PriorityQueue();
-
-  for (let team of teams) {
-    if (isNaN(team.margin) || team.margin === null)
-      team.margin = -Number.MAX_VALUE;
-    priority_queue.enqueue(team, team.margin);
-  }
-
-  teams = [];
-
-  let sandy_coburn_cup_points = 1;
-
-  while (!priority_queue.isEmpty()) {
-    let team = priority_queue.dequeue().element;
-
-    if (team.margin == -Number.MAX_VALUE) {
-      team.sandy_points = 0;
-    } else {
-      team.sandy_points = sandy_coburn_cup_points;
-      ++sandy_coburn_cup_points;
-    }
-
-    teams.push(team);
-  }
-  return teams;
-}
-
-function OrderTeamsBasedOnDivision(teams) {
-  var priority_queue = new PriorityQueue();
-  for (let team of teams) priority_queue.enqueue(team, team.priority);
-  teams = [];
-  while (!priority_queue.isEmpty()) {
-    let team = priority_queue.dequeue().element;
-    teams.push(team);
-  }
-  return teams;
-}
-
-// Returns the Javascript date object that represents the date contained within the given team.
-function getDateObject(team) {
-  return new Date(Date.parse(team.date + " " + team.year));
-}
-
-// Returns the week number, used to determine which team (mens/womens) should be listed first.
-Date.prototype.getWeekNumber = function () {
-  var d = new Date(
-    Date.UTC(this.getFullYear(), this.getMonth(), this.getDate())
-  );
-  var dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
-};
-
-function OrderTeamsForFixtures(teams) {
-  let mens_teams = [];
-  let womens_teams = [];
-
-  for (let team of teams) {
-    if (team["gender"] === "Mens") {
-      mens_teams.push(team);
-    } else {
-      womens_teams.push(team);
-    }
-  }
-
-  mens_teams = OrderTeamsBasedOnDivision(mens_teams);
-  womens_teams = OrderTeamsBasedOnDivision(womens_teams);
-
-  teams = [];
-  // Alternate mens/womens being first every week (according to the week of div1 mens game).
-  if (new Date().getWeekNumber() % 2 == 1) {
-    teams.push(...mens_teams);
-    teams.push(...womens_teams);
-  } else {
-    teams.push(...womens_teams);
-    teams.push(...mens_teams);
-  }
-
-  return teams;
-}
-
-function ApplyRandomWinningVerbs(teams) {
-  let winning_verbs = GetInitialisedWinningVerbs();
-  for (let team of teams) {
-    if (team["win_or_loss_verb"] === "defeated") {
-      // Use and remove a random verb from the list.
-      team["win_or_loss_verb"] = winning_verbs.splice(
-        Math.floor(Math.random() * winning_verbs.length),
-        1
-      )[0];
-    }
-  }
-}
-
-function GetGameDetailsFromServer(game, teams) {
-  return new Promise((resolve) => {
-    fetch("/get_game", {
-      method: "POST",
-      "Content-Type": "application/json",
-      body: JSON.stringify(game),
-    })
-      .then((response) => response.text())
-      .then((game_data) => {
-        teams.push(JSON.parse(game_data));
-        resolve();
-      });
-  });
-}
-
-function GetFormattedBowliesHTML(teams) {
-  // Clear current content, populate with only the title.
-  let container = $("#bowlies-content-container");
-  container.html(
-    '<div class="row"><div class="col-md-12" id="bowlies-title">Hold Your Bowlies</div></div>'
-  );
-
-  container.append(WinLossSummary(teams));
-
-  return new Promise((resolve) => {
-    fetch("/bowlies-content.html", {
-      method: "POST",
-      "Content-Type": "application/json",
-      body: JSON.stringify(teams),
-    })
-      .then((response) => response.text())
-      .then((html) => {
-        container.append(html);
-        resolve();
-      });
-  });
-}
-
-function ShowDates(teams) {
-  let dates_container = $("#dates-found");
-  dates_container.append(
-    "<p>Found matches from the following dates (check that this looks correct):</p>"
-  );
-
-  let unique_dates = {};
-  for (let team of teams) {
-    if (team.date == null) continue;
-    unique_dates[team.date] = 1;
-  }
-  for (const [key, value] of Object.entries(unique_dates)) {
-    dates_container.append('<div class="date-found">' + key + "</div>");
-  }
-}
-
-function ShowErrors(teams) {
-  let errors_container = $("#errors");
-  errors_container.html("");
-
-  for (let team of teams) {
-    if (team.error != "") {
-      errors_container.append(
-        `<div class="substandard-error">ERROR found for ${team.nickname}: ${team.error}</div>`
-      );
-    }
-  }
-
-  if (errors_container.html() == "") {
-    errors_container.append(
-      '<div class="no-errors-found">All teams and results were found without errors</div>'
-    );
-  }
-}
-
-function GetFormattedSubstandardResultsHTML(teams) {
-  let container = $("#substandard-results-container");
-  container.html(
-    '<div id="substandard-results-title">"If winning is all there is, we want no part of it"</div>'
-  );
-  container.append(WinLossSummary(teams));
-
-  ApplyRandomWinningVerbs(teams);
-  console.log(teams);
-
-  return new Promise((resolve) => {
-    fetch("/substandard-results-content.html", {
-      method: "POST",
-      "Content-Type": "application/json",
-      body: JSON.stringify(teams),
-    })
-      .then((response) => response.text())
-      .then((html) => {
-        container.append(html);
-
-        // Give the images time to load before the screenshot is taken.
-        setTimeout(function () {
-          HTMLElementToImage("#substandard-results-container");
-          resolve();
-        }, 3000);
-      });
-  });
-}
-
-function GetFormattedSubstandardFixturesHTML(teams) {
-  let container = $("#substandard-fixtures-container");
-  container.html("<p id='future-games-title'>WHAT'S ON THIS WEEKEND</p>");
-
-  // Include dates.
-  for (let i = 0; i < teams.length; ++i) {
-    let team = teams[i];
-    if (
-      i == 0 ||
-      (team["date"] != teams[i - 1]["date"] &&
-        teams[i - 1]["date"] != null &&
-        team["date"] != null)
-    ) {
-      team["date_HTML"] = ExpandDate(team.date, team.year);
-    }
-  }
-
-  return new Promise((resolve) => {
-    fetch("/substandard-fixtures-content.html", {
-      method: "POST",
-      "Content-Type": "application/json",
-      body: JSON.stringify(teams),
-    })
-      .then((response) => response.text())
-      .then((html) => {
-        container.append(html);
-
-        // Give the images time to load before the screenshot is taken.
-        setTimeout(function () {
-          HTMLElementToImage("#substandard-fixtures-container");
-          resolve();
-        }, 3000);
-      });
-  });
-}
-
-function FormatTeams(
-  team_configurations_request_data,
-  formatter_callback,
-  ordering_callback = OrderTeamsForFixtures
-) {
-  StartLoading();
-
-  let teams = [];
-
-  const promises = [];
-  for (let team of team_configurations_request_data) {
-    if (team["skip_this_game"]) continue;
-    promises.push(GetGameDetailsFromServer(team, teams));
-  }
-
-  Promise.all(promises).then(() => {
-    teams = ordering_callback(teams);
-    ShowErrors(teams);
-    ShowDates(teams);
-    formatter_callback(teams).then(() => EndLoading());
-  });
-}
-
-function ClearAllFormattedResults() {
-  $("#bowlies-content-container").html("");
-  $("#substandard-results-container").html("");
-  $("#substandard-fixtures-container").html("");
-  $("#errors").html("");
-  $("#dates-found").html("");
-}
-
-function AutomateBowlies() {
-  ClearAllFormattedResults();
-
-  let team_configurations_request_data = ExtractJSONFromTable();
-
-  for (let team of team_configurations_request_data)
-    team["is_past_game"] = true;
-
-  FormatTeams(
-    team_configurations_request_data,
-    GetFormattedBowliesHTML,
-    OrderTeamsBasedOnMargins
-  );
-}
+function AutomateBowlies() {}
 
 function SubstandardResults() {
-  ClearAllFormattedResults();
+  StartLoading();
 
-  let team_configurations_request_data = ExtractJSONFromTable();
+  let teams = ExtractJSONFromTable();
 
-  for (let team of team_configurations_request_data)
-    team["is_past_game"] = true;
-
-  FormatTeams(
-    team_configurations_request_data,
-    GetFormattedSubstandardResultsHTML
-  );
+  fetch("/results", {
+    method: "POST",
+    "Content-Type": "application/json",
+    body: JSON.stringify({ teams: teams, options: ALL_OPTIONS }),
+  })
+    .then((response) => response.text())
+    .then((html) => {
+      $("#content-from-server").html(html);
+      EndLoading();
+      // Give the images time to load before the screenshot is taken.
+      // setTimeout(function () {
+      //   HTMLElementToImage("#substandard-fixtures-container");
+      //   resolve();
+      // }, 3000);
+    });
 }
 
-function SubstandardFixtures() {
-  ClearAllFormattedResults();
-
-  let team_configurations_request_data = ExtractJSONFromTable();
-
-  // TODO: would like to remove the need to specify this - if it is a past game, extract the data. If not,
-  // don't extract the data and reflect that in the return value of this flag.
-  // This will allow these three similar functions to be greatly simplified.
-  for (let team of team_configurations_request_data)
-    team["is_past_game"] = false;
-
-  FormatTeams(
-    team_configurations_request_data,
-    GetFormattedSubstandardFixturesHTML
-  );
-}
+function SubstandardFixtures() {}
 
 function RunBowliesTests() {
   fetch("/test_data")
     .then((response) => response.text())
     .then((test_data_str) => {
       let teams_test_data = JSON.parse(test_data_str);
-      FormatTeams(
-        teams_test_data,
-        GetFormattedBowliesHTML,
-        OrderTeamsBasedOnMargins
-      );
+      // TODO
     });
 }
 
@@ -521,7 +191,7 @@ function RunSubstandardResultsTests() {
     .then((response) => response.text())
     .then((test_data_str) => {
       let teams_test_data = JSON.parse(test_data_str);
-      FormatTeams(teams_test_data, GetFormattedSubstandardResultsHTML);
+      // TODO
     });
 }
 
@@ -530,7 +200,7 @@ function RunSubstandardFixturesTests() {
     .then((response) => response.text())
     .then((test_data_str) => {
       let teams_test_data = JSON.parse(test_data_str);
-      FormatTeams(teams_test_data, GetFormattedSubstandardFixturesHTML);
+      // TODO
     });
 }
 
@@ -544,16 +214,4 @@ function HTMLElementToImage(selector) {
     // Add the image.
     $(selector).append(canvas);
   });
-}
-
-// Takes a date string of the form 'Sat 12 Sep' and a year and converts them into
-// a longer format eg. 'Saturday 12 September, 2020'.
-function ExpandDate(date, year) {
-  if (date == null || date == "") return "";
-
-  let d = new Date(date + " " + year);
-  const month = new Intl.DateTimeFormat("en", { month: "long" }).format(d);
-  const day_name = new Intl.DateTimeFormat("en", { weekday: "long" }).format(d);
-
-  return `${day_name} ${d.getDate()} ${month}, ${year}`;
 }

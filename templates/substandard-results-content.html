@@ -1,6 +1,10 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/substandard-results.css') }}">
 
 <div id='substandard-results-container'>
+
+    {{ title }}
+    {{ win_or_loss_summary }}
+
     {% for team in teams %}
     {% if (team.error == '') or (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
 
