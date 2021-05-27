@@ -20,7 +20,8 @@ b {
 }
 
 #bowlies-content-container #win-loss-summary {
-  color: dodgerblue;
+  color: rgba(75, 75, 75);
+  background-color: rgba(255,255,0,0.5);
 }
 
 #bowlies-content-container #win-loss-summary,
@@ -172,6 +173,11 @@ b {
   padding: 3px;
 }
 
+.substandard-error {
+  padding: 10px !important;
+  background-color: rgba(255,0,0,0.8) !important;
+}
+
 .bigger {
   font-size: 1.3em;
 }
@@ -194,4 +200,11 @@ b {
   background-color: yellow;
   opacity: 0.8 !important;
   padding: 3px;
+}
+
+.summary-message {
+  padding: 10px !important;
+  border-radius: 10px;
+  margin: 0 auto;
+  width: fit-content;
 }

@@ -61,7 +61,7 @@ def get_win_loss_summary_stats(teams):
 
 def get_win_loss_summary_html(teams):
     wins, losses, winning_percentage, grade = get_win_loss_summary_stats(teams)
-    return "<div id='win-loss-summary'>Uni won {} out of {} = {}% => {}</div>".format(wins, wins + losses, winning_percentage, grade)
+    return 'Uni won {} out of {} = {}% => {}'.format(wins, wins + losses, winning_percentage, grade)
 
 
 def sort_teams_based_on_division(teams):
@@ -118,16 +118,16 @@ def get_errors_html(teams):
     errors = ''
     for team in teams:
         if team['error'] != '':
-            errors += '<div class="substandard-error">ERROR found for {}: {}</div>'.format(team['nickname'], team['error'])
+            errors += '<div class="substandard-error summary-message">ERROR found for {}: {}</div>'.format(team['nickname'], team['error'])
 
     if errors == '':
-        errors = '<div class="no-errors-found">All teams and results were found without errors</div>'
+        errors = '<div class="no-errors-found summary-message">All teams and results were found without errors</div>'
     
     return errors
 
 
 def get_dates_info_html(teams):
-    dates_html = "<p>Found matches from the following dates (check that this looks correct):</p>"
+    dates_html = "<div id='check-dates-message' class='summary-message'>Found matches from the following dates (check that this looks correct):"
 
     dates = []
     for team in teams:
@@ -137,9 +137,9 @@ def get_dates_info_html(teams):
     unique_dates = set(dates)
 
     for date in unique_dates:
-        dates_html += '<div class="date-found">' + date + '</div>'
+        dates_html += '<div class="date-found summary-message">' + date + '</div>'
 
-    return dates_html
+    return dates_html + '</div>'
 
 
 def expand_date(date, year):
@@ -168,9 +168,7 @@ def include_dates_html_for_appropriate_teams(teams):
     return teams
 
         
-def get_results_title():
-    return '"If winning is all there is, we want no part of it"'
-
-
-def get_fixtures_title():
+def get_title(is_for_results):
+    if is_for_results:
+        return '"If winning is all there is, we want no part of it"'
     return "WHAT'S ON THIS WEEKEND"

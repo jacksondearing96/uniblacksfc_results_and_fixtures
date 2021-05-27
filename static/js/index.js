@@ -151,14 +151,10 @@ function ExtractTeamsJsonFromTable() {
   return rows;
 }
 
-function AutomateBowlies() {}
-
-function SubstandardResults() {
+function SendTeamsRequestToServer(route, teams, convertToImage) {
   StartLoading();
 
-  let teams = ExtractTeamsJsonFromTable();
-
-  fetch("/results", {
+  fetch(route, {
     method: "POST",
     "Content-Type": "application/json",
     body: JSON.stringify({ teams: teams, options: ALL_OPTIONS }),
@@ -167,51 +163,26 @@ function SubstandardResults() {
     .then((html) => {
       $("#content-from-server").html(html);
       EndLoading();
-      // Give the images time to load before the screenshot is taken.
-      setTimeout(function () {
-        HTMLElementToImage(".screenshot-content");
-      }, 3000);
+      if (convertToImage) {
+        // Give the images time to load before the screenshot is taken.
+        // setTimeout(function () {
+        //   HTMLElementToImage(".screenshot-content");
+        // }, 3000);
+      }
     });
 }
 
-function SubstandardFixtures() {}
-
-function RunBowliesTests() {
-  fetch("/test_data")
-    .then((response) => response.text())
-    .then((test_data_str) => {
-      let teams_test_data = JSON.parse(test_data_str);
-      // TODO
-    });
+function AutomateBowlies() {
+  let teams = ExtractTeamsJsonFromTable();
+  SendTeamsRequestToServer("/bowlies", teams, /* convertToImage= */ false);
 }
 
-function RunSubstandardResultsTests() {
-  fetch("/test_data")
-    .then((response) => response.text())
-    .then((test_data_str) => {
-      let teams_test_data = JSON.parse(test_data_str);
-      // TODO
-    });
+function SubstandardResults() {
+  let teams = ExtractTeamsJsonFromTable();
+  SendTeamsRequestToServer("/results", teams, /* convertToImage= */ true);
 }
 
-function RunSubstandardFixturesTests() {
-  fetch("/test_data")
-    .then((response) => response.text())
-    .then((test_data_str) => {
-      let teams_test_data = JSON.parse(test_data_str);
-      // TODO
-    });
-}
-
-function HTMLElementToImage(selector) {
-  window.scrollTo(0, 0);
-  html2canvas(document.querySelector(selector), {
-    allowTaint: true,
-  }).then((canvas) => {
-    // Remove the HTML element.
-    $(selector).html("");
-    // Add the image.
-    $(selector).append(canvas);
-    $(selector).css("background-color", "grey");
-  });
+function SubstandardFixtures() {
+  let teams = ExtractTeamsJsonFromTable();
+  SendTeamsRequestToServer("/fixtures", teams, /* convertToImage= */ true);
 }

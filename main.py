@@ -24,16 +24,20 @@ def test_data():
     return util.read_file_to_string('database/interesting_games_to_test.json')
 
 
-# Deprecated.
-@app.route('/get_game', methods=['POST'])
-def get_game():
-    try:
-        game = request.get_json(force=True)
-        game = web_scraper.get_game_details_from_sportstg(game)
-        return allow_cors(json.dumps(game.__dict__))
-    except Exception as e:
-        logging.error(e)
-        return web_scraper.server_failure('SERVER FAILURE')
+def apply_generic_options(teams, options, is_for_results=True):
+    response_html = ''
+    title = ''
+
+    if 'error_info' in options:
+        response_html += aufc_teams_util.get_errors_html(teams)
+    if 'dates_info' in options:
+        response_html += aufc_teams_util.get_dates_info_html(teams)
+    if 'title' in options:
+        title = aufc_teams_util.get_title(is_for_results)
+    if 'dates' in options:
+        teams = aufc_teams_util.include_dates_html_for_appropriate_teams(teams)
+
+    return title, teams, response_html
 
 
 @app.route('/results', methods=['POST'])
@@ -47,30 +51,56 @@ async def results():
     teams = aufc_teams_util.sort_teams_for_fixtures(teams)
     teams = aufc_teams_util.apply_random_winning_verbs(teams)
 
-    response_html = ''
-    title = ''
-    win_loss_summary = ''
-
     if 'options' in request_json:
-        options = request_json['options']
-        if 'error_info' in options:
-            response_html += aufc_teams_util.get_errors_html(teams)
-        if 'dates_info' in options:
-            response_html += aufc_teams_util.get_dates_info_html(teams)
-        if 'title' in options:
-            title = aufc_teams_util.get_results_title()
-        if 'win_loss_summary' in options:
-            win_loss_summary = aufc_teams_util.get_win_loss_summary_html(teams)
-        if 'dates' in options:
-            teams = aufc_teams_util.include_dates_html_for_appropriate_teams(teams)
+        title, teams, response_html = apply_generic_options(teams, request_json['options'])
+
+    # Additional option just for results.
+    win_loss_summary = ''
+    if 'options' in request_json and 'win_loss_summary' in request_json['options']:
+        win_loss_summary = aufc_teams_util.get_win_loss_summary_html(teams)
 
     response_html += render_template('substandard-results-content.html', teams=teams, title=title, win_loss_summary=win_loss_summary)
     return allow_cors(response_html)
 
 
 @app.route('/fixtures', methods=['POST'])
-def fixtures():
-    return 'unimplemented'
+async def fixtures():
+    request_json = request.get_json(force=True)
+    teams = request_json['teams']
+
+    for team in teams:
+        team['is_past_game'] = False
+    teams = await web_scraper.populate_teams(teams)
+    teams = aufc_teams_util.sort_teams_for_fixtures(teams)
+
+    if 'options' in request_json:
+        is_for_results = False
+        title, teams, response_html = apply_generic_options(teams, request_json['options'], is_for_results)
+
+    response_html += render_template('substandard-fixtures-content.html', teams=teams, title=title)
+    return allow_cors(response_html)
+
+
+@app.route('/bowlies', methods=['POST'])
+async def bowlies():
+    request_json = request.get_json(force=True)
+    teams = request_json['teams']
+
+    for team in teams:
+        team['is_past_game'] = True
+    teams = await web_scraper.populate_teams(teams)
+    teams = aufc_teams_util.sort_teams_based_on_margin(teams)
+
+    if 'options' in request_json:
+        title, teams, response_html = apply_generic_options(teams, request_json['options'])
+
+    # Additional option just for results.
+    win_loss_summary = ''
+    if 'options' in request_json and 'win_loss_summary' in request_json['options']:
+        win_loss_summary = aufc_teams_util.get_win_loss_summary_html(teams)
+
+    response_html += render_template('bowlies-content.html', teams=teams, win_loss_summary=win_loss_summary)
+    return allow_cors(response_html)
 
 
 @app.route('/last_weekend_results', methods=['GET'])
@@ -83,6 +113,7 @@ async def last_weekend_results():
     return allow_cors(response_content)
 
 
+# Implement some smart caching here. Days since Saturday...
 @app.route('/this_weekend_fixtures', methods=['GET'])
 async def this_weekend_fixtures():
     year = datetime.today().year
@@ -96,18 +127,10 @@ async def this_weekend_fixtures():
     return allow_cors(response_content)
 
 
-@app.route('/<path:path>', methods=['GET', 'POST'])
-def send_file(path):
-    if path not in [
-        'index.html',
-    ]:
-        return 'ERROR - server does not serve that url path'
+@app.route('/test')
+def test():
+    return render_template('test.html')
 
-    if request.method == 'POST':
-        teams = request.get_json(force=True)
-        return allow_cors(render_template(path, teams=teams))
-    else:
-        return render_template(path)
 
 # Sending a response with this header set will allow the resource
 # to be utilised by an external app.

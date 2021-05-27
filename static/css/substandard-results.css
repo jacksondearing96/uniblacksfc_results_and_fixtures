@@ -6,7 +6,7 @@
   background-color: white;
   font-family: "Arial", sans-serif;
   color: rgb(75, 75, 75);
-  line-height: 1.4
+  line-height: 1.5
 }
 
 #substandard-results-container table,
@@ -35,6 +35,17 @@
 #substandard-results-container img {
   max-height: 55px;
   max-width: 60px;
+}
+
+#substandard-results-container .nickname,
+#substandard-results-container .score {
+  padding-left: 3px;
+}
+
+#substandard-results-container .opposition-nickname,
+#substandard-results-container .opposition-score {
+  padding-left: 0px;
+  padding-right: 3px;
 }
 
 #substandard-results-container .icons img {
@@ -148,7 +159,11 @@
 
 #substandard-results-container .score {
   color: rgb(150,150,150);
+  margin: 0px;
+  padding: 0px;
+  margin-top: 3px;
 }
 
-#substandard-results-container .goals {
+#substandard-results-container td {
+  padding-top: 5px;
 }

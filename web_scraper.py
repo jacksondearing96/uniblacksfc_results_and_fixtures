@@ -441,10 +441,16 @@ def get_game_details_from_sportstg(game):
     if override_image_url != '':
         populated_game.image_url = override_image_url
 
+    if populated_game.image_url == '':
+        populated_game.image_url = 'http://a1.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/default-team-logo-500.png&h=288&scale=crop&w=288&location=origin'
+
     return populated_game
 
 
 async def populate_team(team, populated_teams):
+    if team['nickname'] == 'Test':
+        populated_teams.append(test_empty_team)
+        return
     populated_teams.append(get_game_details_from_sportstg(team).__dict__)
 
 
@@ -459,3 +465,121 @@ async def populate_teams(teams):
         await task
 
     return populated_teams
+
+
+
+test_empty_team = {
+  "round": 1,
+  "year": 2021,
+  "url": "https://websites.sportstg.com/comp_info.cgi?c=1-114-0-573817-0&a=ROUND&round=1&pool=1",
+  "is_past_game": True,
+  "is_final": False,
+  "nickname": "Empty Nicknames",
+  "division": "1",
+  "gender": "Mens",
+  "url_code": "573817",
+  "match_name": None,
+  "date": "Sat 10 Apr",
+  "time": "2:15 PM",
+  "opposition": "St Peter's OC",
+  "opposition_nickname": "",
+  "image_url": "http://a1.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/default-team-logo-500.png&h=288&scale=crop&w=288&location=origin",
+  "location": "Caterer Oval",
+  "location_nickname": "",
+  "location_url":
+    "https://websites.sportstg.com/comp_info.cgi?round=1&a=VENUE&venueid=19057027&c=1-114-0-573817-0&fID=125673421",
+  "is_home_game": False,
+  "priority": 1,
+  "has_been_played": True,
+  "result": "LOSS",
+  "score_for": "7.7-49",
+  "score_against": "10.8-68",
+  "goal_kickers": [
+    {
+      "name": "M. Langridge",
+      "fullname": "Matthew Langridge",
+      "nickname": "",
+      "memberID": 27080,
+      "goals": 2,
+    },
+    {
+      "name": "H. Gloyne",
+      "fullname": "Harrison Gloyne",
+      "nickname": "",
+      "memberID": 26909,
+      "goals": 1,
+    },
+    {
+      "name": "M. Olekalns",
+      "fullname": "Maris Olekalns",
+      "nickname": "",
+      "memberID": 27683,
+      "goals": 1,
+    },
+    {
+      "name": "M. Marini",
+      "fullname": "Mitchell Marini",
+      "nickname": "",
+      "memberID": 27375,
+      "goals": 1,
+    },
+    {
+      "name": "E. Sims",
+      "fullname": "Edward Sims",
+      "nickname": "",
+      "memberID": 27513,
+      "goals": 1,
+    },
+    {
+      "name": "R. Marini",
+      "fullname": "Ryan Marini",
+      "nickname": "",
+      "memberID": 27317,
+      "goals": 1,
+    },
+  ],
+  "best_players": [
+    {
+      "name": "D. Cunningham",
+      "fullname": "Damian Cunningham",
+      "nickname": "",
+      "memberID": 26610,
+    },
+    {
+      "name": "C. Noonan",
+      "fullname": "Conor Noonan",
+      "nickname": "",
+      "memberID": 27208,
+    },
+    {
+      "name": "B. Adams",
+      "fullname": "Ben Adams",
+      "nickname": "",
+      "memberID": 27099,
+    },
+    {
+      "name": "S. Jankewicz",
+      "fullname": "Stefan Jankewicz",
+      "nickname": "",
+      "memberID": 27316,
+    },
+    {
+      "name": "R. Marini",
+      "fullname": "Ryan Marini",
+      "nickname": "",
+      "memberID": 27317,
+    },
+    {
+      "name": "H. Wallace",
+      "fullname": "Hamish Wallace",
+      "nickname": "",
+      "memberID": 27443,
+    },
+  ],
+  "win_or_loss_verb": "def. by",
+  "margin": -19,
+  "error": "",
+  "AUFC_logo":
+    "https://upload.wikimedia.org/wikipedia/en/4/45/Adelaide_University_Football_Club_Logo.png",
+  "date_HTML": "Saturday 10 April 2021",
+}

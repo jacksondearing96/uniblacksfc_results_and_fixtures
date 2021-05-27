@@ -3,7 +3,7 @@
 <div id='substandard-results-container' class='screenshot-content'>
 
     <div id="substandard-results-title">{{ title }}</div>
-    {{ win_or_loss_summary }}
+    <div class='win-loss-summary summary-message'>{{ win_loss_summary }}</div>
 
     {% for team in teams %}
     {% if (team.error == '') or (team.result == 'FORFEIT') or (team.result == 'OPPOSITION_FORFEIT') %}
@@ -14,10 +14,9 @@
             <td class='logo'><img src="{{ team.AUFC_logo }}">
 
             <td class='expand'>
-                <span class='nickname'>{{ team.nickname }}</span>
+                <div class='nickname'>{{ team.nickname }}</div>
                 {% if team.score_for != '' %}
-                </br>
-                <span class='score'>{{ team.score_for }}</span>
+                <div class='score'>{{ team.score_for }}</div>
                 {% endif %}
             </td>
 
@@ -37,12 +36,15 @@
 
             <td class='right expand'>
                 {% if team.result != 'BYE' %}
-                {{ team.opposition_nickname }}
+                {% if team.opposition_nickname != '' %}
+                <div class='opposition-nickname'>{{ team.opposition_nickname }}</div>
+                {% else %}
+                <div class='opposition-nickname'>{{ team.opposition }}</div>
+                {% endif %}
                 {% endif %}
 
                 {% if team.score_against != '' %}
-                </br>
-                <span class='score'>{{ team.score_against }}</span>
+                <div class='score opposition-score'>{{ team.score_against }}</div>
                 {% endif %}
             </td>
 

@@ -29,8 +29,8 @@ input[type="number"] {
   background-color: limegreen;
 }
 
-.date-found, #dates-found p {
-  background-color: dodgerblue;
+#check-dates-message {
+  background-color: rgba(30, 144, 255, 0.8);
   color: white;
   padding: 3px;
   margin: 5px;

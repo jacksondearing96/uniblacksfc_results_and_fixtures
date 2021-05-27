@@ -1,0 +1,10 @@
+<script src="{{ url_for('static', filename='js/test.js') }}"></script>
+
+<button type='button' class='btn btn-secondary' onclick="RunBowliesTests()" id="automate-bowlies-button">Test
+    Bowlies</button>
+<button type='button' class='btn btn-secondary' onclick="RunSubstandardResultsTests()" id="automate-bowlies-button">Test
+    Substandard Results</button>
+<button type='button' class='btn btn-secondary' onclick="RunSubstandardFixturesTests()"
+    id="automate-bowlies-button">Test Substandard Fixtures</button>
+
+{% include 'index.html' %}
