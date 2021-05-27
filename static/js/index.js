@@ -165,9 +165,9 @@ function SendTeamsRequestToServer(route, teams, convertToImage) {
       EndLoading();
       if (convertToImage) {
         // Give the images time to load before the screenshot is taken.
-        // setTimeout(function () {
-        //   HTMLElementToImage(".screenshot-content");
-        // }, 3000);
+        setTimeout(function () {
+          HTMLElementToImage(".screenshot-content");
+        }, 3000);
       }
     });
 }
