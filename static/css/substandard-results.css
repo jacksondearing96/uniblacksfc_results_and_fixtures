@@ -6,7 +6,7 @@
   background-color: white;
   font-family: "Arial", sans-serif;
   color: rgb(75, 75, 75);
-  line-height: 1.5
+  line-height: 1.4
 }
 
 #substandard-results-container table,
@@ -161,7 +161,7 @@
   color: rgb(150,150,150);
   margin: 0px;
   padding: 0px;
-  margin-top: 3px;
+  margin-top: 0px;
 }
 
 #substandard-results-container td {
