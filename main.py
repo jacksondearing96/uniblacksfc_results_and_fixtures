@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, make_response
+from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, date, timedelta
 import web_scraper
 import logging
@@ -103,37 +104,19 @@ async def bowlies():
     return allow_cors(response_html)
 
 
-cached_last_weekend_results = { 'content': '', 'updated': None }
-cached_this_weekend_fixtures = { 'content': '', 'updated': None }
-
-def should_deliver_cache(cached_result):
-    today = date.today()
-    last_monday = today - timedelta(days=today.weekday())
-    return cached_result['updated'] != None and cached_result['updated'] >= last_monday
-
 @app.route('/last_weekend_results', methods=['GET'])
 async def last_weekend_results():
-    global cached_last_weekend_results
-    if should_deliver_cache(cached_last_weekend_results):
-        return allow_cors(cached_last_weekend_results['content'])
-
     year = datetime.today().year
     teams = initialise_teams_input_data_from_configuration(year)
 
     populated_teams = await web_scraper.populate_teams(teams)
     response_content = render_template('substandard-results-content.html', teams=populated_teams)
-    cached_last_weekend_results['content'] = response_content
-    cached_last_weekend_results['updated'] = date.today()
     return allow_cors(response_content)
 
 
 # Implement some smart caching here. Days since Saturday...
 @app.route('/this_weekend_fixtures', methods=['GET'])
 async def this_weekend_fixtures():
-    global cached_this_weekend_fixtures
-    if should_deliver_cache(cached_this_weekend_fixtures):
-        return allow_cors(cached_this_weekend_fixtures['content'])
-
     year = datetime.today().year
     teams = initialise_teams_input_data_from_configuration(year)
 
@@ -142,8 +125,7 @@ async def this_weekend_fixtures():
 
     populated_teams = await web_scraper.populate_teams(teams)
     response_content = render_template('substandard-fixtures-content.html', teams=populated_teams)
-    cached_this_weekend_fixtures['content'] = response_content
-    cached_this_weekend_fixtures['updated'] = date.today()
+
     return allow_cors(response_content)
 
 
@@ -194,5 +176,14 @@ def input_table_teams_data():
     return allow_cors(response_data)
 
 
+def scheduled_update_of_cache():
+    logging.info('*** SCHEDULED UPDATE RUNNING ***')
+    this_weekend_fixtures()
+    last_weekend_results()
+
+
 if __name__ == '__main__':
+    sched = BackgroundScheduler(daemon=True)
+    sched.add_job(scheduled_update_of_cache,'interval',seconds=40000)
+    sched.start()
     app.run(host="0.0.0.0", debug=True)

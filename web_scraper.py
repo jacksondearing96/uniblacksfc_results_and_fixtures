@@ -9,6 +9,7 @@ import logging
 import re
 import copy
 import asyncio
+from cache import AsyncTTL
 
 from game_data_structure import Game
 from aufc_database_proxy import AufcDatabaseProxy
@@ -454,6 +455,7 @@ async def populate_team(team, populated_teams):
     populated_teams.append(get_game_details_from_sportstg(team).__dict__)
 
 
+@AsyncTTL(time_to_live=86400, maxsize=100)
 async def populate_teams(teams):
     populated_teams = []
 
