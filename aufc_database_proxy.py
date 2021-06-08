@@ -33,8 +33,8 @@ class AufcDatabaseProxy(object):
     @classmethod 
     def update_cache(cls):
         try:
-            if not AufcDatabaseProxy.update_is_required(): 
-                return
+            # if not AufcDatabaseProxy.update_is_required(): 
+            #     return
             
             logging.info('Updating database cache.')
             

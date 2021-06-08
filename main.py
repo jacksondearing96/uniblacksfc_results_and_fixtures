@@ -10,7 +10,7 @@ import asyncio
 import time
 
 import aufc_teams_util
-import aufc_database_proxy
+from aufc_database_proxy import AufcDatabaseProxy
 
 logging.basicConfig(level=logging.INFO)
 
@@ -182,7 +182,7 @@ def input_table_teams_data():
 def scheduled_update_of_cache():
     logging.info('*** SCHEDULED UPDATE RUNNING ***')
 
-    aufc_database_proxy.update_cache()
+    AufcDatabaseProxy.update_cache()
 
     this_weekend_fixtures()
     last_weekend_results()
@@ -192,4 +192,5 @@ if __name__ == '__main__':
     sched = BackgroundScheduler(daemon=True)
     sched.add_job(scheduled_update_of_cache,'interval',seconds=40000)
     sched.start()
+    AufcDatabaseProxy.update_cache()
     app.run(host="0.0.0.0", debug=True)
