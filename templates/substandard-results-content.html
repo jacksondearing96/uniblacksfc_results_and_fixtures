@@ -1,5 +1,4 @@
-    <link rel="stylesheet"
-           href="https://sub-auto.ts.r.appspot.com/static/css/substandard-results.css">
+<link rel="stylesheet" href="https://sub-auto.ts.r.appspot.com/static/css/substandard-results.css">
 
 <div id='substandard-results-container' class='screenshot-content'>
 
@@ -15,7 +14,14 @@
             <td class='logo'><img src="{{ team.AUFC_logo }}">
 
             <td class='expand'>
-                <div class='nickname'>{{ team.nickname }}</div>
+                <div class='nickname'>
+                    {% if team.nickname == '' %}
+                    Div {{ team.division }}
+                    {% else %}
+                    {{ team.nickname }}
+                    {% endif %}
+                </div>
+
                 {% if team.score_for != '' %}
                 <div class='score'>{{ team.score_for }}</div>
                 {% endif %}
