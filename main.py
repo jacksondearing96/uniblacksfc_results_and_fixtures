@@ -10,6 +10,7 @@ import asyncio
 import time
 
 import aufc_teams_util
+import aufc_database_proxy
 
 logging.basicConfig(level=logging.INFO)
 
@@ -41,7 +42,7 @@ def apply_generic_options(teams, options, is_for_results=True):
     return title, teams, response_html
 
 
-@app.route('/results', methods=['POST'])
+@app.route('/results', methods=['POST', 'GET'])
 async def results():
     request_json = request.get_json(force=True)
     teams = request_json['teams']
@@ -52,6 +53,8 @@ async def results():
     teams = aufc_teams_util.sort_teams_for_fixtures(teams)
     teams = aufc_teams_util.apply_random_winning_verbs(teams)
 
+    response_html = ''
+    title = ''
     if 'options' in request_json:
         title, teams, response_html = apply_generic_options(teams, request_json['options'])
 
@@ -178,6 +181,9 @@ def input_table_teams_data():
 
 def scheduled_update_of_cache():
     logging.info('*** SCHEDULED UPDATE RUNNING ***')
+
+    aufc_database_proxy.update_cache()
+
     this_weekend_fixtures()
     last_weekend_results()
 

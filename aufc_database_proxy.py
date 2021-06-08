@@ -168,7 +168,6 @@ class AufcDatabaseProxy(object):
             pass
 
         try:
-            AufcDatabaseProxy.update_cache()
             if player_name in AufcDatabaseProxy.player_names_and_nicknames:
                 return AufcDatabaseProxy.player_names_and_nicknames[player_name]
             
@@ -184,8 +183,6 @@ class AufcDatabaseProxy(object):
         try:
             if original_name is None:
                 original_name = opposition_name
-
-            AufcDatabaseProxy.update_cache()
 
             inconclusives = [
                 '',
@@ -232,7 +229,6 @@ class AufcDatabaseProxy(object):
     @classmethod
     def get_ground_nickname(cls, ground_name):
         try:
-            AufcDatabaseProxy.update_cache()
             if ground_name in AufcDatabaseProxy.ground_nicknames:
                 return AufcDatabaseProxy.ground_nicknames[ground_name]
 
@@ -245,7 +241,6 @@ class AufcDatabaseProxy(object):
     @classmethod
     def get_override_image_url(cls, opposition):
         try:
-            AufcDatabaseProxy.update_cache()
             if opposition in AufcDatabaseProxy.image_url_overrides.keys():
                 return AufcDatabaseProxy.image_url_overrides[opposition]
             return ''
