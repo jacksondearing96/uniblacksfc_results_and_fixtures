@@ -151,10 +151,12 @@
   font-weight: bold;
 }
 
-#win-loss-summary {
-  text-align: center;
+.win-loss-summary {
+  margin: 0 auto;
   padding: 10px;
   font-weight: bold;
+  text-align: center;
+  color: darkgrey;
 }
 
 #substandard-results-container .score {
