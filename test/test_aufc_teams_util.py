@@ -87,7 +87,7 @@ class TestAufcTeamsUtil(unittest.TestCase):
         ] 
         self.assertEqual(aufc_teams_util.get_win_loss_summary_html(
             teams
-        ), "<div id='win-loss-summary'>Uni won 3 out of 4 = 75% => Distinction</div>")
+        ), "Uni won 3 out of 4 = 75% => Distinction")
 
     
     def test_sort_teams_based_on_division(self):

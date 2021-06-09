@@ -12,7 +12,6 @@ class AufcDatabaseProxy(object):
     last_update_time = datetime.now()
 
     opposition_nicknames = None
-    opposition_nicknames_overrides = None
 
     ground_nicknames = None
     ground_nicknames_overrides = None
@@ -33,8 +32,8 @@ class AufcDatabaseProxy(object):
     @classmethod 
     def update_cache(cls):
         try:
-            # if not AufcDatabaseProxy.update_is_required(): 
-            #     return
+            if not AufcDatabaseProxy.update_is_required(): 
+                return
             
             logging.info('Updating database cache.')
             
@@ -58,7 +57,6 @@ class AufcDatabaseProxy(object):
 
     @classmethod 
     def update_overrides(cls):
-        AufcDatabaseProxy.update_opposition_nicknames_overrides()
         AufcDatabaseProxy.update_ground_nicknames_overrides()
         AufcDatabaseProxy.update_image_url_overrides()
 
@@ -71,11 +69,6 @@ class AufcDatabaseProxy(object):
     @classmethod 
     def update_image_url_overrides(cls):
         AufcDatabaseProxy.image_url_overrides = json.loads(util.read_file_to_string('database/override_image_urls.json'))
-
-
-    @classmethod 
-    def update_opposition_nicknames_overrides(cls):
-        AufcDatabaseProxy.opposition_nicknames_overrides = json.loads(util.read_file_to_string('database/override_nicknames.json'))
 
 
     @classmethod 
@@ -135,8 +128,6 @@ class AufcDatabaseProxy(object):
 
     @classmethod 
     def update_opposition_nicknames(cls):
-        AufcDatabaseProxy.update_opposition_nicknames_overrides()
-
         connection = AufcDatabaseProxy.connect_to_aufc_database()
         cursor = connection.cursor()
 
@@ -150,11 +141,6 @@ class AufcDatabaseProxy(object):
             opposition_nickname = opposition_names_and_nickname[1]
 
             AufcDatabaseProxy.opposition_nicknames[opposition_name] = opposition_nickname
-
-            # Override if necessary.
-            for override_name in AufcDatabaseProxy.opposition_nicknames_overrides.keys():
-                AufcDatabaseProxy.opposition_nicknames[override_name] = AufcDatabaseProxy.opposition_nicknames_overrides[override_name]
-
         
         connection.close()
 
@@ -181,6 +167,8 @@ class AufcDatabaseProxy(object):
     @classmethod 
     def get_opposition_nickname(cls, opposition_name, original_name=None):
         try:
+            opposition_name = opposition_name.strip()
+
             if original_name is None:
                 original_name = opposition_name
 
@@ -214,27 +202,88 @@ class AufcDatabaseProxy(object):
 
             # Remove the apostrophe if it is present.
             if "'" in opposition_name:
-                return AufcDatabaseProxy.get_opposition_nickname(opposition_name.replace("'", ''), opposition_name)
+                return AufcDatabaseProxy.get_opposition_nickname(opposition_name.replace("'", ''), original_name)
+
+            if 'OC' in opposition_name:
+                res = AufcDatabaseProxy.get_opposition_nickname(opposition_name.replace('OC', 'O.C.'), original_name)
+                if res != '':
+                    return res
+
+            if 'St' in opposition_name:
+                res = AufcDatabaseProxy.get_opposition_nickname(opposition_name.replace('St', 'Saint'), original_name)
+                if res != '':
+                    return res
 
             # Remove the last word and try again.
             if ' ' in opposition_name:
-                return AufcDatabaseProxy.get_opposition_nickname(opposition_name.rsplit(' ', 1)[0], opposition_name)
+                return AufcDatabaseProxy.get_opposition_nickname(opposition_name.rsplit(' ', 1)[0], original_name)
 
             logging.warning('No match for opposition name: {} in database.'.format(original_name))
             return ''
-        except:
+        except Exception as e:
+            logging.error(e)
             return ''
 
 
     @classmethod
-    def get_ground_nickname(cls, ground_name):
+    def get_ground_nickname(cls, ground_name, original_ground_name=None):
         try:
+            ground_name = ground_name.strip()
+
+            if original_ground_name is None:
+                original_ground_name = ground_name
+
+            inconclusives = [
+                '',
+                'Saint',
+                'North',
+                'St',
+                'South',
+                'East',
+                'West',
+                'The',
+                'Port',
+                'Adelaide',
+                'Mount',
+                'Old'
+            ]
+
+            # Inconclusive.
+            if (ground_name == '' or ground_name in inconclusives):
+                logging.warning('No match for ground name: {} in database.'.format(original_ground_name))
+                return ''
+
+            # Exact match.
             if ground_name in AufcDatabaseProxy.ground_nicknames:
                 return AufcDatabaseProxy.ground_nicknames[ground_name]
 
-            logging.warning('No match for ground name: {} in database.'.format(ground_name))
-            return '' 
-        except:
+            # Contains.
+            for actual_ground_name in AufcDatabaseProxy.ground_nicknames.keys():
+                if ground_name in actual_ground_name:
+                    return AufcDatabaseProxy.ground_nicknames[actual_ground_name]
+
+            # Remove the apostrophe if it is present.
+            if "'" in ground_name:
+                return AufcDatabaseProxy.get_ground_nickname(ground_name.replace("'", ''), original_ground_name)
+
+            if 'OC' in ground_name:
+                res = AufcDatabaseProxy.get_ground_nickname(ground_name.replace('OC', 'O.C.'), original_ground_name)
+                if res != '':
+                    return res
+
+            if 'St' in ground_name:
+                res = AufcDatabaseProxy.get_ground_nickname(ground_name.replace('St', 'Saint'), original_ground_name)
+                if res != '':
+                    return res
+
+            # Remove the last word and try again.
+            if ' ' in ground_name:
+                return AufcDatabaseProxy.get_ground_nickname(ground_name.rsplit(' ', 1)[0], original_ground_name)
+
+            logging.warning('No match for ground name: {} in database.'.format(original_ground_name))
+            return ''
+        except Exception as e:
+            logging.error(e)
             return ''
 
 
@@ -244,5 +293,6 @@ class AufcDatabaseProxy(object):
             if opposition in AufcDatabaseProxy.image_url_overrides.keys():
                 return AufcDatabaseProxy.image_url_overrides[opposition]
             return ''
-        except:
+        except Exception as e:
+            logging.error(e)
             return ''

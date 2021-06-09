@@ -2,12 +2,18 @@ import unittest
 import json
 
 import web_scraper
+from aufc_database_proxy import AufcDatabaseProxy
 
 FUTURE_GAME = True 
 DONT_INCLUDE_PLAYER_NICKNAMES = False
 DONT_SKIP_THIS_GAME = False
 
 class GetFutureGameDetails(unittest.TestCase):
+
+
+    @classmethod
+    def setUpClass(cls):
+        AufcDatabaseProxy.update_cache()
 
     def setUp(self):
         self.maxDiff = None

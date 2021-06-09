@@ -4,9 +4,14 @@ import requests
 from bs4 import BeautifulSoup
 
 import web_scraper
+from aufc_database_proxy import AufcDatabaseProxy
 
 
 class GetPastResults(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        AufcDatabaseProxy.update_cache()
 
     def setUp(self):
         # Div 1, Round 2, 2019, Adl uni vs Brighton.
