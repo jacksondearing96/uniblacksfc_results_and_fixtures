@@ -151,14 +151,6 @@
   font-weight: bold;
 }
 
-.win-loss-summary {
-  margin: 0 auto;
-  padding: 10px;
-  font-weight: bold;
-  text-align: center;
-  color: darkgrey;
-}
-
 #substandard-results-container .score {
   color: rgb(150,150,150);
   margin: 0px;
@@ -168,4 +160,11 @@
 
 #substandard-results-container td {
   padding-top: 5px;
+}
+
+#substandard-results-container > div.win-loss-summary.summary-message {
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+  color: darkgrey;
 }
